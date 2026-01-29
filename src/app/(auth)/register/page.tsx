@@ -70,7 +70,7 @@ export default function RegisterPage() {
         phone: data.phone,
       });
 
-      const { user, tokens } = res;
+      const { user, tokens } = res.data;
 
       localStorage.setItem("accessToken", tokens.accessToken);
       localStorage.setItem("refreshToken", tokens.refreshToken);
