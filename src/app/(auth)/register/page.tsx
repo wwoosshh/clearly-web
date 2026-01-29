@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth.store";
+import api from "@/lib/api";
 
 const registerSchema = z
   .object({
@@ -28,8 +30,8 @@ const registerSchema = z
       .min(1, "비밀번호를 입력해주세요")
       .min(8, "비밀번호는 8자 이상이어야 합니다")
       .regex(
-        /^(?=.*[a-zA-Z])(?=.*\d)/,
-        "영문과 숫자를 포함해야 합니다"
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
+        "대문자, 소문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다"
       ),
     confirmPassword: z.string().min(1, "비밀번호 확인을 입력해주세요"),
     agreeTerms: z.literal(true, {
@@ -61,11 +63,26 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterForm) => {
     setServerError("");
     try {
-      // TODO: API 연동
-      console.log("Register:", data);
-      router.push("/login");
-    } catch {
-      setServerError("회원가입에 실패했습니다. 다시 시도해주세요.");
+      const { data: res } = await api.post("/auth/register", {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        phone: data.phone,
+      });
+
+      const { user, tokens } = res;
+
+      localStorage.setItem("accessToken", tokens.accessToken);
+      localStorage.setItem("refreshToken", tokens.refreshToken);
+
+      useAuthStore.getState().setUser(user);
+
+      router.push("/");
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message ||
+        "회원가입에 실패했습니다. 다시 시도해주세요.";
+      setServerError(message);
     }
   };
 
@@ -167,7 +184,7 @@ export default function RegisterPage() {
         <Input
           label="비밀번호"
           type="password"
-          placeholder="영문, 숫자 포함 8자 이상"
+          placeholder="대소문자, 숫자, 특수문자 포함 8자 이상"
           error={errors.password?.message}
           {...register("password")}
         />
