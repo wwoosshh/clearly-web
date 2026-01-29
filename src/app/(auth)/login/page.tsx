@@ -39,8 +39,11 @@ export default function LoginPage() {
     try {
       await login(data);
       router.push("/");
-    } catch {
-      setServerError("이메일 또는 비밀번호가 올바르지 않습니다.");
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message ||
+        "이메일 또는 비밀번호가 올바르지 않습니다.";
+      setServerError(message);
     }
   };
 
