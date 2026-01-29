@@ -159,3 +159,45 @@ export interface RegisterRequest {
   phone: string;
   role: UserRole;
 }
+
+/** 업체 검색 결과 항목 */
+export interface CompanySearchResult {
+  id: string;
+  businessName: string;
+  businessNumber: string;
+  representative: string;
+  address: string | null;
+  detailAddress: string | null;
+  description: string | null;
+  profileImages: string[];
+  specialties: string[];
+  minPrice: number | null;
+  maxPrice: number | null;
+  averageRating: number | null;
+  totalReviews: number;
+  totalMatchings: number;
+  responseTime: number | null;
+  distance: number | null;
+  score: number;
+  user: {
+    id: string;
+    name: string;
+    phone: string | null;
+    profileImage: string | null;
+  };
+}
+
+/** 업체 검색 응답 */
+export interface CompanySearchResponse {
+  data: CompanySearchResult[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  searchLocation: {
+    latitude: number;
+    longitude: number;
+  } | null;
+}

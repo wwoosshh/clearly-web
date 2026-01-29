@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "@/components/ui/Input";
+import { AddressSearch } from "@/components/address/AddressSearch";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 
@@ -52,9 +53,8 @@ const registerCompanySchema = z
       .max(50, "대표자명은 최대 50자까지 가능합니다"),
     address: z
       .string()
-      .max(300, "주소는 최대 300자까지 가능합니다")
-      .optional()
-      .or(z.literal("")),
+      .min(1, "주소를 검색해주세요")
+      .max(300, "주소는 최대 300자까지 가능합니다"),
     detailAddress: z
       .string()
       .max(200, "상세주소는 최대 200자까지 가능합니다")
@@ -79,13 +79,18 @@ export default function RegisterCompanyPage() {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterCompanyForm>({
     resolver: zodResolver(registerCompanySchema),
     defaultValues: {
+      address: "",
       agreeTerms: undefined,
     },
   });
+
+  const addressValue = watch("address");
 
   const onSubmit = async (data: RegisterCompanyForm) => {
     setServerError("");
@@ -98,7 +103,7 @@ export default function RegisterCompanyPage() {
         businessName: data.businessName,
         businessNumber: data.businessNumber,
         representative: data.representative,
-        address: data.address || undefined,
+        address: data.address,
         detailAddress: data.detailAddress || undefined,
       });
       setIsSuccess(true);
@@ -275,12 +280,38 @@ export default function RegisterCompanyPage() {
           {...register("representative")}
         />
 
-        <Input
-          label="주소"
-          placeholder="서울특별시 강남구 역삼동 (선택)"
-          error={errors.address?.message}
-          {...register("address")}
-        />
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-gray-800">
+            주소 <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              readOnly
+              value={addressValue || ""}
+              placeholder="주소를 검색해주세요"
+              className={cn(
+                "h-[44px] flex-1 rounded-lg border px-3.5 text-[14px] bg-gray-50 cursor-default",
+                "placeholder:text-gray-400",
+                errors.address
+                  ? "border-red-400"
+                  : "border-gray-200"
+              )}
+            />
+            <AddressSearch
+              onComplete={(data) => {
+                setValue("address", data.roadAddress || data.address, {
+                  shouldValidate: true,
+                });
+              }}
+            />
+          </div>
+          {errors.address && (
+            <p className="text-[12px] text-red-500">
+              {errors.address.message}
+            </p>
+          )}
+        </div>
 
         <Input
           label="상세주소"
