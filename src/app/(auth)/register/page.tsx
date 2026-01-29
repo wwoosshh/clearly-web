@@ -232,6 +232,16 @@ export default function RegisterPage() {
       </form>
 
       <p className="mt-7 text-center text-[13px] text-gray-500">
+        청소 업체이신가요?{" "}
+        <Link
+          href="/register/company"
+          className="font-semibold text-gray-900 hover:underline"
+        >
+          업체 회원가입
+        </Link>
+      </p>
+
+      <p className="mt-2 text-center text-[13px] text-gray-500">
         이미 계정이 있으신가요?{" "}
         <Link
           href="/login"
