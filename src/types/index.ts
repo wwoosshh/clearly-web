@@ -171,6 +171,7 @@ export interface CompanySearchResult {
   description: string | null;
   profileImages: string[];
   specialties: string[];
+  serviceAreas: string[];
   minPrice: number | null;
   maxPrice: number | null;
   averageRating: number | null;

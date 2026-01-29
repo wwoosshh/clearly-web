@@ -2,11 +2,52 @@
 
 import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { AddressSearch } from "@/components/address/AddressSearch";
 import { CompanyCard } from "@/components/company/CompanyCard";
 import { Spinner } from "@/components/ui/Spinner";
+import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import type { CompanySearchResponse, CompanySearchResult } from "@/types";
+
+const SPECIALTY_OPTIONS = [
+  "이사청소",
+  "입주청소",
+  "거주청소",
+  "사무실청소",
+  "상가청소",
+  "준공청소",
+  "에어컨청소",
+  "카펫청소",
+  "외벽청소",
+] as const;
+
+const REGION_OPTIONS = [
+  "서울",
+  "경기",
+  "인천",
+  "부산",
+  "대구",
+  "대전",
+  "광주",
+  "울산",
+  "세종",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주",
+] as const;
+
+const SORT_OPTIONS = [
+  { value: "score", label: "추천순" },
+  { value: "rating", label: "평점순" },
+  { value: "reviews", label: "리뷰많은순" },
+  { value: "matchings", label: "매칭많은순" },
+  { value: "price_low", label: "가격낮은순" },
+  { value: "price_high", label: "가격높은순" },
+] as const;
 
 export default function SearchPage() {
   return (
@@ -28,9 +69,17 @@ function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [addressInput, setAddressInput] = useState(
-    searchParams.get("address") || ""
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
+  const [selectedSpecialty, setSelectedSpecialty] = useState(
+    searchParams.get("specialty") || ""
   );
+  const [selectedRegion, setSelectedRegion] = useState(
+    searchParams.get("region") || ""
+  );
+  const [sortBy, setSortBy] = useState(
+    searchParams.get("sortBy") || "score"
+  );
+
   const [companies, setCompanies] = useState<CompanySearchResult[]>([]);
   const [meta, setMeta] = useState<CompanySearchResponse["meta"] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,27 +87,35 @@ function SearchPageContent() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchCompanies = useCallback(
-    async (address: string, page: number = 1) => {
-      if (!address.trim()) return;
-
+    async (params: {
+      keyword?: string;
+      specialty?: string;
+      region?: string;
+      sortBy?: string;
+      page?: number;
+    }) => {
       setIsLoading(true);
       setHasSearched(true);
 
       try {
+        const query: Record<string, string | number> = {
+          page: params.page || 1,
+          limit: 10,
+        };
+        if (params.keyword) query.keyword = params.keyword;
+        if (params.specialty) query.specialty = params.specialty;
+        if (params.region) query.region = params.region;
+        if (params.sortBy) query.sortBy = params.sortBy;
+
         const { data } = await api.get<CompanySearchResponse>(
           "/companies/search",
-          {
-            params: { address, page, limit: 10 },
-          }
+          { params: query }
         );
 
         const result = (data as any)?.data ?? data;
-
-        setCompanies(
-          Array.isArray(result) ? result : result?.data ?? []
-        );
+        setCompanies(Array.isArray(result) ? result : result?.data ?? []);
         setMeta(result?.meta ?? (data as any)?.meta ?? null);
-        setCurrentPage(page);
+        setCurrentPage(params.page || 1);
       } catch {
         setCompanies([]);
         setMeta(null);
@@ -69,23 +126,50 @@ function SearchPageContent() {
     []
   );
 
-  // URL의 address 쿼리 파라미터로 자동 검색
+  // 초기 로드: 파라미터가 있으면 검색, 없으면 전체 목록
   useEffect(() => {
-    const urlAddress = searchParams.get("address");
-    if (urlAddress) {
-      setAddressInput(urlAddress);
-      fetchCompanies(urlAddress);
-    }
-  }, [searchParams, fetchCompanies]);
+    fetchCompanies({
+      keyword: searchParams.get("keyword") || "",
+      specialty: searchParams.get("specialty") || "",
+      region: searchParams.get("region") || "",
+      sortBy: searchParams.get("sortBy") || "score",
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = () => {
-    if (!addressInput.trim()) return;
-    router.replace(`/search?address=${encodeURIComponent(addressInput)}`);
-    fetchCompanies(addressInput);
+    const params = new URLSearchParams();
+    if (keyword) params.set("keyword", keyword);
+    if (selectedSpecialty) params.set("specialty", selectedSpecialty);
+    if (selectedRegion) params.set("region", selectedRegion);
+    if (sortBy !== "score") params.set("sortBy", sortBy);
+    router.replace(`/search?${params.toString()}`);
+    fetchCompanies({
+      keyword,
+      specialty: selectedSpecialty,
+      region: selectedRegion,
+      sortBy,
+    });
+  };
+
+  const handleSortChange = (newSort: string) => {
+    setSortBy(newSort);
+    fetchCompanies({
+      keyword,
+      specialty: selectedSpecialty,
+      region: selectedRegion,
+      sortBy: newSort,
+      page: 1,
+    });
   };
 
   const handlePageChange = (page: number) => {
-    fetchCompanies(addressInput, page);
+    fetchCompanies({
+      keyword,
+      specialty: selectedSpecialty,
+      region: selectedRegion,
+      sortBy,
+      page,
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -96,36 +180,157 @@ function SearchPageContent() {
         업체 찾기
       </h1>
       <p className="mt-1.5 text-[15px] text-gray-500">
-        주소를 입력하면 가까운 업체를 추천해 드립니다
+        조건에 맞는 청소 업체를 찾아보세요
       </p>
 
-      {/* 검색 바 */}
+      {/* 키워드 검색 바 */}
       <div className="mt-6 flex gap-2">
         <input
           type="text"
-          readOnly
-          value={addressInput}
-          placeholder="주소를 검색해주세요"
-          className="h-[46px] flex-1 rounded-lg border border-gray-200 bg-gray-50 px-4 text-[14px] placeholder:text-gray-400 cursor-default"
-        />
-        <AddressSearch
-          onComplete={(data) => {
-            const addr = data.roadAddress || data.address;
-            setAddressInput(addr);
-          }}
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          placeholder="업체명 또는 키워드로 검색"
+          className="h-[46px] flex-1 rounded-lg border border-gray-200 px-4 text-[14px] placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
         />
         <button
           onClick={handleSearch}
-          disabled={!addressInput.trim() || isLoading}
+          disabled={isLoading}
           className="h-[46px] rounded-lg bg-gray-900 px-6 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           검색
         </button>
       </div>
 
+      {/* 전문분야 필터 */}
+      <div className="mt-4">
+        <p className="text-[13px] font-medium text-gray-600 mb-2">전문분야</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => {
+              setSelectedSpecialty("");
+              fetchCompanies({
+                keyword,
+                specialty: "",
+                region: selectedRegion,
+                sortBy,
+              });
+            }}
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+              !selectedSpecialty
+                ? "border-gray-900 bg-gray-900 text-white"
+                : "border-gray-200 text-gray-600 hover:border-gray-400"
+            )}
+          >
+            전체
+          </button>
+          {SPECIALTY_OPTIONS.map((spec) => (
+            <button
+              key={spec}
+              onClick={() => {
+                const next = selectedSpecialty === spec ? "" : spec;
+                setSelectedSpecialty(next);
+                fetchCompanies({
+                  keyword,
+                  specialty: next,
+                  region: selectedRegion,
+                  sortBy,
+                });
+              }}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+                selectedSpecialty === spec
+                  ? "border-gray-900 bg-gray-900 text-white"
+                  : "border-gray-200 text-gray-600 hover:border-gray-400"
+              )}
+            >
+              {spec}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 지역 필터 */}
+      <div className="mt-3">
+        <p className="text-[13px] font-medium text-gray-600 mb-2">지역</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => {
+              setSelectedRegion("");
+              fetchCompanies({
+                keyword,
+                specialty: selectedSpecialty,
+                region: "",
+                sortBy,
+              });
+            }}
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+              !selectedRegion
+                ? "border-gray-900 bg-gray-900 text-white"
+                : "border-gray-200 text-gray-600 hover:border-gray-400"
+            )}
+          >
+            전체
+          </button>
+          {REGION_OPTIONS.map((region) => (
+            <button
+              key={region}
+              onClick={() => {
+                const next = selectedRegion === region ? "" : region;
+                setSelectedRegion(next);
+                fetchCompanies({
+                  keyword,
+                  specialty: selectedSpecialty,
+                  region: next,
+                  sortBy,
+                });
+              }}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+                selectedRegion === region
+                  ? "border-gray-900 bg-gray-900 text-white"
+                  : "border-gray-200 text-gray-600 hover:border-gray-400"
+              )}
+            >
+              {region}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 구분선 + 정렬 */}
+      <div className="mt-5 border-t border-gray-200 pt-4 flex items-center justify-between">
+        <p className="text-[14px] text-gray-500">
+          {meta ? (
+            <>
+              총{" "}
+              <span className="font-semibold text-gray-900">
+                {meta.total}
+              </span>
+              개의 업체
+            </>
+          ) : (
+            "\u00A0"
+          )}
+        </p>
+        <select
+          value={sortBy}
+          onChange={(e) => handleSortChange(e.target.value)}
+          className="rounded-lg border border-gray-200 px-3 py-1.5 text-[13px] text-gray-700 focus:border-gray-900 focus:outline-none"
+        >
+          {SORT_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* 로딩 상태 */}
       {isLoading && (
-        <div className="mt-16 flex flex-col items-center gap-3">
+        <div className="mt-12 flex flex-col items-center gap-3">
           <Spinner size="lg" className="text-gray-400" />
           <p className="text-[14px] text-gray-500">업체를 찾고 있습니다...</p>
         </div>
@@ -136,14 +341,6 @@ function SearchPageContent() {
         <>
           {companies.length > 0 ? (
             <>
-              <p className="mt-6 text-[14px] text-gray-500">
-                총{" "}
-                <span className="font-semibold text-gray-900">
-                  {meta?.total ?? companies.length}
-                </span>
-                개의 업체를 찾았습니다
-              </p>
-
               <div className="mt-4 flex flex-col gap-4">
                 {companies.map((company) => (
                   <CompanyCard key={company.id} company={company} />
@@ -229,7 +426,7 @@ function SearchPageContent() {
               )}
             </>
           ) : (
-            <div className="mt-16 flex flex-col items-center text-center">
+            <div className="mt-12 flex flex-col items-center text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
                 <svg
                   width="24"
@@ -246,41 +443,14 @@ function SearchPageContent() {
                 </svg>
               </div>
               <p className="mt-4 text-[15px] font-medium text-gray-700">
-                검색 결과가 없습니다
+                조건에 맞는 업체가 없습니다
               </p>
               <p className="mt-1.5 text-[13px] text-gray-500">
-                다른 주소로 검색해 보시거나 검색 범위를 넓혀보세요
+                필터를 변경하거나 다른 키워드로 검색해 보세요
               </p>
             </div>
           )}
         </>
-      )}
-
-      {/* 초기 상태 */}
-      {!isLoading && !hasSearched && (
-        <div className="mt-16 flex flex-col items-center text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#9ca3af"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-          </div>
-          <p className="mt-4 text-[15px] font-medium text-gray-700">
-            주소를 입력하여 검색을 시작하세요
-          </p>
-          <p className="mt-1.5 text-[13px] text-gray-500">
-            입력하신 주소 근처의 우수 업체를 추천해 드립니다
-          </p>
-        </div>
       )}
     </div>
   );

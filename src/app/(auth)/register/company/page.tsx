@@ -11,6 +11,39 @@ import { AddressSearch } from "@/components/address/AddressSearch";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 
+const SPECIALTY_OPTIONS = [
+  "이사청소",
+  "입주청소",
+  "거주청소",
+  "사무실청소",
+  "상가청소",
+  "준공청소",
+  "에어컨청소",
+  "카펫청소",
+  "외벽청소",
+  "기타",
+] as const;
+
+const REGION_OPTIONS = [
+  "서울",
+  "경기",
+  "인천",
+  "부산",
+  "대구",
+  "대전",
+  "광주",
+  "울산",
+  "세종",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주",
+] as const;
+
 const registerCompanySchema = z
   .object({
     // 담당자 정보
@@ -60,6 +93,22 @@ const registerCompanySchema = z
       .max(200, "상세주소는 최대 200자까지 가능합니다")
       .optional()
       .or(z.literal("")),
+    // 서비스 정보
+    specialties: z.array(z.string()).optional(),
+    serviceAreas: z.array(z.string()).optional(),
+    description: z
+      .string()
+      .max(2000, "업체 소개는 최대 2000자까지 가능합니다")
+      .optional()
+      .or(z.literal("")),
+    minPrice: z
+      .string()
+      .optional()
+      .or(z.literal("")),
+    maxPrice: z
+      .string()
+      .optional()
+      .or(z.literal("")),
     agreeTerms: z.literal(true, {
       error: "필수 약관에 동의해주세요",
     }),
@@ -86,11 +135,18 @@ export default function RegisterCompanyPage() {
     resolver: zodResolver(registerCompanySchema),
     defaultValues: {
       address: "",
+      specialties: [],
+      serviceAreas: [],
+      description: "",
+      minPrice: "",
+      maxPrice: "",
       agreeTerms: undefined,
     },
   });
 
   const addressValue = watch("address");
+  const selectedSpecialties = watch("specialties") || [];
+  const selectedAreas = watch("serviceAreas") || [];
 
   const onSubmit = async (data: RegisterCompanyForm) => {
     setServerError("");
@@ -105,6 +161,11 @@ export default function RegisterCompanyPage() {
         representative: data.representative,
         address: data.address,
         detailAddress: data.detailAddress || undefined,
+        specialties: data.specialties?.length ? data.specialties : undefined,
+        serviceAreas: data.serviceAreas?.length ? data.serviceAreas : undefined,
+        description: data.description || undefined,
+        minPrice: data.minPrice ? Number(data.minPrice) : undefined,
+        maxPrice: data.maxPrice ? Number(data.maxPrice) : undefined,
       });
       setIsSuccess(true);
     } catch (error: any) {
@@ -319,6 +380,124 @@ export default function RegisterCompanyPage() {
           error={errors.detailAddress?.message}
           {...register("detailAddress")}
         />
+
+        {/* 구분선 */}
+        <div className="my-2 h-px bg-gray-200" />
+
+        {/* 섹션: 서비스 정보 */}
+        <div className="flex items-center gap-3">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 text-[11px] font-bold text-white">
+            3
+          </div>
+          <span className="text-[14px] font-semibold text-gray-900">
+            서비스 정보 <span className="text-[12px] font-normal text-gray-400">(선택)</span>
+          </span>
+        </div>
+
+        {/* 전문분야 */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-gray-800">
+            전문분야
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {SPECIALTY_OPTIONS.map((spec) => {
+              const isSelected = selectedSpecialties.includes(spec);
+              return (
+                <button
+                  key={spec}
+                  type="button"
+                  onClick={() => {
+                    const current = selectedSpecialties;
+                    const next = isSelected
+                      ? current.filter((s) => s !== spec)
+                      : [...current, spec];
+                    setValue("specialties", next);
+                  }}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+                    isSelected
+                      ? "border-gray-900 bg-gray-900 text-white"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-400"
+                  )}
+                >
+                  {spec}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 서비스 가능 지역 */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-gray-800">
+            서비스 가능 지역
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {REGION_OPTIONS.map((region) => {
+              const isSelected = selectedAreas.includes(region);
+              return (
+                <button
+                  key={region}
+                  type="button"
+                  onClick={() => {
+                    const current = selectedAreas;
+                    const next = isSelected
+                      ? current.filter((a) => a !== region)
+                      : [...current, region];
+                    setValue("serviceAreas", next);
+                  }}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+                    isSelected
+                      ? "border-gray-900 bg-gray-900 text-white"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-400"
+                  )}
+                >
+                  {region}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 업체 소개 */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-gray-800">
+            업체 소개
+          </label>
+          <textarea
+            placeholder="업체를 소개해주세요 (경력, 강점, 서비스 특징 등)"
+            rows={3}
+            className={cn(
+              "w-full rounded-lg border px-3.5 py-3 text-[14px] transition-colors resize-none",
+              "placeholder:text-gray-400",
+              "border-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+            )}
+            {...register("description")}
+          />
+        </div>
+
+        {/* 가격 범위 */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-gray-800">
+            예상 가격 범위 (원)
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              placeholder="최소 가격"
+              className="h-[44px] flex-1 rounded-lg border border-gray-200 px-3.5 text-[14px] placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+              {...register("minPrice")}
+            />
+            <span className="text-gray-400">~</span>
+            <input
+              type="number"
+              placeholder="최대 가격"
+              className="h-[44px] flex-1 rounded-lg border border-gray-200 px-3.5 text-[14px] placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+              {...register("maxPrice")}
+            />
+          </div>
+        </div>
 
         {/* 약관 동의 */}
         <div className="mt-1">
