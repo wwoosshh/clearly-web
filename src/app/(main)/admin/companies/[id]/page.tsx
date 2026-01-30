@@ -14,6 +14,9 @@ export default function AdminCompanyDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [tab, setTab] = useState<"matchings" | "reviews" | "estimates" | "points">("matchings");
   const [actionLoading, setActionLoading] = useState(false);
+  const [chargeAmount, setChargeAmount] = useState("");
+  const [chargeDescription, setChargeDescription] = useState("");
+  const [isCharging, setIsCharging] = useState(false);
 
   const fetchCompany = async () => {
     try {
@@ -347,55 +350,127 @@ export default function AdminCompanyDetailPage() {
 
         {tab === "points" && (
           <div>
-            {company.pointWallet ? (
-              <>
-                <div className="rounded-lg border border-gray-200 bg-white p-4">
-                  <p className="text-[13px] text-gray-500">현재 잔액</p>
-                  <p className="mt-1 text-2xl font-bold text-gray-900">
-                    {(company.pointWallet.balance || 0).toLocaleString()} P
-                  </p>
-                </div>
-                {company.pointWallet.transactions?.length > 0 && (
-                  <div className="mt-3 overflow-hidden rounded-lg border border-gray-200 bg-white">
-                    <table className="w-full text-left text-sm">
-                      <thead>
-                        <tr className="border-b border-gray-100 bg-gray-50/50">
-                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">유형</th>
-                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">금액</th>
-                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">설명</th>
-                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {company.pointWallet.transactions.map((t: any) => (
-                          <tr key={t.id} className="border-b border-gray-50 last:border-0">
-                            <td className="px-3 py-2">
-                              <span className={cn(
-                                "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                                t.type === "CHARGE" ? "bg-green-50 text-green-700" :
-                                t.type === "USE" ? "bg-red-50 text-red-600" :
-                                "bg-blue-50 text-blue-700"
-                              )}>
-                                {t.type === "CHARGE" ? "충전" : t.type === "USE" ? "사용" : "환불"}
-                              </span>
-                            </td>
-                            <td className={cn(
-                              "px-3 py-2 text-[12px] font-medium",
-                              t.type === "USE" ? "text-red-600" : "text-green-700"
-                            )}>
-                              {t.type === "USE" ? "-" : "+"}{t.amount?.toLocaleString()} P
-                            </td>
-                            <td className="px-3 py-2 text-[12px] text-gray-600">{t.description}</td>
-                            <td className="px-3 py-2 text-[12px] text-gray-500">{formatDate(t.createdAt)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+            {/* 포인트 지급 폼 */}
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <h3 className="text-[14px] font-bold text-gray-900">포인트 지급</h3>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const amount = parseInt(chargeAmount);
+                  if (!amount || amount <= 0) {
+                    alert("올바른 금액을 입력해주세요.");
+                    return;
+                  }
+                  if (!confirm(`이 업체에 ${amount.toLocaleString()}P를 지급하시겠습니까?`)) return;
+                  setIsCharging(true);
+                  try {
+                    await api.post("/admin/points/charge", {
+                      companyId,
+                      amount,
+                      description: chargeDescription || "관리자 포인트 지급",
+                    });
+                    setChargeAmount("");
+                    setChargeDescription("");
+                    await fetchCompany();
+                    alert(`${amount.toLocaleString()}P가 지급되었습니다.`);
+                  } catch {
+                    alert("포인트 지급에 실패했습니다.");
+                  } finally {
+                    setIsCharging(false);
+                  }
+                }}
+                className="mt-3 flex flex-col gap-3"
+              >
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="block text-[12px] font-medium text-gray-500">지급 금액 (P)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="예: 1000"
+                      value={chargeAmount}
+                      onChange={(e) => setChargeAmount(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-[13px] outline-none focus:border-gray-400"
+                      required
+                    />
                   </div>
-                )}
-              </>
-            ) : (
-              <p className="py-8 text-center text-[13px] text-gray-400">포인트 지갑이 없습니다.</p>
+                  <div className="flex-1">
+                    <label className="block text-[12px] font-medium text-gray-500">지급 사유 (선택)</label>
+                    <input
+                      type="text"
+                      placeholder="예: 프로모션 지급"
+                      value={chargeDescription}
+                      onChange={(e) => setChargeDescription(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-[13px] outline-none focus:border-gray-400"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {[100, 500, 1000, 5000].map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setChargeAmount(String(p))}
+                      className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:bg-gray-50"
+                    >
+                      {p.toLocaleString()}P
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="submit"
+                  disabled={isCharging || !chargeAmount}
+                  className="w-fit rounded-lg bg-green-600 px-5 py-2 text-[13px] font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                >
+                  {isCharging ? "지급 중..." : "포인트 지급"}
+                </button>
+              </form>
+            </div>
+
+            {/* 현재 잔액 + 거래내역 */}
+            <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
+              <p className="text-[13px] text-gray-500">현재 잔액</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">
+                {(company.pointWallet?.balance || 0).toLocaleString()} P
+              </p>
+            </div>
+            {company.pointWallet?.transactions?.length > 0 && (
+              <div className="mt-3 overflow-hidden rounded-lg border border-gray-200 bg-white">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100 bg-gray-50/50">
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">유형</th>
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">금액</th>
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">설명</th>
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {company.pointWallet.transactions.map((t: any) => (
+                      <tr key={t.id} className="border-b border-gray-50 last:border-0">
+                        <td className="px-3 py-2">
+                          <span className={cn(
+                            "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                            t.type === "CHARGE" ? "bg-green-50 text-green-700" :
+                            t.type === "USE" ? "bg-red-50 text-red-600" :
+                            "bg-blue-50 text-blue-700"
+                          )}>
+                            {t.type === "CHARGE" ? "충전" : t.type === "USE" ? "사용" : "환불"}
+                          </span>
+                        </td>
+                        <td className={cn(
+                          "px-3 py-2 text-[12px] font-medium",
+                          t.type === "USE" ? "text-red-600" : "text-green-700"
+                        )}>
+                          {t.type === "USE" ? "-" : "+"}{t.amount?.toLocaleString()} P
+                        </td>
+                        <td className="px-3 py-2 text-[12px] text-gray-600">{t.description}</td>
+                        <td className="px-3 py-2 text-[12px] text-gray-500">{formatDate(t.createdAt)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}
