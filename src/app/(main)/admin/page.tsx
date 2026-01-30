@@ -25,7 +25,7 @@ export default function AdminDashboardPage() {
     async function fetchStats() {
       try {
         const { data } = await api.get("/admin/dashboard");
-        setStats(data);
+        setStats(data.data);
       } catch {
         // 에러 무시
       } finally {

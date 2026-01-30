@@ -49,8 +49,8 @@ export default function AdminCompaniesPage() {
       const params: Record<string, unknown> = { page, limit: 20 };
       if (status) params.status = status;
       const { data } = await api.get("/admin/companies", { params });
-      setCompanies(data.data);
-      setMeta(data.meta);
+      setCompanies(data.data.data);
+      setMeta(data.data.meta);
     } catch {
       // 에러 무시
     } finally {

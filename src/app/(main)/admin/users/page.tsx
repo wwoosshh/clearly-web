@@ -33,8 +33,8 @@ export default function AdminUsersPage() {
         const { data } = await api.get("/admin/users", {
           params: { page, limit: 20 },
         });
-        setUsers(data.data);
-        setMeta(data.meta);
+        setUsers(data.data.data);
+        setMeta(data.data.meta);
       } catch {
         // 에러 무시
       } finally {
