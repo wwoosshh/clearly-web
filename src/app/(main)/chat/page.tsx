@@ -93,6 +93,18 @@ function ChatPageContent() {
     const socket = getSocket();
     socketRef.current = socket;
 
+    socket.on("connect", () => {
+      console.log("[Chat] 소켓 연결 성공");
+      // 현재 선택된 방이 있으면 다시 join
+      if (selectedRoom) {
+        socket.emit("joinRoom", selectedRoom.id);
+      }
+    });
+
+    socket.on("connect_error", (err) => {
+      console.warn("[Chat] 소켓 연결 실패:", err.message);
+    });
+
     socket.on("newMessage", (message: ChatMessageDetail) => {
       setMessages((prev) => {
         if (prev.some((m) => m.id === message.id)) return prev;
@@ -113,10 +125,13 @@ function ChatPageContent() {
     });
 
     return () => {
+      socket.off("connect");
+      socket.off("connect_error");
       socket.off("newMessage");
       socket.off("messageRead");
       disconnectSocket();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // 방 선택 시
@@ -140,20 +155,37 @@ function ChatPageContent() {
 
   const handleSend = async () => {
     if (!newMessage.trim() || !selectedRoom || isSending) return;
+    const content = newMessage.trim();
     setIsSending(true);
+    setNewMessage("");
 
     try {
       if (socketRef.current?.connected) {
+        // 소켓 연결 시 실시간 전송
         socketRef.current.emit("sendMessage", {
           roomId: selectedRoom.id,
-          content: newMessage.trim(),
+          content,
         });
       } else {
-        await loadMessages(selectedRoom.id);
+        // 소켓 미연결 시 REST API 폴백
+        const { data } = await api.post(`/chat/rooms/${selectedRoom.id}/messages`, {
+          content,
+        });
+        const msg = (data as any)?.data ?? data;
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        });
+        setRooms((prev) =>
+          prev.map((r) =>
+            r.id === selectedRoom.id
+              ? { ...r, lastMessage: content, lastSentAt: msg.createdAt }
+              : r
+          )
+        );
       }
-      setNewMessage("");
     } catch {
-      // silent
+      setNewMessage(content);
     } finally {
       setIsSending(false);
     }
