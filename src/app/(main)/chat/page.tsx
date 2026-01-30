@@ -8,6 +8,7 @@ import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import { getSocket, connectSocket, disconnectSocket } from "@/lib/socket";
+import { chatCache } from "@/lib/chatCache";
 import type { ChatRoomDetail, ChatMessageDetail } from "@/types";
 
 export default function ChatPage() {
@@ -24,68 +25,128 @@ export default function ChatPage() {
   );
 }
 
+// ─── 임시 메시지 헬퍼 ───────────────────────────────
+let tempSeq = 0;
+function createTempMessage(
+  roomId: string,
+  senderId: string,
+  senderName: string,
+  content: string,
+): ChatMessageDetail {
+  return {
+    id: `temp-${Date.now()}-${++tempSeq}`,
+    roomId,
+    senderId,
+    content,
+    messageType: "TEXT",
+    isRead: false,
+    createdAt: new Date().toISOString(),
+    sender: { id: senderId, name: senderName },
+  };
+}
+
+function isTempId(id: string) {
+  return id.startsWith("temp-");
+}
+
+// ─── 메인 컴포넌트 ─────────────────────────────────
 function ChatPageContent() {
   const searchParams = useSearchParams();
   const companyIdParam = searchParams.get("companyId");
   const { user } = useAuthStore();
 
-  const [rooms, setRooms] = useState<ChatRoomDetail[]>([]);
+  const [rooms, setRooms] = useState<ChatRoomDetail[]>(() => {
+    // 캐시에서 즉시 로드
+    return chatCache.getRooms() || [];
+  });
   const [selectedRoom, setSelectedRoom] = useState<ChatRoomDetail | null>(null);
   const [messages, setMessages] = useState<ChatMessageDetail[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    // 캐시가 있으면 로딩 없이 바로 표시
+    return !chatCache.getRooms();
+  });
   const [isSending, setIsSending] = useState(false);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [isDeclining, setIsDeclining] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+  const selectedRoomRef = useRef<ChatRoomDetail | null>(null);
 
-  const loadRooms = useCallback(async () => {
+  // selectedRoom이 바뀔 때 ref도 동기화 (소켓 콜백 내에서 최신값 참조용)
+  useEffect(() => {
+    selectedRoomRef.current = selectedRoom;
+  }, [selectedRoom]);
+
+  // ─── 서버에서 방 목록 가져오기 (백그라운드) ──────────
+  const syncRooms = useCallback(async () => {
     try {
       const { data } = await api.get("/chat/rooms");
       const result = (data as any)?.data ?? data;
-      setRooms(Array.isArray(result) ? result : []);
+      const serverRooms: ChatRoomDetail[] = Array.isArray(result) ? result : [];
+      setRooms(serverRooms);
+      chatCache.setRooms(serverRooms);
     } catch {
-      setRooms([]);
+      // 캐시 데이터 유지
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const loadMessages = useCallback(async (roomId: string) => {
+  // ─── 서버에서 메시지 가져오기 (백그라운드) ────────────
+  const syncMessages = useCallback(async (roomId: string) => {
     try {
       const { data } = await api.get(`/chat/rooms/${roomId}/messages`);
       const result = (data as any)?.data ?? data;
-      setMessages(result?.data ?? (Array.isArray(result) ? result : []));
+      const serverMessages: ChatMessageDetail[] =
+        result?.data ?? (Array.isArray(result) ? result : []);
+      setMessages((prev) => {
+        // 전송중인 temp 메시지는 유지
+        const pending = prev.filter((m) => isTempId(m.id));
+        const merged = [...serverMessages];
+        for (const p of pending) {
+          if (!merged.some((m) => m.content === p.content && m.senderId === p.senderId)) {
+            merged.push(p);
+          }
+        }
+        return merged;
+      });
+      chatCache.setMessages(roomId, serverMessages);
     } catch {
-      setMessages([]);
+      // 캐시 데이터 유지
     }
   }, []);
 
-  // companyId 쿼리로 자동 채팅방 생성
+  // ─── 초기 로드 + companyId 자동 채팅방 생성 ──────────
   useEffect(() => {
-    if (companyIdParam && user) {
+    if (!user) return;
+
+    if (companyIdParam) {
       (async () => {
         try {
           const { data } = await api.post("/chat/rooms", {
             companyId: companyIdParam,
           });
           const room = (data as any)?.data ?? data;
-          await loadRooms();
           setSelectedRoom(room);
           setShowMobileChat(true);
-          await loadMessages(room.id);
+          // 캐시에서 메시지 즉시 로드
+          const cached = chatCache.getMessages(room.id);
+          if (cached?.length) setMessages(cached);
+          syncMessages(room.id);
         } catch {
-          await loadRooms();
+          // silent
         }
+        syncRooms();
       })();
     } else {
-      loadRooms();
+      syncRooms();
     }
-  }, [companyIdParam, user, loadRooms, loadMessages]);
+  }, [companyIdParam, user, syncRooms, syncMessages]);
 
-  // 소켓 연결
+  // ─── 소켓 연결 ──────────────────────────────────
   useEffect(() => {
     if (!user) return;
 
@@ -95,9 +156,8 @@ function ChatPageContent() {
 
     socket.on("connect", () => {
       console.log("[Chat] 소켓 연결 성공");
-      // 현재 선택된 방이 있으면 다시 join
-      if (selectedRoom) {
-        socket.emit("joinRoom", selectedRoom.id);
+      if (selectedRoomRef.current) {
+        socket.emit("joinRoom", selectedRoomRef.current.id);
       }
     });
 
@@ -107,10 +167,23 @@ function ChatPageContent() {
 
     socket.on("newMessage", (message: ChatMessageDetail) => {
       setMessages((prev) => {
-        if (prev.some((m) => m.id === message.id)) return prev;
-        return [...prev, message];
+        // 내가 보낸 temp 메시지를 서버 메시지로 교체
+        const replaced = prev.map((m) => {
+          if (
+            isTempId(m.id) &&
+            m.senderId === message.senderId &&
+            m.content === message.content
+          ) {
+            return message;
+          }
+          return m;
+        });
+        // 이미 있으면 무시
+        if (replaced.some((m) => m.id === message.id)) return replaced;
+        return [...replaced, message];
       });
 
+      // 방 목록 업데이트
       setRooms((prev) =>
         prev.map((r) =>
           r.id === message.roomId
@@ -118,6 +191,16 @@ function ChatPageContent() {
             : r
         )
       );
+
+      // 캐시 업데이트
+      if (selectedRoomRef.current?.id === message.roomId) {
+        chatCache.replaceTempMessage(
+          message.roomId,
+          message.senderId,
+          message.content,
+          message,
+        );
+      }
     });
 
     socket.on("messageRead", () => {
@@ -134,74 +217,142 @@ function ChatPageContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // 방 선택 시
+  // ─── 방 선택 시: 캐시 먼저, 서버 동기화는 백그라운드 ─
   useEffect(() => {
-    if (selectedRoom && socketRef.current) {
-      socketRef.current.emit("joinRoom", selectedRoom.id);
-      loadMessages(selectedRoom.id);
-      api.patch(`/chat/rooms/${selectedRoom.id}/read`).catch(() => {});
+    if (!selectedRoom) return;
+
+    // 1) 캐시에서 즉시 로드
+    const cached = chatCache.getMessages(selectedRoom.id);
+    if (cached?.length) {
+      setMessages(cached);
     }
+
+    // 2) 소켓 방 입장
+    if (socketRef.current) {
+      socketRef.current.emit("joinRoom", selectedRoom.id);
+    }
+
+    // 3) 서버에서 최신 데이터 동기화 (백그라운드)
+    syncMessages(selectedRoom.id);
+    api.patch(`/chat/rooms/${selectedRoom.id}/read`).catch(() => {});
 
     return () => {
       if (selectedRoom && socketRef.current) {
         socketRef.current.emit("leaveRoom", selectedRoom.id);
       }
     };
-  }, [selectedRoom, loadMessages]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRoom]);
 
+  // 자동 스크롤
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // ─── 메시지 전송 (Optimistic) ──────────────────────
   const handleSend = async () => {
-    if (!newMessage.trim() || !selectedRoom || isSending) return;
+    if (!newMessage.trim() || !selectedRoom || !user || isSending) return;
     const content = newMessage.trim();
     setIsSending(true);
     setNewMessage("");
 
+    // 1) Optimistic: 즉시 화면에 추가
+    const tempMsg = createTempMessage(
+      selectedRoom.id,
+      user.id,
+      user.name,
+      content,
+    );
+    setMessages((prev) => [...prev, tempMsg]);
+    setRooms((prev) =>
+      prev.map((r) =>
+        r.id === selectedRoom.id
+          ? { ...r, lastMessage: content, lastSentAt: tempMsg.createdAt }
+          : r
+      )
+    );
+
+    // 2) 서버에 전송 (백그라운드)
     try {
       if (socketRef.current?.connected) {
-        // 소켓 연결 시 실시간 전송
         socketRef.current.emit("sendMessage", {
           roomId: selectedRoom.id,
           content,
         });
       } else {
-        // 소켓 미연결 시 REST API 폴백
-        const { data } = await api.post(`/chat/rooms/${selectedRoom.id}/messages`, {
+        // REST 폴백
+        const { data } = await api.post(
+          `/chat/rooms/${selectedRoom.id}/messages`,
+          { content },
+        );
+        const real = (data as any)?.data ?? data;
+        // temp → real 교체
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === tempMsg.id ? real : m,
+          ),
+        );
+        chatCache.replaceTempMessage(
+          selectedRoom.id,
+          user.id,
           content,
-        });
-        const msg = (data as any)?.data ?? data;
-        setMessages((prev) => {
-          if (prev.some((m) => m.id === msg.id)) return prev;
-          return [...prev, msg];
-        });
-        setRooms((prev) =>
-          prev.map((r) =>
-            r.id === selectedRoom.id
-              ? { ...r, lastMessage: content, lastSentAt: msg.createdAt }
-              : r
-          )
+          real,
         );
       }
     } catch {
+      // 전송 실패: temp 메시지에 실패 표시 가능 (현재는 유지)
       setNewMessage(content);
+      setMessages((prev) => prev.filter((m) => m.id !== tempMsg.id));
     } finally {
       setIsSending(false);
     }
   };
 
+  // ─── 거래 취소 (Optimistic) ────────────────────────
   const handleDecline = async () => {
-    if (!selectedRoom) return;
+    if (!selectedRoom || isDeclining) return;
+    setIsDeclining(true);
+
+    // Optimistic: 모달 즉시 닫기 + 상태 업데이트
+    setShowDeclineModal(false);
+    const isCompany = user?.role === "company";
+    setRooms((prev) =>
+      prev.map((r) =>
+        r.id === selectedRoom.id
+          ? {
+              ...r,
+              ...(isCompany
+                ? { companyDeclined: true }
+                : { userDeclined: true }),
+            }
+          : r
+      )
+    );
+
     try {
       await api.patch(`/chat/rooms/${selectedRoom.id}/decline`);
-      setShowDeclineModal(false);
-      await loadRooms();
+      // 서버 응답으로 정확한 상태 동기화
+      syncRooms();
     } catch {
-      // silent
+      // 실패 시 롤백
+      setRooms((prev) =>
+        prev.map((r) =>
+          r.id === selectedRoom.id
+            ? {
+                ...r,
+                ...(isCompany
+                  ? { companyDeclined: false }
+                  : { userDeclined: false }),
+              }
+            : r
+        )
+      );
+    } finally {
+      setIsDeclining(false);
     }
   };
 
+  // ─── 유틸 ──────────────────────────────────────
   const getRoomDisplayName = (room: ChatRoomDetail) => {
     if (!user) return "";
     if (user.role === "company") return room.user.name;
@@ -346,6 +497,7 @@ function ChatPageContent() {
               {messages.map((msg) => {
                 const isMe = msg.senderId === user?.id;
                 const isSystem = msg.messageType === "SYSTEM";
+                const isTemp = isTempId(msg.id);
 
                 if (isSystem) {
                   return (
@@ -365,19 +517,25 @@ function ChatPageContent() {
                       )}
                       <div
                         className={cn(
-                          "rounded-2xl px-4 py-2.5 text-[14px]",
+                          "rounded-2xl px-4 py-2.5 text-[14px] transition-opacity",
                           isMe
                             ? "bg-gray-900 text-white rounded-br-md"
-                            : "bg-white text-gray-900 border border-gray-200 rounded-bl-md"
+                            : "bg-white text-gray-900 border border-gray-200 rounded-bl-md",
+                          isTemp && "opacity-60"
                         )}
                       >
                         {msg.content}
                       </div>
                       <div className="flex items-center gap-1 mt-1">
                         <span className="text-[11px] text-gray-400">
-                          {new Date(msg.createdAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                          {isTemp
+                            ? "전송중..."
+                            : new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
                         </span>
-                        {isMe && msg.isRead && (
+                        {isMe && !isTemp && msg.isRead && (
                           <span className="text-[11px] text-gray-400">읽음</span>
                         )}
                       </div>
@@ -449,7 +607,8 @@ function ChatPageContent() {
           </button>
           <button
             onClick={handleDecline}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800"
+            disabled={isDeclining}
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
           >
             거래 취소 요청
           </button>
