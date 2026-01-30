@@ -13,6 +13,7 @@ import type { CleaningType } from "@/types";
 
 export default function MatchingPage() {
   const { user } = useAuthStore();
+  const isUser = user?.role === "USER";
   const [tab, setTab] = useState<"estimates" | "requests">("estimates");
   const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [requests, setRequests] = useState<EstimateRequest[]>([]);
@@ -97,7 +98,7 @@ export default function MatchingPage() {
         받은 견적과 견적요청 현황을 확인하세요
       </p>
 
-      {/* 탭 */}
+      {/* 탭 - 내 견적요청은 USER 역할만 표시 */}
       <div className="mt-6 flex gap-1 rounded-lg bg-gray-100 p-1">
         <button
           onClick={() => setTab("estimates")}
@@ -110,17 +111,19 @@ export default function MatchingPage() {
         >
           받은 견적
         </button>
-        <button
-          onClick={() => setTab("requests")}
-          className={cn(
-            "flex-1 rounded-md py-2 text-[14px] font-medium transition-colors",
-            tab === "requests"
-              ? "bg-white text-gray-900 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-          )}
-        >
-          내 견적요청
-        </button>
+        {isUser && (
+          <button
+            onClick={() => setTab("requests")}
+            className={cn(
+              "flex-1 rounded-md py-2 text-[14px] font-medium transition-colors",
+              tab === "requests"
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            )}
+          >
+            내 견적요청
+          </button>
+        )}
       </div>
 
       {isLoading ? (

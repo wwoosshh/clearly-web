@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import api from "@/lib/api";
 
 interface DashboardStats {
@@ -8,13 +9,28 @@ interface DashboardStats {
   totalCompanies: number;
   pendingCompanies: number;
   totalMatchings: number;
+  pendingReports: number;
+  completedMatchings: number;
+  totalReviews: number;
+  openEstimateRequests: number;
+  activeChatRooms: number;
 }
 
-const statCards = [
-  { key: "totalUsers" as const, label: "전체 사용자", color: "bg-blue-50 text-blue-700" },
-  { key: "totalCompanies" as const, label: "전체 업체", color: "bg-green-50 text-green-700" },
-  { key: "pendingCompanies" as const, label: "승인 대기", color: "bg-amber-50 text-amber-700" },
-  { key: "totalMatchings" as const, label: "전체 매칭", color: "bg-purple-50 text-purple-700" },
+const statCards: {
+  key: keyof DashboardStats;
+  label: string;
+  color: string;
+  href?: string;
+}[] = [
+  { key: "totalUsers", label: "전체 사용자", color: "bg-blue-50 text-blue-700", href: "/admin/users" },
+  { key: "totalCompanies", label: "전체 업체", color: "bg-green-50 text-green-700", href: "/admin/companies" },
+  { key: "pendingCompanies", label: "승인 대기 업체", color: "bg-amber-50 text-amber-700", href: "/admin/companies" },
+  { key: "totalMatchings", label: "전체 매칭", color: "bg-purple-50 text-purple-700", href: "/admin/matchings" },
+  { key: "pendingReports", label: "미처리 신고", color: "bg-red-50 text-red-700", href: "/admin/reports" },
+  { key: "completedMatchings", label: "완료 매칭", color: "bg-emerald-50 text-emerald-700", href: "/admin/matchings" },
+  { key: "totalReviews", label: "전체 리뷰", color: "bg-indigo-50 text-indigo-700", href: "/admin/reviews" },
+  { key: "openEstimateRequests", label: "진행중 견적요청", color: "bg-orange-50 text-orange-700", href: "/admin/estimate-requests" },
+  { key: "activeChatRooms", label: "활성 채팅방", color: "bg-cyan-50 text-cyan-700", href: "/admin/chat-rooms" },
 ];
 
 export default function AdminDashboardPage() {
@@ -45,26 +61,82 @@ export default function AdminDashboardPage() {
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
         </div>
       ) : stats ? (
-        <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {statCards.map((card) => (
-            <div
-              key={card.key}
-              className="rounded-xl border border-gray-200 bg-white p-5"
-            >
-              <p className="text-[12px] font-medium text-gray-500">
-                {card.label}
-              </p>
-              <p className="mt-2 text-2xl font-bold text-gray-900">
-                {stats[card.key].toLocaleString()}
-              </p>
-              <span
-                className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${card.color}`}
+        <>
+          <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-3">
+            {statCards.map((card) => (
+              <Link
+                key={card.key}
+                href={card.href || "/admin"}
+                className="rounded-xl border border-gray-200 bg-white p-5 transition-shadow hover:shadow-md"
               >
-                {card.label}
-              </span>
+                <p className="text-[12px] font-medium text-gray-500">
+                  {card.label}
+                </p>
+                <p className="mt-2 text-2xl font-bold text-gray-900">
+                  {stats[card.key].toLocaleString()}
+                </p>
+                <span
+                  className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${card.color}`}
+                >
+                  {card.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          {/* 긴급 처리 필요 */}
+          {(stats.pendingReports > 0 || stats.pendingCompanies > 0) && (
+            <div className="mt-8">
+              <h2 className="text-[15px] font-bold text-gray-900">
+                긴급 처리 필요
+              </h2>
+              <div className="mt-3 flex flex-col gap-3">
+                {stats.pendingReports > 0 && (
+                  <Link
+                    href="/admin/reports"
+                    className="flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4 transition-colors hover:bg-red-100"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">🚨</span>
+                      <div>
+                        <p className="text-[14px] font-semibold text-red-800">
+                          미처리 신고 {stats.pendingReports}건
+                        </p>
+                        <p className="text-[12px] text-red-600">
+                          확인이 필요한 신고가 있습니다
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-[13px] font-medium text-red-700">
+                      바로가기 →
+                    </span>
+                  </Link>
+                )}
+                {stats.pendingCompanies > 0 && (
+                  <Link
+                    href="/admin/companies"
+                    className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 p-4 transition-colors hover:bg-amber-100"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">🏢</span>
+                      <div>
+                        <p className="text-[14px] font-semibold text-amber-800">
+                          승인 대기 업체 {stats.pendingCompanies}건
+                        </p>
+                        <p className="text-[12px] text-amber-600">
+                          업체 승인 처리가 필요합니다
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-[13px] font-medium text-amber-700">
+                      바로가기 →
+                    </span>
+                  </Link>
+                )}
+              </div>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       ) : (
         <div className="mt-8 text-center text-sm text-gray-500">
           데이터를 불러올 수 없습니다.

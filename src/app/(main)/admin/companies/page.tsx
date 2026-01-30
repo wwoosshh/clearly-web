@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface Company {
   id: string;
-  companyName: string;
+  businessName: string;
   businessNumber: string;
   verificationStatus: string;
   rejectionReason: string | null;
@@ -33,6 +34,7 @@ const tabs = [
   { key: "PENDING", label: "대기" },
   { key: "APPROVED", label: "승인" },
   { key: "REJECTED", label: "반려" },
+  { key: "SUSPENDED", label: "정지" },
 ];
 
 export default function AdminCompaniesPage() {
@@ -86,6 +88,33 @@ export default function AdminCompaniesPage() {
       await fetchCompanies();
     } catch {
       alert("반려 처리에 실패했습니다.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleSuspend = async (companyId: string) => {
+    const reason = prompt("정지 사유를 입력해주세요:");
+    if (!reason) return;
+    setActionLoading(companyId);
+    try {
+      await api.patch(`/admin/companies/${companyId}/suspend`, { reason });
+      await fetchCompanies();
+    } catch {
+      alert("정지 처리에 실패했습니다.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReactivate = async (companyId: string) => {
+    if (!confirm("이 업체의 정지를 해제하시겠습니까?")) return;
+    setActionLoading(companyId);
+    try {
+      await api.patch(`/admin/companies/${companyId}/reactivate`);
+      await fetchCompanies();
+    } catch {
+      alert("정지 해제에 실패했습니다.");
     } finally {
       setActionLoading(null);
     }
@@ -152,47 +181,27 @@ export default function AdminCompaniesPage() {
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">
-                      업체명
-                    </th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">
-                      대표자
-                    </th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">
-                      이메일
-                    </th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">
-                      사업자번호
-                    </th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">
-                      상태
-                    </th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">
-                      등록일
-                    </th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">
-                      작업
-                    </th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">업체명</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">대표자</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">이메일</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">사업자번호</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">상태</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">등록일</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">작업</th>
                   </tr>
                 </thead>
                 <tbody>
                   {companies.length === 0 ? (
                     <tr>
-                      <td
-                        colSpan={7}
-                        className="px-4 py-12 text-center text-sm text-gray-400"
-                      >
+                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-gray-400">
                         업체가 없습니다.
                       </td>
                     </tr>
                   ) : (
                     companies.map((company) => (
-                      <tr
-                        key={company.id}
-                        className="border-b border-gray-50 last:border-0"
-                      >
+                      <tr key={company.id} className="border-b border-gray-50 last:border-0">
                         <td className="px-4 py-3 text-[13px] font-medium text-gray-900">
-                          {company.companyName}
+                          {company.businessName}
                         </td>
                         <td className="px-4 py-3 text-[13px] text-gray-600">
                           {company.user.name}
@@ -207,29 +216,53 @@ export default function AdminCompaniesPage() {
                           {statusBadge(company.verificationStatus)}
                         </td>
                         <td className="px-4 py-3 text-[13px] text-gray-500">
-                          {new Date(company.createdAt).toLocaleDateString(
-                            "ko-KR"
-                          )}
+                          {new Date(company.createdAt).toLocaleDateString("ko-KR")}
                         </td>
                         <td className="px-4 py-3">
-                          {company.verificationStatus === "PENDING" && (
-                            <div className="flex gap-1.5">
+                          <div className="flex gap-1.5">
+                            <Link
+                              href={`/admin/companies/${company.id}`}
+                              className="rounded-md border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+                            >
+                              상세
+                            </Link>
+                            {company.verificationStatus === "PENDING" && (
+                              <>
+                                <button
+                                  onClick={() => handleApprove(company.id)}
+                                  disabled={actionLoading === company.id}
+                                  className="rounded-md bg-green-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                                >
+                                  승인
+                                </button>
+                                <button
+                                  onClick={() => handleReject(company.id)}
+                                  disabled={actionLoading === company.id}
+                                  className="rounded-md bg-red-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                                >
+                                  반려
+                                </button>
+                              </>
+                            )}
+                            {company.verificationStatus === "APPROVED" && (
                               <button
-                                onClick={() => handleApprove(company.id)}
+                                onClick={() => handleSuspend(company.id)}
                                 disabled={actionLoading === company.id}
-                                className="rounded-md bg-green-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                                className="rounded-md bg-gray-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
                               >
-                                승인
+                                정지
                               </button>
+                            )}
+                            {company.verificationStatus === "SUSPENDED" && (
                               <button
-                                onClick={() => handleReject(company.id)}
+                                onClick={() => handleReactivate(company.id)}
                                 disabled={actionLoading === company.id}
-                                className="rounded-md bg-red-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                                className="rounded-md bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
                               >
-                                반려
+                                정지해제
                               </button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -239,7 +272,6 @@ export default function AdminCompaniesPage() {
             </div>
           </div>
 
-          {/* Pagination */}
           {meta && meta.totalPages > 1 && (
             <div className="mt-4 flex items-center justify-center gap-2">
               <button

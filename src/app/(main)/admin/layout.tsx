@@ -10,6 +10,11 @@ const sidebarLinks = [
   { href: "/admin", label: "대시보드", icon: "📊" },
   { href: "/admin/users", label: "사용자 관리", icon: "👤" },
   { href: "/admin/companies", label: "업체 관리", icon: "🏢" },
+  { href: "/admin/reports", label: "신고 관리", icon: "🚨" },
+  { href: "/admin/chat-rooms", label: "채팅 모니터링", icon: "💬" },
+  { href: "/admin/reviews", label: "리뷰 관리", icon: "⭐" },
+  { href: "/admin/matchings", label: "매칭 관리", icon: "🤝" },
+  { href: "/admin/estimate-requests", label: "견적요청", icon: "📋" },
 ];
 
 export default function AdminLayout({
@@ -73,7 +78,7 @@ export default function AdminLayout({
 
       {/* Mobile Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white md:hidden">
-        <nav className="flex">
+        <nav className="flex overflow-x-auto">
           {sidebarLinks.map((link) => {
             const isActive =
               link.href === "/admin"
@@ -84,7 +89,7 @@ export default function AdminLayout({
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium",
+                  "flex shrink-0 flex-col items-center gap-0.5 px-3 py-2.5 text-[11px] font-medium",
                   isActive ? "text-gray-900" : "text-gray-400"
                 )}
               >
