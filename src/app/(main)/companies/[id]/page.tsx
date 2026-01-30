@@ -1,12 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
 import type { CompanySearchResult } from "@/types";
+
+interface ReviewItem {
+  id: string;
+  rating: number;
+  content: string | null;
+  createdAt: string;
+  user: { id: string; name: string };
+  matching: {
+    id: string;
+    cleaningType: string;
+    address: string;
+    estimatedPrice: number | null;
+    completedAt: string | null;
+  };
+}
+
+interface ReviewListResponse {
+  data: ReviewItem[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
 
 export default function CompanyDetailPage() {
   const params = useParams();
@@ -18,6 +38,11 @@ export default function CompanyDetailPage() {
   const [company, setCompany] = useState<CompanySearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [reviewMeta, setReviewMeta] = useState<ReviewListResponse["meta"] | null>(null);
+  const [reviewPage, setReviewPage] = useState(1);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(false);
 
   useEffect(() => {
     async function fetchCompany() {
@@ -33,6 +58,24 @@ export default function CompanyDetailPage() {
     }
     fetchCompany();
   }, [companyId]);
+
+  const fetchReviews = useCallback(async (page: number) => {
+    setIsLoadingReviews(true);
+    try {
+      const { data } = await api.get(`/reviews/company/${companyId}?page=${page}&limit=5`);
+      const result = (data as any)?.data ?? data;
+      setReviews(result.data || []);
+      setReviewMeta(result.meta || null);
+    } catch {
+      // silent
+    } finally {
+      setIsLoadingReviews(false);
+    }
+  }, [companyId]);
+
+  useEffect(() => {
+    fetchReviews(reviewPage);
+  }, [reviewPage, fetchReviews]);
 
   if (isLoading) {
     return (
@@ -184,6 +227,123 @@ export default function CompanyDetailPage() {
             <p className="text-[14px] text-gray-700 leading-relaxed whitespace-pre-wrap">
               {company.description}
             </p>
+          </div>
+        )}
+      </div>
+
+      {/* 리뷰 목록 */}
+      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[16px] font-bold text-gray-900">
+            리뷰
+            {reviewMeta && (
+              <span className="ml-1.5 text-[14px] font-normal text-gray-400">
+                {reviewMeta.total}
+              </span>
+            )}
+          </h2>
+        </div>
+
+        {isLoadingReviews && reviews.length === 0 ? (
+          <div className="flex items-center justify-center py-10">
+            <Spinner size="md" className="text-gray-400" />
+          </div>
+        ) : reviews.length === 0 ? (
+          <div className="py-10 text-center">
+            <p className="text-[14px] text-gray-400">아직 작성된 리뷰가 없습니다.</p>
+          </div>
+        ) : (
+          <div>
+            <div className="divide-y divide-gray-100">
+              {reviews.map((review) => (
+                <div key={review.id} className="py-4 first:pt-0 last:pb-0">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[14px] font-semibold text-gray-900">
+                        {review.user.name}
+                      </span>
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <svg
+                            key={star}
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill={star <= review.rating ? "#1f2937" : "none"}
+                            stroke={star <= review.rating ? "#1f2937" : "#d1d5db"}
+                            strokeWidth="1.5"
+                          >
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        ))}
+                      </div>
+                    </div>
+                    <span className="text-[12px] text-gray-400">
+                      {new Date(review.createdAt).toLocaleDateString("ko-KR")}
+                    </span>
+                  </div>
+
+                  {review.content && (
+                    <p className="mt-2 text-[14px] text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
+                      {review.content}
+                    </p>
+                  )}
+
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <span className="rounded bg-gray-100 px-2 py-0.5 text-[12px] text-gray-500">
+                      {review.matching.cleaningType === "MOVE_IN" ? "입주청소" :
+                       review.matching.cleaningType === "MOVE_OUT" ? "이사청소" :
+                       review.matching.cleaningType === "REGULAR" ? "정기청소" :
+                       review.matching.cleaningType === "SPECIAL" ? "특수청소" :
+                       review.matching.cleaningType === "OFFICE" ? "사무실청소" :
+                       review.matching.cleaningType}
+                    </span>
+                    {review.matching.completedAt && (
+                      <span className="rounded bg-gray-100 px-2 py-0.5 text-[12px] text-gray-500">
+                        {new Date(review.matching.completedAt).toLocaleDateString("ko-KR")} 완료
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* 페이지네이션 */}
+            {reviewMeta && reviewMeta.totalPages > 1 && (
+              <div className="mt-4 flex items-center justify-center gap-1 pt-4 border-t border-gray-100">
+                <button
+                  onClick={() => setReviewPage((p) => Math.max(1, p - 1))}
+                  disabled={reviewPage <= 1}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                {Array.from({ length: reviewMeta.totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setReviewPage(p)}
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg text-[13px] font-medium transition-colors ${
+                      p === reviewPage
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-500 hover:bg-gray-100"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setReviewPage((p) => Math.min(reviewMeta.totalPages, p + 1))}
+                  disabled={reviewPage >= reviewMeta.totalPages}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

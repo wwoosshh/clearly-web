@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
@@ -52,6 +52,7 @@ function isTempId(id: string) {
 // ─── 메인 컴포넌트 ─────────────────────────────────
 function ChatPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const companyIdParam = searchParams.get("companyId");
   const { user } = useAuthStore();
 
@@ -76,6 +77,8 @@ function ChatPageContent() {
   const [isReporting, setIsReporting] = useState(false);
   const [reportSuccess, setReportSuccess] = useState(false);
   const [reportError, setReportError] = useState("");
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   const selectedRoomRef = useRef<ChatRoomDetail | null>(null);
@@ -396,6 +399,26 @@ function ChatPageContent() {
     setReportSuccess(false);
   };
 
+  // ─── 거래완료 ────────────────────────────────────
+  const handleComplete = async () => {
+    if (!selectedRoom || isCompleting) return;
+    setIsCompleting(true);
+    setShowCompleteModal(false);
+
+    try {
+      const { data } = await api.patch(`/chat/rooms/${selectedRoom.id}/complete`);
+      const result = (data as any)?.data ?? data;
+      syncMessages(selectedRoom.id);
+      // 리뷰 작성 페이지로 이동
+      router.push(`/review/write?matchingId=${result.matchingId}&companyId=${result.companyId}`);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || "거래완료 처리에 실패했습니다.";
+      alert(msg);
+    } finally {
+      setIsCompleting(false);
+    }
+  };
+
   // ─── 유틸 ──────────────────────────────────────
   const getRoomDisplayName = (room: ChatRoomDetail) => {
     if (!user) return "";
@@ -540,6 +563,15 @@ function ChatPageContent() {
                 >
                   신고
                 </button>
+                {!(selectedRoom.userDeclined && selectedRoom.companyDeclined) && user?.role === "USER" && (
+                  <button
+                    onClick={() => setShowCompleteModal(true)}
+                    disabled={isCompleting}
+                    className="rounded-lg border border-gray-900 bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    거래완료
+                  </button>
+                )}
                 {!(selectedRoom.userDeclined && selectedRoom.companyDeclined) && (
                   <button
                     onClick={() => setShowDeclineModal(true)}
@@ -676,6 +708,34 @@ function ChatPageContent() {
             className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
           >
             거래 취소 요청
+          </button>
+        </div>
+      </Modal>
+
+      {/* 거래완료 확인 모달 */}
+      <Modal
+        isOpen={showCompleteModal}
+        onClose={() => setShowCompleteModal(false)}
+        title="거래 완료"
+        size="sm"
+      >
+        <p className="text-[14px] text-gray-600">거래를 완료 처리하시겠습니까?</p>
+        <p className="mt-2 text-[13px] text-gray-500">
+          거래 완료 후 리뷰를 작성할 수 있습니다.
+        </p>
+        <div className="mt-5 flex gap-2">
+          <button
+            onClick={() => setShowCompleteModal(false)}
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleComplete}
+            disabled={isCompleting}
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+          >
+            {isCompleting ? "처리중..." : "거래 완료"}
           </button>
         </div>
       </Modal>
