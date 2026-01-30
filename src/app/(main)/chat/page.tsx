@@ -71,7 +71,6 @@ function ChatPageContent() {
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   const selectedRoomRef = useRef<ChatRoomDetail | null>(null);
 
@@ -221,6 +220,13 @@ function ChatPageContent() {
   useEffect(() => {
     if (!selectedRoom) return;
 
+    // 0) 안읽은 카운트 즉시 0으로 초기화
+    setRooms((prev) =>
+      prev.map((r) =>
+        r.id === selectedRoom.id ? { ...r, unreadCount: 0 } : r
+      )
+    );
+
     // 1) 캐시에서 즉시 로드
     const cached = chatCache.getMessages(selectedRoom.id);
     if (cached?.length) {
@@ -243,11 +249,6 @@ function ChatPageContent() {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoom]);
-
-  // 자동 스크롤
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   // ─── 메시지 전송 (Optimistic) ──────────────────────
   const handleSend = async () => {
@@ -543,7 +544,6 @@ function ChatPageContent() {
                   </div>
                 );
               })}
-              <div ref={messagesEndRef} />
             </div>
 
             <div className="border-t border-gray-200 bg-white p-4">
