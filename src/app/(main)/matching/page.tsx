@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
@@ -12,6 +13,7 @@ import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
 
 export default function MatchingPage() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const isUser = user?.role === "USER";
   const [tab, setTab] = useState<"estimates" | "requests">("estimates");
@@ -20,6 +22,7 @@ export default function MatchingPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedEstimate, setSelectedEstimate] = useState<Estimate | null>(null);
   const [isAccepting, setIsAccepting] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -49,13 +52,32 @@ export default function MatchingPage() {
   const handleAccept = async (estimateId: string) => {
     setIsAccepting(true);
     try {
-      await api.patch(`/estimates/${estimateId}/accept`);
+      const { data } = await api.patch(`/estimates/${estimateId}/accept`);
+      const result = (data as any)?.data ?? data;
+      const chatRoomId = result?.chatRoom?.id;
+      setSelectedEstimate(null);
+      if (chatRoomId) {
+        router.push(`/chat?roomId=${chatRoomId}`);
+      } else {
+        router.push("/chat");
+      }
+    } catch {
+      // silent
+    } finally {
+      setIsAccepting(false);
+    }
+  };
+
+  const handleReject = async (estimateId: string) => {
+    setIsRejecting(true);
+    try {
+      await api.patch(`/estimates/${estimateId}/reject`);
       setSelectedEstimate(null);
       loadData();
     } catch {
       // silent
     } finally {
-      setIsAccepting(false);
+      setIsRejecting(false);
     }
   };
 
@@ -314,16 +336,16 @@ export default function MatchingPage() {
             )}
             {selectedEstimate.status === "SUBMITTED" && (
               <div className="mt-5 flex gap-2">
-                <Link
-                  href={`/chat?companyId=${selectedEstimate.companyId}`}
-                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                  onClick={() => setSelectedEstimate(null)}
+                <button
+                  onClick={() => handleReject(selectedEstimate.id)}
+                  disabled={isRejecting || isAccepting}
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-red-200 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
                 >
-                  채팅 상담
-                </Link>
+                  {isRejecting ? "처리중..." : "견적 거부"}
+                </button>
                 <button
                   onClick={() => handleAccept(selectedEstimate.id)}
-                  disabled={isAccepting}
+                  disabled={isAccepting || isRejecting}
                   className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
                 >
                   {isAccepting ? "처리중..." : "견적 수락"}

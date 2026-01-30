@@ -42,7 +42,10 @@ function Header() {
     ...(!isCompany ? [{ href: "/matching", label: "매칭 내역" }] : []),
     { href: "/chat", label: "채팅" },
     ...(isCompany
-      ? [{ href: "/estimates", label: "견적 리스트" }]
+      ? [
+          { href: "/estimates", label: "견적 리스트" },
+          { href: "/estimates/submitted", label: "내 견적" },
+        ]
       : []),
     ...(isAuthenticated && user?.role === "ADMIN"
       ? [{ href: "/admin", label: "관리자" }]
