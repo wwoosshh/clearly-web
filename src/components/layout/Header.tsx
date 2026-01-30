@@ -36,7 +36,7 @@ function Header() {
   }, []);
 
   const navLinks =
-    isAuthenticated && user?.role === "company"
+    isAuthenticated && user?.role === "COMPANY"
       ? [
           { href: "/estimates", label: "견적 리스트" },
           { href: "/chat", label: "채팅" },

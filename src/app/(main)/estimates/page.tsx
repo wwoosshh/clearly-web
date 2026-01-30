@@ -88,7 +88,7 @@ export default function EstimatesPage() {
     return new Date(dateStr).toLocaleDateString("ko-KR");
   };
 
-  if (!user || user.role !== "company") {
+  if (!user || user.role !== "COMPANY") {
     return (
       <div className="mx-auto max-w-3xl px-6 py-20 text-center">
         <p className="text-[15px] text-gray-500">업체 회원만 접근할 수 있습니다</p>

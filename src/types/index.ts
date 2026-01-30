@@ -3,7 +3,7 @@
 // =====================
 
 /** 사용자 역할 */
-export type UserRole = "customer" | "company" | "admin";
+export type UserRole = "USER" | "COMPANY" | "ADMIN";
 
 /** 매칭 상태 */
 export type MatchingStatus =

@@ -316,36 +316,38 @@ function ChatPageContent() {
 
     // Optimistic: 모달 즉시 닫기 + 상태 업데이트
     setShowDeclineModal(false);
-    const isCompany = user?.role === "company";
+    const isCompany = user?.role === "COMPANY";
+    const declinePatch = isCompany
+      ? { companyDeclined: true }
+      : { userDeclined: true };
+
+    setSelectedRoom((prev) => prev ? { ...prev, ...declinePatch } : prev);
     setRooms((prev) =>
       prev.map((r) =>
-        r.id === selectedRoom.id
-          ? {
-              ...r,
-              ...(isCompany
-                ? { companyDeclined: true }
-                : { userDeclined: true }),
-            }
-          : r
+        r.id === selectedRoom.id ? { ...r, ...declinePatch } : r
       )
     );
 
     try {
-      await api.patch(`/chat/rooms/${selectedRoom.id}/decline`);
-      // 서버 응답으로 정확한 상태 동기화
+      const { data } = await api.patch(`/chat/rooms/${selectedRoom.id}/decline`);
+      const result = (data as any)?.data ?? data;
+      // 서버 응답으로 정확한 상태 동기화 (양측 취소 여부 반영)
+      if (result.bothDeclined) {
+        setSelectedRoom((prev) =>
+          prev ? { ...prev, userDeclined: true, companyDeclined: true, refundStatus: "REQUESTED" as const } : prev
+        );
+      }
       syncRooms();
+      syncMessages(selectedRoom.id);
     } catch {
       // 실패 시 롤백
+      const rollbackPatch = isCompany
+        ? { companyDeclined: false }
+        : { userDeclined: false };
+      setSelectedRoom((prev) => prev ? { ...prev, ...rollbackPatch } : prev);
       setRooms((prev) =>
         prev.map((r) =>
-          r.id === selectedRoom.id
-            ? {
-                ...r,
-                ...(isCompany
-                  ? { companyDeclined: false }
-                  : { userDeclined: false }),
-              }
-            : r
+          r.id === selectedRoom.id ? { ...r, ...rollbackPatch } : r
         )
       );
     } finally {
@@ -356,7 +358,7 @@ function ChatPageContent() {
   // ─── 유틸 ──────────────────────────────────────
   const getRoomDisplayName = (room: ChatRoomDetail) => {
     if (!user) return "";
-    if (user.role === "company") return room.user.name;
+    if (user.role === "COMPANY") return room.user.name;
     return room.company.businessName;
   };
 
@@ -486,12 +488,14 @@ function ChatPageContent() {
                   {getRoomDisplayName(selectedRoom)}
                 </span>
               </div>
-              <button
-                onClick={() => setShowDeclineModal(true)}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-500 transition-colors hover:bg-gray-50"
-              >
-                거래안함
-              </button>
+              {!(selectedRoom.userDeclined && selectedRoom.companyDeclined) && (
+                <button
+                  onClick={() => setShowDeclineModal(true)}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-500 transition-colors hover:bg-gray-50"
+                >
+                  거래안함
+                </button>
+              )}
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-4">
@@ -546,6 +550,13 @@ function ChatPageContent() {
               })}
             </div>
 
+            {selectedRoom.userDeclined && selectedRoom.companyDeclined ? (
+              <div className="border-t border-gray-200 bg-gray-50 px-5 py-4">
+                <p className="text-center text-[13px] text-gray-400">
+                  양쪽 모두 거래를 취소하여 대화가 종료되었습니다.
+                </p>
+              </div>
+            ) : (
             <div className="border-t border-gray-200 bg-white p-4">
               <div className="flex gap-2">
                 <input
@@ -573,6 +584,7 @@ function ChatPageContent() {
                 </button>
               </div>
             </div>
+            )}
           </>
         ) : (
           <div className="hidden md:flex flex-1 items-center justify-center">
