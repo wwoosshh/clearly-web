@@ -20,13 +20,6 @@ export function getSocket(): Socket {
     socket = io(`${SOCKET_URL}/chat`, {
       autoConnect: false,
       transports: ["polling", "websocket"],
-      auth: () => {
-        const token =
-          typeof window !== "undefined"
-            ? localStorage.getItem("accessToken")
-            : null;
-        return { token };
-      },
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
@@ -39,6 +32,14 @@ export function getSocket(): Socket {
  */
 export function connectSocket(): void {
   const s = getSocket();
+
+  // 매번 연결 시 최신 토큰으로 auth 설정
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("accessToken")
+      : null;
+  s.auth = { token };
+
   if (!s.connected) {
     s.connect();
   }

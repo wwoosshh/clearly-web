@@ -82,7 +82,7 @@ export function NotificationBell() {
   const handleToggle = () => {
     const next = !isOpen;
     setIsOpen(next);
-    if (next && notifications.length === 0) {
+    if (next) {
       fetchNotifications(true);
     }
   };
