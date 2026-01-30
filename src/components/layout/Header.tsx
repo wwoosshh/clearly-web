@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 function Header() {
   const pathname = usePathname();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, isInitialized, logout } = useAuthStore();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -87,7 +87,9 @@ function Header() {
 
         {/* Desktop Right */}
         <div className="hidden items-center gap-2 md:flex">
-          {isAuthenticated && user ? (
+          {!isInitialized ? (
+            <div className="h-7 w-20" />
+          ) : isAuthenticated && user ? (
             <div ref={profileRef} className="relative">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -195,7 +197,9 @@ function Header() {
             ))}
           </nav>
           <div className="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-4">
-            {isAuthenticated && user ? (
+            {!isInitialized ? (
+              <div className="h-11" />
+            ) : isAuthenticated && user ? (
               <>
                 <Link
                   href="/mypage"

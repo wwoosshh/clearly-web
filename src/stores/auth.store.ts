@@ -13,6 +13,8 @@ interface AuthState {
   isLoading: boolean;
   /** 로그인 여부 */
   isAuthenticated: boolean;
+  /** 초기 세션 복원 완료 여부 */
+  isInitialized: boolean;
 
   /** 로그인 */
   login: (credentials: LoginRequest) => Promise<void>;
@@ -24,7 +26,7 @@ interface AuthState {
   setUser: (user: User) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   accessToken:
     typeof window !== "undefined"
@@ -36,6 +38,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       : null,
   isLoading: false,
   isAuthenticated: false,
+  isInitialized: false,
 
   login: async (credentials: LoginRequest) => {
     set({ isLoading: true });
@@ -55,6 +58,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         refreshToken: tokens.refreshToken,
         isAuthenticated: true,
         isLoading: false,
+        isInitialized: true,
       });
     } catch (error) {
       set({ isLoading: false });
@@ -75,13 +79,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   restoreSession: async () => {
+    // 이미 초기화 완료된 경우 중복 호출 방지
+    if (get().isInitialized) return;
+
     const token =
       typeof window !== "undefined"
         ? localStorage.getItem("accessToken")
         : null;
 
     if (!token) {
-      set({ isAuthenticated: false, isLoading: false });
+      set({ isAuthenticated: false, isLoading: false, isInitialized: true });
       return;
     }
 
@@ -90,8 +97,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { data } = await api.get<{ data: User }>("/auth/me");
       set({
         user: data.data,
+        accessToken: token,
         isAuthenticated: true,
         isLoading: false,
+        isInitialized: true,
       });
     } catch {
       localStorage.removeItem("accessToken");
@@ -102,6 +111,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         refreshToken: null,
         isAuthenticated: false,
         isLoading: false,
+        isInitialized: true,
       });
     }
   },
