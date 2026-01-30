@@ -70,6 +70,12 @@ function ChatPageContent() {
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
+  const [isReporting, setIsReporting] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
+  const [reportError, setReportError] = useState("");
 
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   const selectedRoomRef = useRef<ChatRoomDetail | null>(null);
@@ -355,6 +361,41 @@ function ChatPageContent() {
     }
   };
 
+  // ─── 신고 ──────────────────────────────────────
+  const handleReport = async () => {
+    if (!selectedRoom || !reportReason || isReporting) return;
+    setIsReporting(true);
+    setReportError("");
+
+    // 상대방 결정: 내가 USER면 COMPANY 신고, 내가 COMPANY면 USER 신고
+    const isCompanyUser = user?.role === "COMPANY";
+    const targetType = isCompanyUser ? "USER" : "COMPANY";
+    const targetId = isCompanyUser ? selectedRoom.userId : selectedRoom.companyId;
+
+    try {
+      await api.post("/reports", {
+        targetType,
+        targetId,
+        reason: reportReason,
+        description: reportDescription || undefined,
+      });
+      setReportSuccess(true);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || "신고 접수에 실패했습니다.";
+      setReportError(msg);
+    } finally {
+      setIsReporting(false);
+    }
+  };
+
+  const resetReportModal = () => {
+    setShowReportModal(false);
+    setReportReason("");
+    setReportDescription("");
+    setReportError("");
+    setReportSuccess(false);
+  };
+
   // ─── 유틸 ──────────────────────────────────────
   const getRoomDisplayName = (room: ChatRoomDetail) => {
     if (!user) return "";
@@ -488,14 +529,26 @@ function ChatPageContent() {
                   {getRoomDisplayName(selectedRoom)}
                 </span>
               </div>
-              {!(selectedRoom.userDeclined && selectedRoom.companyDeclined) && (
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setShowDeclineModal(true)}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-500 transition-colors hover:bg-gray-50"
+                  onClick={() => {
+                    setReportSuccess(false);
+                    setReportError("");
+                    setShowReportModal(true);
+                  }}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-red-500 transition-colors hover:bg-red-50"
                 >
-                  거래안함
+                  신고
                 </button>
-              )}
+                {!(selectedRoom.userDeclined && selectedRoom.companyDeclined) && (
+                  <button
+                    onClick={() => setShowDeclineModal(true)}
+                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-500 transition-colors hover:bg-gray-50"
+                  >
+                    거래안함
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-4">
@@ -625,6 +678,112 @@ function ChatPageContent() {
             거래 취소 요청
           </button>
         </div>
+      </Modal>
+
+      {/* 신고 모달 */}
+      <Modal
+        isOpen={showReportModal}
+        onClose={resetReportModal}
+        title="상대방 신고"
+        size="md"
+      >
+        {reportSuccess ? (
+          <div className="text-center py-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-50">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <p className="mt-3 text-[15px] font-medium text-gray-900">신고가 접수되었습니다</p>
+            <p className="mt-1 text-[13px] text-gray-500">관리자가 검토 후 조치하겠습니다.</p>
+            <button
+              onClick={resetReportModal}
+              className="mt-5 flex h-[38px] w-full items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800"
+            >
+              확인
+            </button>
+          </div>
+        ) : (
+          <div>
+            <p className="text-[14px] text-gray-600">
+              <span className="font-semibold">{selectedRoom ? getRoomDisplayName(selectedRoom) : ""}</span>
+              님을 신고합니다.
+            </p>
+
+            {reportError && (
+              <div className="mt-3 rounded-lg bg-red-50 px-4 py-3 text-[13px] text-red-600">
+                {reportError}
+              </div>
+            )}
+
+            <div className="mt-4">
+              <label className="text-[13px] font-medium text-gray-800 mb-2 block">
+                신고 사유 <span className="text-red-500">*</span>
+              </label>
+              <div className="flex flex-col gap-2">
+                {[
+                  { value: "FRAUD", label: "사기 / 허위 정보" },
+                  { value: "INAPPROPRIATE", label: "부적절한 언행" },
+                  { value: "NO_SHOW", label: "연락 두절 / 노쇼" },
+                  { value: "POOR_QUALITY", label: "서비스 품질 불량" },
+                  { value: "OTHER", label: "기타" },
+                ].map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setReportReason(opt.value)}
+                    className={cn(
+                      "flex items-center rounded-lg border px-4 py-3 text-[14px] text-left transition-colors",
+                      reportReason === opt.value
+                        ? "border-gray-900 bg-gray-50 font-medium text-gray-900"
+                        : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                    )}
+                  >
+                    <span className={cn(
+                      "mr-3 flex h-5 w-5 items-center justify-center rounded-full border-2",
+                      reportReason === opt.value
+                        ? "border-gray-900 bg-gray-900"
+                        : "border-gray-300"
+                    )}>
+                      {reportReason === opt.value && (
+                        <span className="h-2 w-2 rounded-full bg-white" />
+                      )}
+                    </span>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label className="text-[13px] font-medium text-gray-800 mb-1.5 block">
+                상세 설명 (선택)
+              </label>
+              <textarea
+                value={reportDescription}
+                onChange={(e) => setReportDescription(e.target.value)}
+                placeholder="구체적인 상황을 설명해주세요"
+                rows={3}
+                className="w-full rounded-lg border border-gray-200 px-3.5 py-3 text-[14px] resize-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+              />
+            </div>
+
+            <div className="mt-5 flex gap-2">
+              <button
+                onClick={resetReportModal}
+                className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleReport}
+                disabled={!reportReason || isReporting}
+                className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-red-600 text-[13px] font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+              >
+                {isReporting ? "접수중..." : "신고 접수"}
+              </button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );
