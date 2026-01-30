@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { CompanyCard } from "@/components/company/CompanyCard";
 import { Spinner } from "@/components/ui/Spinner";
@@ -179,9 +180,17 @@ function SearchPageContent() {
       <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
         업체 찾기
       </h1>
-      <p className="mt-1.5 text-[15px] text-gray-500">
-        조건에 맞는 청소 업체를 찾아보세요
-      </p>
+      <div className="mt-1.5 flex items-center justify-between">
+        <p className="text-[15px] text-gray-500">
+          조건에 맞는 청소 업체를 찾아보세요
+        </p>
+        <Link
+          href="/estimate/request"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          견적 요청하기
+        </Link>
+      </div>
 
       {/* 키워드 검색 바 */}
       <div className="mt-6 flex gap-2">
@@ -448,6 +457,12 @@ function SearchPageContent() {
               <p className="mt-1.5 text-[13px] text-gray-500">
                 필터를 변경하거나 다른 키워드로 검색해 보세요
               </p>
+              <Link
+                href="/estimate/request"
+                className="mt-4 inline-flex items-center rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
+              >
+                견적 요청하기
+              </Link>
             </div>
           )}
         </>

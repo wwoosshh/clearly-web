@@ -202,3 +202,144 @@ export interface CompanySearchResponse {
     longitude: number;
   } | null;
 }
+
+// =====================
+// 견적 시스템
+// =====================
+
+/** 견적요청 상태 */
+export type EstimateRequestStatus = "OPEN" | "CLOSED" | "EXPIRED";
+
+/** 견적 상태 */
+export type EstimateStatus = "SUBMITTED" | "ACCEPTED" | "REJECTED";
+
+/** 포인트 거래 유형 */
+export type PointTransactionType = "CHARGE" | "USE" | "REFUND";
+
+/** 환불 상태 */
+export type RefundStatus = "NONE" | "REQUESTED" | "APPROVED" | "REJECTED";
+
+/** 청소 유형 */
+export type CleaningType =
+  | "MOVE_IN"
+  | "MOVE_OUT"
+  | "FULL"
+  | "OFFICE"
+  | "STORE"
+  | "CONSTRUCTION"
+  | "AIRCON"
+  | "CARPET"
+  | "EXTERIOR";
+
+/** 청소 유형 라벨 매핑 */
+export const CLEANING_TYPE_LABELS: Record<CleaningType, string> = {
+  MOVE_IN: "입주청소",
+  MOVE_OUT: "이사청소",
+  FULL: "거주청소",
+  OFFICE: "사무실청소",
+  STORE: "상가청소",
+  CONSTRUCTION: "준공청소",
+  AIRCON: "에어컨청소",
+  CARPET: "카펫청소",
+  EXTERIOR: "외벽청소",
+};
+
+/** 견적요청 */
+export interface EstimateRequest {
+  id: string;
+  userId: string;
+  cleaningType: CleaningType;
+  address: string;
+  detailAddress?: string;
+  areaSize?: number;
+  desiredDate?: string;
+  desiredTime?: string;
+  message: string;
+  budget?: number;
+  status: EstimateRequestStatus;
+  createdAt: string;
+  updatedAt: string;
+  user?: { id: string; name: string; phone?: string };
+  estimates?: Estimate[];
+}
+
+/** 견적 응답 */
+export interface Estimate {
+  id: string;
+  estimateRequestId: string;
+  companyId: string;
+  price: number;
+  message?: string;
+  estimatedDuration?: string;
+  availableDate?: string;
+  pointsUsed: number;
+  status: EstimateStatus;
+  createdAt: string;
+  company?: {
+    id: string;
+    businessName: string;
+    averageRating?: number;
+    totalReviews?: number;
+    user?: { id: string; name: string };
+  };
+  estimateRequest?: {
+    id: string;
+    cleaningType: CleaningType;
+    address: string;
+    desiredDate?: string;
+    status: EstimateRequestStatus;
+  };
+}
+
+/** 포인트 지갑 */
+export interface PointWallet {
+  id: string;
+  companyId: string;
+  balance: number;
+}
+
+/** 포인트 거래내역 */
+export interface PointTransaction {
+  id: string;
+  type: PointTransactionType;
+  amount: number;
+  description?: string;
+  relatedId?: string;
+  createdAt: string;
+}
+
+/** 채팅방 (확장) */
+export interface ChatRoomDetail {
+  id: string;
+  matchingId?: string;
+  userId: string;
+  companyId: string;
+  isActive: boolean;
+  lastMessage?: string;
+  lastSentAt?: string;
+  userDeclined: boolean;
+  companyDeclined: boolean;
+  refundStatus: RefundStatus;
+  estimateId?: string;
+  createdAt: string;
+  unreadCount: number;
+  user: { id: string; name: string; profileImage?: string };
+  company: {
+    id: string;
+    businessName: string;
+    user: { id: string; name: string; profileImage?: string };
+  };
+}
+
+/** 채팅 메시지 (확장) */
+export interface ChatMessageDetail {
+  id: string;
+  roomId: string;
+  senderId: string;
+  content: string;
+  messageType: "TEXT" | "IMAGE" | "FILE" | "SYSTEM";
+  fileUrl?: string;
+  isRead: boolean;
+  createdAt: string;
+  sender?: { id: string; name: string; profileImage?: string };
+}

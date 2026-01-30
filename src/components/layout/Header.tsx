@@ -35,11 +35,17 @@ function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const navLinks = [
-    { href: "/search", label: "업체 찾기" },
-    { href: "/matching", label: "매칭 내역" },
-    { href: "/chat", label: "채팅" },
-  ];
+  const navLinks =
+    isAuthenticated && user?.role === "company"
+      ? [
+          { href: "/estimates", label: "견적 리스트" },
+          { href: "/chat", label: "채팅" },
+        ]
+      : [
+          { href: "/search", label: "업체 찾기" },
+          { href: "/matching", label: "매칭 내역" },
+          { href: "/chat", label: "채팅" },
+        ];
 
   return (
     <header
