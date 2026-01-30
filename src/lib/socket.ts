@@ -13,7 +13,7 @@ export function getSocket(): Socket {
   if (!socket) {
     socket = io(`${SOCKET_URL}/chat`, {
       autoConnect: false,
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
       auth: () => {
         const token =
           typeof window !== "undefined"
@@ -21,6 +21,8 @@ export function getSocket(): Socket {
             : null;
         return { token };
       },
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
   }
   return socket;
