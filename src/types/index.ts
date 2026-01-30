@@ -343,3 +343,34 @@ export interface ChatMessageDetail {
   createdAt: string;
   sender?: { id: string; name: string; profileImage?: string };
 }
+
+// =====================
+// 알림 시스템
+// =====================
+
+/** 알림 유형 */
+export type NotificationType =
+  | "MATCHING_REQUEST"
+  | "MATCHING_ACCEPTED"
+  | "MATCHING_REJECTED"
+  | "NEW_MESSAGE"
+  | "NEW_REVIEW"
+  | "SUBSCRIPTION"
+  | "SYSTEM"
+  | "ESTIMATE_SUBMITTED"
+  | "ESTIMATE_ACCEPTED"
+  | "ESTIMATE_REJECTED"
+  | "NEW_ESTIMATE_REQUEST"
+  | "POINT_CHANGE";
+
+/** 알림 */
+export interface Notification {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  content?: string;
+  data?: Record<string, any>;
+  isRead: boolean;
+  createdAt: string;
+}

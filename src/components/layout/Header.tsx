@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "./NotificationBell";
 
 function Header() {
   const pathname = usePathname();
@@ -95,6 +96,8 @@ function Header() {
           {!isInitialized ? (
             <div className="h-7 w-20" />
           ) : isAuthenticated && user ? (
+            <>
+            <NotificationBell />
             <div ref={profileRef} className="relative">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -144,6 +147,7 @@ function Header() {
                 </div>
               )}
             </div>
+            </>
           ) : (
             <>
               <Link
@@ -206,6 +210,10 @@ function Header() {
               <div className="h-11" />
             ) : isAuthenticated && user ? (
               <>
+                <div className="flex items-center gap-2 py-2">
+                  <NotificationBell />
+                  <span className="text-[15px] font-medium text-gray-700">알림</span>
+                </div>
                 <Link
                   href="/mypage"
                   className="py-2 text-[15px] font-medium text-gray-700"
