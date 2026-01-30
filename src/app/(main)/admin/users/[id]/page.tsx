@@ -19,6 +19,7 @@ interface UserDetail {
   recentReviews: any[];
   recentReports: any[];
   estimateRequests: any[];
+  recentEstimates: any[];
 }
 
 export default function AdminUserDetailPage() {
@@ -73,6 +74,20 @@ export default function AdminUserDetailPage() {
     const info = map[role] || { label: role, style: "bg-gray-100 text-gray-600" };
     return (
       <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-semibold", info.style)}>
+        {info.label}
+      </span>
+    );
+  };
+
+  const estimateStatusBadge = (status: string) => {
+    const map: Record<string, { label: string; style: string }> = {
+      SUBMITTED: { label: "대기중", style: "bg-gray-100 text-gray-700" },
+      ACCEPTED: { label: "수락됨", style: "bg-green-50 text-green-700" },
+      REJECTED: { label: "거절됨", style: "bg-red-50 text-red-600" },
+    };
+    const info = map[status] || { label: status, style: "bg-gray-100 text-gray-600" };
+    return (
+      <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", info.style)}>
         {info.label}
       </span>
     );
@@ -209,7 +224,9 @@ export default function AdminUserDetailPage() {
                 <table className="w-full text-left text-sm">
                   <thead>
                     <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">업체</th>
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">
+                        {user.role === "COMPANY" ? "사용자" : "업체"}
+                      </th>
                       <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">청소유형</th>
                       <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
                       <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
@@ -219,7 +236,9 @@ export default function AdminUserDetailPage() {
                     {user.recentMatchings.map((m: any) => (
                       <tr key={m.id} className="border-b border-gray-50 last:border-0">
                         <td className="px-3 py-2 text-[12px] text-gray-700">
-                          {m.company?.businessName || "-"}
+                          {user.role === "COMPANY"
+                            ? (m.user?.name || "-")
+                            : (m.company?.businessName || "-")}
                         </td>
                         <td className="px-3 py-2 text-[12px] text-gray-600">{m.cleaningType}</td>
                         <td className="px-3 py-2">{matchingStatusBadge(m.status)}</td>
@@ -234,7 +253,9 @@ export default function AdminUserDetailPage() {
 
           {/* 리뷰 내역 */}
           <div>
-            <h3 className="text-[14px] font-bold text-gray-900">최근 리뷰 ({user.recentReviews.length}건)</h3>
+            <h3 className="text-[14px] font-bold text-gray-900">
+              {user.role === "COMPANY" ? "받은 리뷰" : "최근 리뷰"} ({user.recentReviews.length}건)
+            </h3>
             {user.recentReviews.length === 0 ? (
               <p className="mt-2 text-[13px] text-gray-400">리뷰 내역이 없습니다.</p>
             ) : (
@@ -243,7 +264,9 @@ export default function AdminUserDetailPage() {
                   <div key={r.id} className="rounded-lg border border-gray-200 bg-white p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-[13px] font-medium text-gray-900">
-                        {r.company?.businessName || "-"}
+                        {user.role === "COMPANY"
+                          ? (r.user?.name || "-")
+                          : (r.company?.businessName || "-")}
                       </span>
                       <span className="text-[12px] text-gray-500">
                         {"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}
@@ -257,8 +280,47 @@ export default function AdminUserDetailPage() {
             )}
           </div>
 
-          {/* 견적요청 */}
-          {user.estimateRequests.length > 0 && (
+          {/* 업체: 최근 견적 작성 */}
+          {user.role === "COMPANY" && user.recentEstimates && user.recentEstimates.length > 0 && (
+            <div>
+              <h3 className="text-[14px] font-bold text-gray-900">최근 견적 작성 ({user.recentEstimates.length}건)</h3>
+              <div className="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-white">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100 bg-gray-50/50">
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">요청자</th>
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">청소유형</th>
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">견적금액</th>
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
+                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {user.recentEstimates.map((est: any) => (
+                      <tr key={est.id} className="border-b border-gray-50 last:border-0">
+                        <td className="px-3 py-2 text-[12px] text-gray-700">
+                          {est.estimateRequest?.user?.name || "-"}
+                        </td>
+                        <td className="px-3 py-2 text-[12px] text-gray-600">
+                          {est.estimateRequest?.cleaningType || "-"}
+                        </td>
+                        <td className="px-3 py-2 text-[12px] font-medium text-gray-900">
+                          {est.price?.toLocaleString()}원
+                        </td>
+                        <td className="px-3 py-2">
+                          {estimateStatusBadge(est.status)}
+                        </td>
+                        <td className="px-3 py-2 text-[12px] text-gray-500">{formatDate(est.createdAt)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* 일반사용자: 견적요청 */}
+          {user.role !== "COMPANY" && user.estimateRequests.length > 0 && (
             <div>
               <h3 className="text-[14px] font-bold text-gray-900">견적요청 ({user.estimateRequests.length}건)</h3>
               <div className="mt-2 space-y-2">
