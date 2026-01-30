@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
 import type { CompanySearchResult } from "@/types";
@@ -10,6 +11,8 @@ import type { CompanySearchResult } from "@/types";
 export default function CompanyDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuthStore();
+  const isCompany = user?.role === "COMPANY";
   const companyId = params.id as string;
 
   const [company, setCompany] = useState<CompanySearchResult | null>(null);
@@ -194,12 +197,21 @@ export default function CompanyDetailPage() {
           >
             목록으로
           </Link>
-          <Link
-            href={`/chat?companyId=${company.id}`}
-            className="flex h-[46px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[14px] font-medium text-white transition-colors hover:bg-gray-800"
-          >
-            채팅 상담
-          </Link>
+          {isCompany ? (
+            <button
+              disabled
+              className="flex h-[46px] flex-1 items-center justify-center rounded-lg bg-gray-300 text-[14px] font-medium text-gray-500 cursor-not-allowed"
+            >
+              채팅 상담
+            </button>
+          ) : (
+            <Link
+              href={`/chat?companyId=${company.id}`}
+              className="flex h-[46px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[14px] font-medium text-white transition-colors hover:bg-gray-800"
+            >
+              채팅 상담
+            </Link>
+          )}
         </div>
       </div>
 

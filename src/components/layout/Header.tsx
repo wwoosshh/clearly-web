@@ -35,11 +35,13 @@ function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const isCompany = isAuthenticated && user?.role === "COMPANY";
+
   const navLinks = [
     { href: "/search", label: "업체 찾기" },
-    { href: "/matching", label: "매칭 내역" },
+    ...(!isCompany ? [{ href: "/matching", label: "매칭 내역" }] : []),
     { href: "/chat", label: "채팅" },
-    ...(isAuthenticated && user?.role === "COMPANY"
+    ...(isCompany
       ? [{ href: "/estimates", label: "견적 리스트" }]
       : []),
     ...(isAuthenticated && user?.role === "ADMIN"
