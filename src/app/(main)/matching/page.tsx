@@ -86,6 +86,13 @@ export default function MatchingPage() {
     return new Date(dateStr).toLocaleDateString("ko-KR");
   };
 
+  const formatDuration = (d?: string) => {
+    if (!d) return "";
+    const trimmed = d.trim();
+    if (/^\d+(\.\d+)?$/.test(trimmed)) return `${trimmed}시간`;
+    return trimmed;
+  };
+
   const getStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
       SUBMITTED: { label: "대기중", style: "bg-gray-100 text-gray-700" },
@@ -200,7 +207,7 @@ export default function MatchingPage() {
                   {est.estimatedDuration && (
                     <>
                       <span className="text-gray-300">|</span>
-                      <span className="text-gray-500">예상 {est.estimatedDuration}</span>
+                      <span className="text-gray-500">예상 {formatDuration(est.estimatedDuration)}</span>
                     </>
                   )}
                   {est.availableDate && (
@@ -305,7 +312,7 @@ export default function MatchingPage() {
                 <div className="flex justify-between">
                   <span className="text-[13px] text-gray-500">예상 소요시간</span>
                   <span className="text-[14px] text-gray-700">
-                    {selectedEstimate.estimatedDuration}
+                    {formatDuration(selectedEstimate.estimatedDuration)}
                   </span>
                 </div>
               )}
@@ -329,7 +336,7 @@ export default function MatchingPage() {
             {selectedEstimate.message && (
               <div className="mt-4 rounded-lg bg-gray-50 p-4">
                 <p className="text-[13px] font-medium text-gray-500 mb-1">업체 메시지</p>
-                <p className="text-[14px] text-gray-700 whitespace-pre-wrap">
+                <p className="text-[14px] text-gray-700 whitespace-pre-wrap break-words">
                   {selectedEstimate.message}
                 </p>
               </div>

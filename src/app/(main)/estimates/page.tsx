@@ -239,7 +239,7 @@ export default function EstimatesPage() {
 
             <div className="mt-4 rounded-lg bg-gray-50 p-4">
               <p className="text-[13px] font-medium text-gray-500 mb-1">상세 설명</p>
-              <p className="text-[14px] text-gray-700 whitespace-pre-wrap">
+              <p className="text-[14px] text-gray-700 whitespace-pre-wrap break-words">
                 {selectedRequest.message}
               </p>
             </div>
