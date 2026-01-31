@@ -187,67 +187,73 @@ function Header() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="border-t border-gray-100 bg-white px-5 pb-5 pt-3 md:hidden">
-          <nav className="flex flex-col">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "py-2.5 text-[15px] font-medium transition-colors",
-                  pathname === link.href ? "text-gray-900" : "text-gray-500"
-                )}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-4">
-            {!isInitialized ? (
-              <div className="h-11" />
-            ) : isAuthenticated && user ? (
-              <>
-                <div className="flex items-center gap-2 py-2">
-                  <NotificationBell />
-                  <span className="text-[15px] font-medium text-gray-700">알림</span>
-                </div>
+        <>
+          <div
+            className="fixed inset-0 top-[60px] z-40 bg-black/20 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="absolute left-0 right-0 top-[60px] z-50 border-t border-gray-200 bg-white shadow-lg md:hidden">
+            <nav className="flex flex-col px-5 pt-3">
+              {navLinks.map((link) => (
                 <Link
-                  href="/mypage"
-                  className="py-2 text-[15px] font-medium text-gray-700"
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "py-2.5 text-[15px] font-medium transition-colors",
+                    pathname === link.href ? "text-gray-900" : "text-gray-500"
+                  )}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  마이페이지
+                  {link.label}
                 </Link>
-                <button
-                  onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                  className="py-2 text-left text-[15px] font-medium text-gray-500"
-                >
-                  로그아웃
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="flex h-11 items-center justify-center rounded-lg border border-gray-200 text-[14px] font-medium text-gray-700"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  로그인
-                </Link>
-                <Link
-                  href="/register"
-                  className="flex h-11 items-center justify-center rounded-lg bg-gray-900 text-[14px] font-medium text-white"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  시작하기
-                </Link>
-              </>
-            )}
+              ))}
+            </nav>
+            <div className="mx-5 mt-3 flex flex-col gap-2 border-t border-gray-200 pb-5 pt-4">
+              {!isInitialized ? (
+                <div className="h-11" />
+              ) : isAuthenticated && user ? (
+                <>
+                  <div className="flex items-center gap-2 py-2">
+                    <NotificationBell />
+                    <span className="text-[15px] font-medium text-gray-700">알림</span>
+                  </div>
+                  <Link
+                    href="/mypage"
+                    className="py-2 text-[15px] font-medium text-gray-700"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    마이페이지
+                  </Link>
+                  <button
+                    onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                    className="py-2 text-left text-[15px] font-medium text-gray-500"
+                  >
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="flex h-11 items-center justify-center rounded-lg border border-gray-200 text-[14px] font-medium text-gray-700"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    로그인
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="flex h-11 items-center justify-center rounded-lg bg-gray-900 text-[14px] font-medium text-white"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    시작하기
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );
