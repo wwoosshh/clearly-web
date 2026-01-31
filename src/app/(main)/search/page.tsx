@@ -8,6 +8,8 @@ import { CompanyCard } from "@/components/company/CompanyCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import { AddressAutocomplete } from "@/components/address/AddressAutocomplete";
+import type { AddressSuggestion } from "@/hooks/useAddressSuggestions";
 import type { CompanySearchResponse, CompanySearchResult } from "@/types";
 
 const SPECIALTY_OPTIONS = [
@@ -85,6 +87,11 @@ function SearchPageContent() {
     searchParams.get("sortBy") || "score"
   );
 
+  const [selectedCoords, setSelectedCoords] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
   const [companies, setCompanies] = useState<CompanySearchResult[]>([]);
   const [meta, setMeta] = useState<CompanySearchResponse["meta"] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -99,6 +106,8 @@ function SearchPageContent() {
       region?: string;
       sortBy?: string;
       page?: number;
+      latitude?: number;
+      longitude?: number;
     }) => {
       setIsLoading(true);
       setHasSearched(true);
@@ -113,6 +122,8 @@ function SearchPageContent() {
         if (params.specialty) query.specialty = params.specialty;
         if (params.region) query.region = params.region;
         if (params.sortBy) query.sortBy = params.sortBy;
+        if (params.latitude != null) query.latitude = params.latitude;
+        if (params.longitude != null) query.longitude = params.longitude;
 
         const { data } = await api.get<CompanySearchResponse>(
           "/companies/search",
@@ -158,6 +169,8 @@ function SearchPageContent() {
       specialty: selectedSpecialty,
       region: selectedRegion,
       sortBy,
+      latitude: selectedCoords?.latitude,
+      longitude: selectedCoords?.longitude,
     });
   };
 
@@ -170,6 +183,8 @@ function SearchPageContent() {
       region: selectedRegion,
       sortBy: newSort,
       page: 1,
+      latitude: selectedCoords?.latitude,
+      longitude: selectedCoords?.longitude,
     });
   };
 
@@ -181,6 +196,8 @@ function SearchPageContent() {
       region: selectedRegion,
       sortBy,
       page,
+      latitude: selectedCoords?.latitude,
+      longitude: selectedCoords?.longitude,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -205,39 +222,47 @@ function SearchPageContent() {
         )}
       </div>
 
-      {/* 주소 입력 필드 */}
+      {/* 주소 입력 필드 (자동완성) */}
       <div className="mt-6 flex gap-2">
-        <div className="relative flex-1">
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="주소를 입력하세요 (예: 서울시 강남구)"
-            className="h-[46px] w-full rounded-lg border border-gray-200 px-4 pr-10 text-[14px] placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
-          />
-          {address && (
-            <button
-              onClick={() => {
-                setAddress("");
-                fetchCompanies({
-                  keyword,
-                  address: "",
-                  specialty: selectedSpecialty,
-                  region: selectedRegion,
-                  sortBy,
-                });
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              aria-label="주소 초기화"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          )}
-        </div>
+        <AddressAutocomplete
+          value={address}
+          onChange={(val) => {
+            setAddress(val);
+            // 직접 타이핑 시 기존 좌표 초기화
+            setSelectedCoords(null);
+          }}
+          onSelect={(suggestion: AddressSuggestion) => {
+            const displayAddress =
+              suggestion.roadAddress ||
+              suggestion.jibunAddress ||
+              suggestion.address;
+            setAddress(displayAddress);
+            setSelectedCoords({
+              latitude: suggestion.latitude,
+              longitude: suggestion.longitude,
+            });
+            // 선택 즉시 검색 실행
+            fetchCompanies({
+              keyword,
+              address: displayAddress,
+              specialty: selectedSpecialty,
+              region: selectedRegion,
+              sortBy,
+              latitude: suggestion.latitude,
+              longitude: suggestion.longitude,
+            });
+          }}
+          onClear={() => {
+            setSelectedCoords(null);
+            fetchCompanies({
+              keyword,
+              address: "",
+              specialty: selectedSpecialty,
+              region: selectedRegion,
+              sortBy,
+            });
+          }}
+        />
       </div>
 
       {/* 주소 배지 */}
@@ -283,6 +308,8 @@ function SearchPageContent() {
                 specialty: "",
                 region: selectedRegion,
                 sortBy,
+                latitude: selectedCoords?.latitude,
+                longitude: selectedCoords?.longitude,
               });
             }}
             className={cn(
@@ -306,6 +333,8 @@ function SearchPageContent() {
                   specialty: next,
                   region: selectedRegion,
                   sortBy,
+                  latitude: selectedCoords?.latitude,
+                  longitude: selectedCoords?.longitude,
                 });
               }}
               className={cn(
@@ -334,6 +363,8 @@ function SearchPageContent() {
                 specialty: selectedSpecialty,
                 region: "",
                 sortBy,
+                latitude: selectedCoords?.latitude,
+                longitude: selectedCoords?.longitude,
               });
             }}
             className={cn(
@@ -357,6 +388,8 @@ function SearchPageContent() {
                   specialty: selectedSpecialty,
                   region: next,
                   sortBy,
+                  latitude: selectedCoords?.latitude,
+                  longitude: selectedCoords?.longitude,
                 });
               }}
               className={cn(
