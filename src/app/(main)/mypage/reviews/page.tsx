@@ -17,6 +17,7 @@ interface ReviewItem {
   isVisible: boolean;
   createdAt: string;
   company?: { id: string; businessName: string };
+  user?: { id: string; name: string };
   matching?: {
     id: string;
     cleaningType?: string;
@@ -34,12 +35,14 @@ interface ReviewMeta {
 
 export default function MyReviewsPage() {
   const { user } = useAuthStore();
+  const isCompany = user?.role === "COMPANY";
+
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [meta, setMeta] = useState<ReviewMeta>({ total: 0, page: 1, limit: 10, totalPages: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  // 수정 모달
+  // 수정 모달 (유저 전용)
   const [editTarget, setEditTarget] = useState<ReviewItem | null>(null);
   const [editRating, setEditRating] = useState(0);
   const [editHoverRating, setEditHoverRating] = useState(0);
@@ -47,7 +50,7 @@ export default function MyReviewsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [editError, setEditError] = useState("");
 
-  // 삭제 모달
+  // 삭제 모달 (유저 전용)
   const [deleteTarget, setDeleteTarget] = useState<ReviewItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -110,7 +113,6 @@ export default function MyReviewsPage() {
     try {
       await api.delete(`/reviews/${deleteTarget.id}`);
       setDeleteTarget(null);
-      // 삭제 후 현재 페이지에 항목이 없으면 이전 페이지로
       if (reviews.length === 1 && page > 1) {
         setPage(page - 1);
       } else {
@@ -168,8 +170,12 @@ export default function MyReviewsPage() {
         마이페이지
       </Link>
 
-      <h1 className="text-[24px] font-bold tracking-tight text-gray-900">내 리뷰</h1>
-      <p className="mt-1.5 text-[15px] text-gray-500">내가 작성한 리뷰를 관리하세요</p>
+      <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
+        {isCompany ? "받은 리뷰" : "내 리뷰"}
+      </h1>
+      <p className="mt-1.5 text-[15px] text-gray-500">
+        {isCompany ? "고객이 남긴 리뷰를 확인하세요" : "내가 작성한 리뷰를 관리하세요"}
+      </p>
 
       {/* 리뷰 목록 */}
       {isLoading ? (
@@ -183,14 +189,20 @@ export default function MyReviewsPage() {
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
           </div>
-          <p className="mt-4 text-[15px] font-medium text-gray-700">작성한 리뷰가 없습니다</p>
-          <p className="mt-1.5 text-[13px] text-gray-500">거래 완료 후 리뷰를 작성할 수 있습니다</p>
-          <Link
-            href="/estimate/request"
-            className="mt-4 rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
-          >
-            견적 요청하기
-          </Link>
+          <p className="mt-4 text-[15px] font-medium text-gray-700">
+            {isCompany ? "받은 리뷰가 없습니다" : "작성한 리뷰가 없습니다"}
+          </p>
+          <p className="mt-1.5 text-[13px] text-gray-500">
+            {isCompany ? "거래를 완료하면 고객이 리뷰를 남길 수 있습니다" : "거래 완료 후 리뷰를 작성할 수 있습니다"}
+          </p>
+          {!isCompany && (
+            <Link
+              href="/estimate/request"
+              className="mt-4 rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
+            >
+              견적 요청하기
+            </Link>
+          )}
         </div>
       ) : (
         <>
@@ -201,7 +213,9 @@ export default function MyReviewsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-[15px] font-bold text-gray-900">
-                        {review.company?.businessName || "업체"}
+                        {isCompany
+                          ? (review.user?.name || "고객")
+                          : (review.company?.businessName || "업체")}
                       </span>
                       {renderStars(review.rating)}
                     </div>
@@ -219,20 +233,23 @@ export default function MyReviewsPage() {
                       <span className="text-[12px] text-gray-400">{formatDate(review.createdAt)}</span>
                     </div>
                   </div>
-                  <div className="ml-4 flex flex-shrink-0 items-center gap-1">
-                    <button
-                      onClick={() => openEdit(review)}
-                      className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-100"
-                    >
-                      수정
-                    </button>
-                    <button
-                      onClick={() => setDeleteTarget(review)}
-                      className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-red-500 transition-colors hover:bg-red-50"
-                    >
-                      삭제
-                    </button>
-                  </div>
+                  {/* 수정/삭제 버튼은 일반 유저만 */}
+                  {!isCompany && (
+                    <div className="ml-4 flex flex-shrink-0 items-center gap-1">
+                      <button
+                        onClick={() => openEdit(review)}
+                        className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(review)}
+                        className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-red-500 transition-colors hover:bg-red-50"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -296,121 +313,122 @@ export default function MyReviewsPage() {
         </>
       )}
 
-      {/* 수정 모달 */}
-      <Modal
-        isOpen={!!editTarget}
-        onClose={() => setEditTarget(null)}
-        title="리뷰 수정"
-      >
-        {editTarget && (
-          <div>
-            {editError && (
-              <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-[13px] text-red-600">
-                {editError}
-              </div>
-            )}
-
-            {/* 별점 */}
+      {/* 수정 모달 (유저 전용) */}
+      {!isCompany && (
+        <Modal
+          isOpen={!!editTarget}
+          onClose={() => setEditTarget(null)}
+          title="리뷰 수정"
+        >
+          {editTarget && (
             <div>
-              <label className="text-[14px] font-medium text-gray-800">
-                별점 <span className="text-red-500">*</span>
-              </label>
-              <div className="mt-2 flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setEditRating(star)}
-                    onMouseEnter={() => setEditHoverRating(star)}
-                    onMouseLeave={() => setEditHoverRating(0)}
-                    className="p-0.5"
-                  >
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 24 24"
-                      fill={star <= editActiveRating ? "#1f2937" : "none"}
-                      stroke={star <= editActiveRating ? "#1f2937" : "#d1d5db"}
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+              {editError && (
+                <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-[13px] text-red-600">
+                  {editError}
+                </div>
+              )}
+
+              <div>
+                <label className="text-[14px] font-medium text-gray-800">
+                  별점 <span className="text-red-500">*</span>
+                </label>
+                <div className="mt-2 flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setEditRating(star)}
+                      onMouseEnter={() => setEditHoverRating(star)}
+                      onMouseLeave={() => setEditHoverRating(0)}
+                      className="p-0.5"
                     >
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  </button>
-                ))}
-                {editRating > 0 && (
-                  <span className="ml-2 text-[14px] font-medium text-gray-900">
-                    {editRating}점
-                  </span>
-                )}
+                      <svg
+                        width="28"
+                        height="28"
+                        viewBox="0 0 24 24"
+                        fill={star <= editActiveRating ? "#1f2937" : "none"}
+                        stroke={star <= editActiveRating ? "#1f2937" : "#d1d5db"}
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    </button>
+                  ))}
+                  {editRating > 0 && (
+                    <span className="ml-2 text-[14px] font-medium text-gray-900">
+                      {editRating}점
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <label className="text-[14px] font-medium text-gray-800">리뷰 내용</label>
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  placeholder="서비스 이용 경험을 자유롭게 작성해주세요 (선택)"
+                  rows={4}
+                  maxLength={2000}
+                  className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-3 text-[14px] leading-relaxed resize-none placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+                />
+                <div className="mt-1 text-right text-[12px] text-gray-400">
+                  {editContent.length}/2000
+                </div>
+              </div>
+
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => setEditTarget(null)}
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={editRating === 0 || isSaving}
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? "저장중..." : "저장"}
+                </button>
               </div>
             </div>
+          )}
+        </Modal>
+      )}
 
-            {/* 내용 */}
-            <div className="mt-4">
-              <label className="text-[14px] font-medium text-gray-800">리뷰 내용</label>
-              <textarea
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                placeholder="서비스 이용 경험을 자유롭게 작성해주세요 (선택)"
-                rows={4}
-                maxLength={2000}
-                className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-3 text-[14px] leading-relaxed resize-none placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
-              />
-              <div className="mt-1 text-right text-[12px] text-gray-400">
-                {editContent.length}/2000
+      {/* 삭제 확인 모달 (유저 전용) */}
+      {!isCompany && (
+        <Modal
+          isOpen={!!deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          title="리뷰 삭제"
+          size="sm"
+        >
+          {deleteTarget && (
+            <div>
+              <p className="text-[14px] text-gray-600">정말 삭제하시겠습니까? 삭제된 리뷰는 복구할 수 없습니다.</p>
+              <div className="mt-5 flex gap-2">
+                <button
+                  onClick={() => setDeleteTarget(null)}
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-red-600 text-[13px] font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                >
+                  {isDeleting ? "삭제중..." : "삭제"}
+                </button>
               </div>
             </div>
-
-            {/* 버튼 */}
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={() => setEditTarget(null)}
-                className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
-              >
-                취소
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={editRating === 0 || isSaving}
-                className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSaving ? "저장중..." : "저장"}
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
-
-      {/* 삭제 확인 모달 */}
-      <Modal
-        isOpen={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        title="리뷰 삭제"
-        size="sm"
-      >
-        {deleteTarget && (
-          <div>
-            <p className="text-[14px] text-gray-600">정말 삭제하시겠습니까? 삭제된 리뷰는 복구할 수 없습니다.</p>
-            <div className="mt-5 flex gap-2">
-              <button
-                onClick={() => setDeleteTarget(null)}
-                className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
-              >
-                취소
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-red-600 text-[13px] font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
-              >
-                {isDeleting ? "삭제중..." : "삭제"}
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
+          )}
+        </Modal>
+      )}
     </div>
   );
 }

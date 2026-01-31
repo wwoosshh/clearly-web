@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/auth.store";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -34,8 +35,24 @@ const TIME_OPTIONS = [
 
 export default function EstimateRequestPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
+
+  if (user?.role === "COMPANY") {
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-20 text-center">
+        <p className="text-[15px] font-medium text-gray-700">업체 계정으로는 견적을 요청할 수 없습니다</p>
+        <p className="mt-1.5 text-[13px] text-gray-500">견적 요청은 일반 회원만 이용할 수 있습니다</p>
+        <button
+          onClick={() => router.push("/estimates")}
+          className="mt-4 rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
+        >
+          견적 리스트 보기
+        </button>
+      </div>
+    );
+  }
 
   const {
     register,

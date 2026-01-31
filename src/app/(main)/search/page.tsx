@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/auth.store";
 import { CompanyCard } from "@/components/company/CompanyCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
@@ -69,6 +70,8 @@ export default function SearchPage() {
 function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user } = useAuthStore();
+  const isCompany = user?.role === "COMPANY";
 
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   const [selectedSpecialty, setSelectedSpecialty] = useState(
@@ -184,12 +187,14 @@ function SearchPageContent() {
         <p className="text-[15px] text-gray-500">
           조건에 맞는 청소 업체를 찾아보세요
         </p>
-        <Link
-          href="/estimate/request"
-          className="rounded-lg border border-gray-200 px-4 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
-        >
-          견적 요청하기
-        </Link>
+        {!isCompany && (
+          <Link
+            href="/estimate/request"
+            className="rounded-lg border border-gray-200 px-4 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            견적 요청하기
+          </Link>
+        )}
       </div>
 
       {/* 키워드 검색 바 */}
@@ -457,12 +462,14 @@ function SearchPageContent() {
               <p className="mt-1.5 text-[13px] text-gray-500">
                 필터를 변경하거나 다른 키워드로 검색해 보세요
               </p>
-              <Link
-                href="/estimate/request"
-                className="mt-4 inline-flex items-center rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
-              >
-                견적 요청하기
-              </Link>
+              {!isCompany && (
+                <Link
+                  href="/estimate/request"
+                  className="mt-4 inline-flex items-center rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
+                >
+                  견적 요청하기
+                </Link>
+              )}
             </div>
           )}
         </>
