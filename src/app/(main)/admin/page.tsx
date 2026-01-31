@@ -14,6 +14,7 @@ interface DashboardStats {
   totalReviews: number;
   openEstimateRequests: number;
   activeChatRooms: number;
+  pendingInquiries: number;
 }
 
 const statCards: {
@@ -31,6 +32,7 @@ const statCards: {
   { key: "totalReviews", label: "전체 리뷰", color: "bg-indigo-50 text-indigo-700", href: "/admin/reviews" },
   { key: "openEstimateRequests", label: "진행중 견적요청", color: "bg-orange-50 text-orange-700", href: "/admin/estimate-requests" },
   { key: "activeChatRooms", label: "활성 채팅방", color: "bg-cyan-50 text-cyan-700", href: "/admin/chat-rooms" },
+  { key: "pendingInquiries", label: "미답변 문의", color: "bg-pink-50 text-pink-700", href: "/admin/inquiries" },
 ];
 
 export default function AdminDashboardPage() {
@@ -85,7 +87,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* 긴급 처리 필요 */}
-          {(stats.pendingReports > 0 || stats.pendingCompanies > 0) && (
+          {(stats.pendingReports > 0 || stats.pendingCompanies > 0 || stats.pendingInquiries > 0) && (
             <div className="mt-8">
               <h2 className="text-[15px] font-bold text-gray-900">
                 긴급 처리 필요
@@ -129,6 +131,27 @@ export default function AdminDashboardPage() {
                       </div>
                     </div>
                     <span className="text-[13px] font-medium text-amber-700">
+                      바로가기 →
+                    </span>
+                  </Link>
+                )}
+                {stats.pendingInquiries > 0 && (
+                  <Link
+                    href="/admin/inquiries"
+                    className="flex items-center justify-between rounded-xl border border-pink-200 bg-pink-50 p-4 transition-colors hover:bg-pink-100"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">📩</span>
+                      <div>
+                        <p className="text-[14px] font-semibold text-pink-800">
+                          미답변 문의 {stats.pendingInquiries}건
+                        </p>
+                        <p className="text-[12px] text-pink-600">
+                          답변 대기 중인 문의가 있습니다
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-[13px] font-medium text-pink-700">
                       바로가기 →
                     </span>
                   </Link>
