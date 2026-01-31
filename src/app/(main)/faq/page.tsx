@@ -24,8 +24,8 @@ export default function FaqPage() {
     setIsLoading(true);
     try {
       const params = query ? { search: query } : {};
-      const { data } = await api.get("/faq", { params });
-      setFaqGroups(data.data ?? data);
+      const { data: res } = await api.get("/faq", { params });
+      setFaqGroups(res.data ?? res);
     } catch {
       // 에러 무시
     } finally {

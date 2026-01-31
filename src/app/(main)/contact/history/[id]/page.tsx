@@ -42,8 +42,8 @@ export default function InquiryDetailPage() {
     if (!isAuthenticated || !params.id) return;
     async function fetch() {
       try {
-        const { data } = await api.get(`/inquiries/my/${params.id}`);
-        setInquiry(data.data ?? data);
+        const { data: res } = await api.get(`/inquiries/my/${params.id}`);
+        setInquiry(res.data ?? res);
       } catch {
         router.replace("/contact/history");
       } finally {

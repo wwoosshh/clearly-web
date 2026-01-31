@@ -40,8 +40,9 @@ export default function AdminFaqPage() {
     try {
       const params: Record<string, string | number> = { limit: 200 };
       if (filterCategory) params.category = filterCategory;
-      const { data } = await api.get("/faq/admin", { params });
-      setFaqs(data.data ?? []);
+      const { data: res } = await api.get("/faq/admin", { params });
+      const payload = res.data ?? res;
+      setFaqs(payload.data ?? payload ?? []);
     } catch {
       // 에러 무시
     } finally {

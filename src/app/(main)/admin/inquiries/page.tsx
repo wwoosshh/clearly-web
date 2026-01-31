@@ -43,9 +43,10 @@ export default function AdminInquiriesPage() {
     try {
       const params: Record<string, string | number> = { page, limit: 20 };
       if (activeTab) params.status = activeTab;
-      const { data } = await api.get("/inquiries/admin", { params });
-      setInquiries(data.data ?? []);
-      setTotalPages(data.meta?.totalPages ?? 1);
+      const { data: res } = await api.get("/inquiries/admin", { params });
+      const payload = res.data ?? res;
+      setInquiries(payload.data ?? []);
+      setTotalPages(payload.meta?.totalPages ?? 1);
     } catch {
       // 에러 무시
     } finally {

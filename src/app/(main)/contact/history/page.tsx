@@ -36,8 +36,9 @@ export default function InquiryHistoryPage() {
     if (!isAuthenticated) return;
     async function fetch() {
       try {
-        const { data } = await api.get("/inquiries/my");
-        setInquiries(data.data ?? []);
+        const { data: res } = await api.get("/inquiries/my");
+        const payload = res.data ?? res;
+        setInquiries(payload.data ?? payload ?? []);
       } catch {
         // 에러 무시
       } finally {

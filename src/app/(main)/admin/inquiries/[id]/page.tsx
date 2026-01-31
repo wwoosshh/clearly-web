@@ -41,8 +41,8 @@ export default function AdminInquiryDetailPage() {
   useEffect(() => {
     async function fetch() {
       try {
-        const { data } = await api.get(`/inquiries/admin/${params.id}`);
-        const d = data.data ?? data;
+        const { data: res } = await api.get(`/inquiries/admin/${params.id}`);
+        const d = res.data ?? res;
         setInquiry(d);
         setAnswer(d.adminAnswer ?? "");
       } catch {
@@ -58,10 +58,10 @@ export default function AdminInquiryDetailPage() {
     if (!answer.trim()) return;
     setIsSaving(true);
     try {
-      const { data } = await api.patch(`/inquiries/admin/${params.id}/answer`, {
+      const { data: res } = await api.patch(`/inquiries/admin/${params.id}/answer`, {
         adminAnswer: answer,
       });
-      setInquiry(data.data ?? data);
+      setInquiry(res.data ?? res);
     } catch {
       // 에러 무시
     } finally {
@@ -72,8 +72,8 @@ export default function AdminInquiryDetailPage() {
   async function handleClose() {
     if (!confirm("문의를 종료하시겠습니까?")) return;
     try {
-      const { data } = await api.patch(`/inquiries/admin/${params.id}/close`);
-      setInquiry(data.data ?? data);
+      const { data: res } = await api.patch(`/inquiries/admin/${params.id}/close`);
+      setInquiry(res.data ?? res);
     } catch {
       // 에러 무시
     }

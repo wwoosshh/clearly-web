@@ -30,8 +30,9 @@ export default function AdminFaqEditPage() {
   useEffect(() => {
     async function fetch() {
       try {
-        const { data } = await api.get("/faq/admin", { params: { limit: 200 } });
-        const faqs: FaqDetail[] = data.data ?? [];
+        const { data: res } = await api.get("/faq/admin", { params: { limit: 200 } });
+        const payload = res.data ?? res;
+        const faqs: FaqDetail[] = payload.data ?? payload ?? [];
         const faq = faqs.find((f) => f.id === params.id);
         if (faq) {
           setForm({
