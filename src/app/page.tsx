@@ -22,8 +22,8 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="pt-16 pb-20 sm:pt-24 sm:pb-32 overflow-hidden">
-          <div className="mx-auto max-w-6xl px-6">
+        <section className="pt-12 pb-16 sm:pt-24 sm:pb-32 overflow-hidden">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-16">
               {/* Left - Text */}
               <div className="flex-shrink-0 lg:max-w-[520px]">
@@ -37,33 +37,35 @@ export default function Home() {
                   이사청소 업체를 매칭해드립니다.
                 </p>
 
-                <div className="mt-10 flex max-w-[500px] items-center rounded-lg border border-gray-300 bg-white transition-colors focus-within:border-gray-900">
-                  <div className="flex items-center pl-4 text-gray-400">
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="11" cy="11" r="8" />
-                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
+                <div className="mt-8 flex max-w-[500px] flex-col gap-2 sm:mt-10 sm:flex-row sm:gap-0 sm:items-center sm:rounded-lg sm:border sm:border-gray-300 sm:bg-white sm:transition-colors sm:focus-within:border-gray-900">
+                  <div className="flex items-center rounded-lg border border-gray-300 bg-white sm:flex-1 sm:border-0 sm:rounded-none">
+                    <div className="flex items-center pl-4 text-gray-400">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="청소할 주소를 입력하세요"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      className="h-[50px] flex-1 bg-transparent px-3 text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none"
+                    />
                   </div>
-                  <input
-                    type="text"
-                    placeholder="청소할 주소를 입력하세요"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    className="h-[50px] flex-1 bg-transparent px-3 text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none"
-                  />
                   <button
                     onClick={handleSearch}
-                    className="my-1.5 mr-1.5 h-[38px] shrink-0 rounded-md bg-gray-900 px-5 text-[14px] font-medium text-white transition-colors hover:bg-gray-800"
+                    className="h-[46px] w-full shrink-0 rounded-lg bg-gray-900 text-[14px] font-medium text-white transition-colors hover:bg-gray-800 sm:my-1.5 sm:mr-1.5 sm:h-[38px] sm:w-auto sm:rounded-md sm:px-5"
                   >
                     업체 찾기
                   </button>
@@ -170,8 +172,8 @@ export default function Home() {
 
         {/* Numbers */}
         <section className="border-y border-gray-100 bg-gray-50">
-          <div className="mx-auto max-w-6xl px-6 py-14">
-            <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+            <div className="grid grid-cols-2 gap-4 sm:gap-8 sm:grid-cols-4">
               {[
                 { value: "120+", label: "검증된 업체" },
                 { value: "4.8", label: "평균 평점" },
@@ -193,7 +195,7 @@ export default function Home() {
 
         {/* How it works */}
         <section className="py-20 sm:py-28">
-          <div className="mx-auto max-w-6xl px-6">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <p className="text-[13px] font-semibold tracking-widest text-gray-400">
               이용 방법
             </p>
@@ -201,7 +203,7 @@ export default function Home() {
               간단한 3단계
             </h2>
 
-            <div className="mt-16 grid grid-cols-1 gap-14 sm:grid-cols-3 sm:gap-10">
+            <div className="mt-10 grid grid-cols-1 gap-10 sm:mt-16 sm:grid-cols-3">
               {[
                 {
                   num: "01",
@@ -237,7 +239,7 @@ export default function Home() {
 
         {/* Value Props */}
         <section className="border-t border-gray-100 bg-gray-50 py-20 sm:py-28">
-          <div className="mx-auto max-w-6xl px-6">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <p className="text-[13px] font-semibold tracking-widest text-gray-400">
               왜 clearly인가요
             </p>
@@ -279,7 +281,7 @@ export default function Home() {
 
         {/* CTA */}
         <section className="py-20 sm:py-28">
-          <div className="mx-auto max-w-6xl px-6 text-center">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 text-center">
             <h2 className="text-[26px] font-bold tracking-[-0.02em] text-gray-900 sm:text-[32px]">
               깨끗한 시작, 지금 바로.
             </h2>

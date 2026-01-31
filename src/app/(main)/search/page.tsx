@@ -57,7 +57,7 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-3xl px-6 py-10">
+        <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
           <div className="flex items-center justify-center py-20">
             <Spinner size="lg" className="text-gray-400" />
           </div>
@@ -203,7 +203,7 @@ function SearchPageContent() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       {/* 헤더 */}
       <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
         업체 찾기

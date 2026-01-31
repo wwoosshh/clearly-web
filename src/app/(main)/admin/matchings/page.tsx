@@ -114,7 +114,7 @@ export default function AdminMatchingsPage() {
         <>
           <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-sm min-w-[600px]">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">사용자</th>

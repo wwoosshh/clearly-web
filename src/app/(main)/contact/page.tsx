@@ -61,7 +61,7 @@ export default function ContactPage() {
 
   if (isSubmitted) {
     return (
-      <div className="mx-auto max-w-xl px-6 py-24 text-center">
+      <div className="mx-auto max-w-xl px-4 sm:px-6 py-24 text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
           <svg
             className="h-8 w-8 text-green-600"
@@ -104,7 +104,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="mx-auto max-w-xl px-6 py-12">
+    <div className="mx-auto max-w-xl px-4 sm:px-6 py-12">
       <h1 className="text-2xl font-bold text-gray-900">문의하기</h1>
       <p className="mt-2 text-sm text-gray-500">
         궁금한 점이나 불편한 사항이 있으시면 문의해주세요.

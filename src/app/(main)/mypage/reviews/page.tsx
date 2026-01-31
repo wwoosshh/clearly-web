@@ -151,14 +151,14 @@ export default function MyReviewsPage() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-20 text-center">
         <p className="text-[15px] text-gray-500">로그인이 필요합니다</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
       {/* 헤더 */}
       <Link
         href="/mypage"

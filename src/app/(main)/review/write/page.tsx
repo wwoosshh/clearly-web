@@ -10,7 +10,7 @@ export default function ReviewWritePage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-2xl px-6 py-10">
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-10">
           <div className="flex items-center justify-center py-20">
             <Spinner size="lg" className="text-gray-400" />
           </div>
@@ -38,7 +38,7 @@ function ReviewWriteContent() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-10">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-10">
         <div className="flex items-center justify-center py-20">
           <p className="text-[15px] text-gray-500">로그인이 필요합니다</p>
         </div>
@@ -48,7 +48,7 @@ function ReviewWriteContent() {
 
   if (!matchingId || !companyId) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-10">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-10">
         <div className="text-center py-20">
           <p className="text-[15px] text-gray-500">잘못된 접근입니다.</p>
           <button
@@ -88,7 +88,7 @@ function ReviewWriteContent() {
   const activeRating = hoverRating || rating;
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
+    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-10">
       <button
         onClick={() => router.back()}
         className="mb-6 flex items-center gap-1 text-[14px] text-gray-500 hover:text-gray-700"

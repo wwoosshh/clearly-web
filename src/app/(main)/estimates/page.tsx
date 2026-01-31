@@ -90,7 +90,7 @@ export default function EstimatesPage() {
 
   if (!user || user.role !== "COMPANY") {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-20 text-center">
         <p className="text-[15px] text-gray-500">업체 회원만 접근할 수 있습니다</p>
       </div>
     );
@@ -98,7 +98,7 @@ export default function EstimatesPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" className="text-gray-400" />
         </div>
@@ -107,7 +107,7 @@ export default function EstimatesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[24px] font-bold tracking-tight text-gray-900">

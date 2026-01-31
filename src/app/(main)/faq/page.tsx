@@ -48,7 +48,7 @@ export default function FaqPage() {
   const isEmpty = categories.length === 0;
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
       <h1 className="text-2xl font-bold text-gray-900">
         자주 묻는 질문
       </h1>

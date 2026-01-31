@@ -130,7 +130,7 @@ export default function AdminCompanyDetailPage() {
       </button>
 
       {/* 업체 정보 카드 */}
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6">
+      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">{company.businessName}</h1>
@@ -167,7 +167,7 @@ export default function AdminCompanyDetailPage() {
       </div>
 
       {/* 사업 정보 패널 */}
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6">
+      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
         <h2 className="text-[15px] font-bold text-gray-900">사업 정보</h2>
         <div className="mt-3 grid grid-cols-1 gap-4 text-[13px] sm:grid-cols-2">
           <div>
@@ -351,7 +351,7 @@ export default function AdminCompanyDetailPage() {
         {tab === "points" && (
           <div>
             {/* 포인트 지급 폼 */}
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
               <h3 className="text-[14px] font-bold text-gray-900">포인트 지급</h3>
               <form
                 onSubmit={async (e) => {

@@ -49,4 +49,14 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #9ca3af;
   }
+
+  /* 모바일 하단 네비 등에서 스크롤바 숨김 */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }

@@ -185,7 +185,7 @@ export default function AdminFaqPage() {
         </div>
       ) : (
         <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full text-left text-sm min-w-[600px]">
             <thead>
               <tr className="border-b border-gray-200 text-[12px] font-medium text-gray-500">
                 <th className="pb-3 pr-4">카테고리</th>

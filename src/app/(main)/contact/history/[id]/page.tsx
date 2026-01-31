@@ -66,7 +66,7 @@ export default function InquiryDetailPage() {
   const status = STATUS_LABELS[inquiry.status] ?? STATUS_LABELS.PENDING;
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
       <Link
         href="/contact/history"
         className="text-sm text-gray-500 hover:text-gray-700"

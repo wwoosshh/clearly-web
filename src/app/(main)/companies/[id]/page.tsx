@@ -79,7 +79,7 @@ export default function CompanyDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" className="text-gray-400" />
         </div>
@@ -89,7 +89,7 @@ export default function CompanyDetailPage() {
 
   if (error || !company) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
         <div className="text-center py-20">
           <p className="text-[15px] text-gray-500">{error || "업체를 찾을 수 없습니다."}</p>
           <button
@@ -126,7 +126,7 @@ export default function CompanyDetailPage() {
   const responseTimeText = formatResponseTime(company.responseTime);
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
       {/* 뒤로가기 */}
       <button
         onClick={() => router.back()}

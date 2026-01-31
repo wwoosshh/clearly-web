@@ -41,7 +41,7 @@ export default function EstimateRequestPage() {
 
   if (user?.role === "COMPANY") {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-20 text-center">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 py-20 text-center">
         <p className="text-[15px] font-medium text-gray-700">업체 계정으로는 견적을 요청할 수 없습니다</p>
         <p className="mt-1.5 text-[13px] text-gray-500">견적 요청은 일반 회원만 이용할 수 있습니다</p>
         <button
@@ -105,7 +105,7 @@ export default function EstimateRequestPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
+    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-10">
       <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
         견적 요청
       </h1>
@@ -125,7 +125,7 @@ export default function EstimateRequestPage() {
           <label className="text-[13px] font-medium text-gray-800 mb-2 block">
             청소 유형 <span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {(Object.entries(CLEANING_TYPE_LABELS) as [CleaningType, string][]).map(
               ([value, label]) => (
                 <button

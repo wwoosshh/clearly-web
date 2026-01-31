@@ -129,7 +129,7 @@ export default function AdminUserDetailPage() {
       </button>
 
       {/* 사용자 정보 카드 */}
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6">
+      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">{user.name}</h1>

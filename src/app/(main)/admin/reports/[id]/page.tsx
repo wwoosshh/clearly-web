@@ -91,7 +91,7 @@ export default function AdminReportDetailPage() {
 
       <div className="mt-4 space-y-4">
         {/* 신고 정보 */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-bold text-gray-900">신고 상세</h1>
             {statusBadge(report.status)}
@@ -140,7 +140,7 @@ export default function AdminReportDetailPage() {
 
         {/* 신고자 / 대상 정보 */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
             <h3 className="text-[13px] font-bold text-gray-900">신고자</h3>
             <div className="mt-2 space-y-1 text-[13px]">
               <p className="text-gray-700">{report.reporter?.name}</p>
@@ -155,7 +155,7 @@ export default function AdminReportDetailPage() {
             </Link>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
             <h3 className="text-[13px] font-bold text-gray-900">
               대상 ({report.targetType === "USER" ? "유저" : report.targetType === "COMPANY" ? "업체" : "리뷰"})
             </h3>
@@ -211,7 +211,7 @@ export default function AdminReportDetailPage() {
 
         {/* 동일 대상 다른 신고 이력 */}
         {report.relatedReports?.length > 0 && (
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
             <h3 className="text-[14px] font-bold text-gray-900">
               동일 대상 다른 신고 ({report.relatedReports.length}건)
             </h3>
@@ -240,7 +240,7 @@ export default function AdminReportDetailPage() {
 
         {/* 처리 폼 */}
         {(report.status === "PENDING" || report.status === "REVIEWED") && (
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
             <h3 className="text-[15px] font-bold text-gray-900">신고 처리</h3>
             <form onSubmit={handleResolve} className="mt-4 space-y-4">
               <div>

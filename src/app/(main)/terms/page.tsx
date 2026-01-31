@@ -1,6 +1,6 @@
 export default function TermsPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
       <h1 className="text-2xl font-bold text-gray-900">이용약관</h1>
       <p className="mt-2 text-sm text-gray-500">최종 수정일: 2025년 1월 1일</p>
 

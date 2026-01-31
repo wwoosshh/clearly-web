@@ -110,7 +110,7 @@ export default function AdminInquiryDetailPage() {
       </div>
 
       {/* 문의 정보 카드 */}
-      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
         <div className="grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-4">
           <div>
             <p className="text-gray-400">이름</p>
@@ -145,7 +145,7 @@ export default function AdminInquiryDetailPage() {
       </div>
 
       {/* 문의 내용 */}
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-5">
+      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
         <h2 className="text-[13px] font-semibold text-gray-500">문의 내용</h2>
         <p className="mt-3 whitespace-pre-wrap text-[14px] leading-relaxed text-gray-700">
           {inquiry.content}
@@ -154,7 +154,7 @@ export default function AdminInquiryDetailPage() {
 
       {/* 기존 답변 표시 */}
       {inquiry.adminAnswer && inquiry.status !== "PENDING" && (
-        <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-5">
+        <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4 sm:p-5">
           <h2 className="text-[13px] font-semibold text-green-700">
             관리자 답변
           </h2>
@@ -177,7 +177,7 @@ export default function AdminInquiryDetailPage() {
 
       {/* 답변 입력 */}
       {inquiry.status !== "CLOSED" && (
-        <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+        <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
           <h2 className="text-[15px] font-bold text-gray-900">
             {inquiry.status === "ANSWERED" ? "답변 수정" : "답변 작성"}
           </h2>

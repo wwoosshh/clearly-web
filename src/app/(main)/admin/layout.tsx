@@ -47,7 +47,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl gap-6 px-6 py-8">
+    <div className="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6 pb-20 sm:px-6 sm:py-8 md:pb-8">
       {/* Sidebar */}
       <aside className="hidden w-56 shrink-0 md:block">
         <nav className="sticky top-[76px] space-y-1">
@@ -80,7 +80,7 @@ export default function AdminLayout({
 
       {/* Mobile Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white md:hidden">
-        <nav className="flex overflow-x-auto">
+        <nav className="-mb-px flex overflow-x-auto scrollbar-none">
           {sidebarLinks.map((link) => {
             const isActive =
               link.href === "/admin"
@@ -91,11 +91,13 @@ export default function AdminLayout({
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "flex shrink-0 flex-col items-center gap-0.5 px-3 py-2.5 text-[11px] font-medium",
-                  isActive ? "text-gray-900" : "text-gray-400"
+                  "flex shrink-0 flex-col items-center gap-0.5 px-3 py-2 text-[10px] font-medium",
+                  isActive
+                    ? "text-gray-900 border-t-2 border-gray-900"
+                    : "text-gray-400 border-t-2 border-transparent"
                 )}
               >
-                <span className="text-base">{link.icon}</span>
+                <span className="text-sm">{link.icon}</span>
                 {link.label}
               </Link>
             );
