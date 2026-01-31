@@ -41,7 +41,7 @@ export function useAddressSuggestions(query: string, debounceMs = 300) {
       abortControllerRef.current = controller;
 
       try {
-        const { data } = await api.get<AddressSuggestion[]>(
+        const { data: res } = await api.get(
           "/address/suggestions",
           {
             params: { query: query.trim() },
@@ -50,7 +50,9 @@ export function useAddressSuggestions(query: string, debounceMs = 300) {
         );
 
         if (!controller.signal.aborted) {
-          setSuggestions(Array.isArray(data) ? data : []);
+          // TransformInterceptor가 { success, data, timestamp }로 감싸므로 내부 data 추출
+          const list = (res as any)?.data ?? res;
+          setSuggestions(Array.isArray(list) ? list : []);
           setIsLoading(false);
         }
       } catch (err: unknown) {
