@@ -74,6 +74,7 @@ function SearchPageContent() {
   const isCompany = user?.role === "COMPANY";
 
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
+  const [address, setAddress] = useState(searchParams.get("address") || "");
   const [selectedSpecialty, setSelectedSpecialty] = useState(
     searchParams.get("specialty") || ""
   );
@@ -93,6 +94,7 @@ function SearchPageContent() {
   const fetchCompanies = useCallback(
     async (params: {
       keyword?: string;
+      address?: string;
       specialty?: string;
       region?: string;
       sortBy?: string;
@@ -107,6 +109,7 @@ function SearchPageContent() {
           limit: 10,
         };
         if (params.keyword) query.keyword = params.keyword;
+        if (params.address) query.address = params.address;
         if (params.specialty) query.specialty = params.specialty;
         if (params.region) query.region = params.region;
         if (params.sortBy) query.sortBy = params.sortBy;
@@ -134,6 +137,7 @@ function SearchPageContent() {
   useEffect(() => {
     fetchCompanies({
       keyword: searchParams.get("keyword") || "",
+      address: searchParams.get("address") || "",
       specialty: searchParams.get("specialty") || "",
       region: searchParams.get("region") || "",
       sortBy: searchParams.get("sortBy") || "score",
@@ -143,12 +147,14 @@ function SearchPageContent() {
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (keyword) params.set("keyword", keyword);
+    if (address) params.set("address", address);
     if (selectedSpecialty) params.set("specialty", selectedSpecialty);
     if (selectedRegion) params.set("region", selectedRegion);
     if (sortBy !== "score") params.set("sortBy", sortBy);
     router.replace(`/search?${params.toString()}`);
     fetchCompanies({
       keyword,
+      address,
       specialty: selectedSpecialty,
       region: selectedRegion,
       sortBy,
@@ -159,6 +165,7 @@ function SearchPageContent() {
     setSortBy(newSort);
     fetchCompanies({
       keyword,
+      address,
       specialty: selectedSpecialty,
       region: selectedRegion,
       sortBy: newSort,
@@ -169,6 +176,7 @@ function SearchPageContent() {
   const handlePageChange = (page: number) => {
     fetchCompanies({
       keyword,
+      address,
       specialty: selectedSpecialty,
       region: selectedRegion,
       sortBy,
@@ -197,8 +205,54 @@ function SearchPageContent() {
         )}
       </div>
 
-      {/* 키워드 검색 바 */}
+      {/* 주소 입력 필드 */}
       <div className="mt-6 flex gap-2">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            placeholder="주소를 입력하세요 (예: 서울시 강남구)"
+            className="h-[46px] w-full rounded-lg border border-gray-200 px-4 pr-10 text-[14px] placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+          />
+          {address && (
+            <button
+              onClick={() => {
+                setAddress("");
+                fetchCompanies({
+                  keyword,
+                  address: "",
+                  specialty: selectedSpecialty,
+                  region: selectedRegion,
+                  sortBy,
+                });
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              aria-label="주소 초기화"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 주소 배지 */}
+      {address && (
+        <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-[13px] text-blue-700">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          {address} 기준 거리순 검색
+        </div>
+      )}
+
+      {/* 키워드 검색 바 */}
+      <div className="mt-3 flex gap-2">
         <input
           type="text"
           value={keyword}
@@ -225,6 +279,7 @@ function SearchPageContent() {
               setSelectedSpecialty("");
               fetchCompanies({
                 keyword,
+                address,
                 specialty: "",
                 region: selectedRegion,
                 sortBy,
@@ -247,6 +302,7 @@ function SearchPageContent() {
                 setSelectedSpecialty(next);
                 fetchCompanies({
                   keyword,
+                  address,
                   specialty: next,
                   region: selectedRegion,
                   sortBy,
@@ -274,6 +330,7 @@ function SearchPageContent() {
               setSelectedRegion("");
               fetchCompanies({
                 keyword,
+                address,
                 specialty: selectedSpecialty,
                 region: "",
                 sortBy,
@@ -296,6 +353,7 @@ function SearchPageContent() {
                 setSelectedRegion(next);
                 fetchCompanies({
                   keyword,
+                  address,
                   specialty: selectedSpecialty,
                   region: next,
                   sortBy,
