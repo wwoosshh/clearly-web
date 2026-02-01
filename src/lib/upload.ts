@@ -31,7 +31,7 @@ export async function uploadImage(
   formData.append("file", file);
   formData.append("bucket", bucket);
 
-  const { data } = await api.post<UploadResult>("/upload/file", formData, {
+  const { data } = await api.post("/upload/file", formData, {
     headers: { "Content-Type": "multipart/form-data" },
     onUploadProgress: (e) => {
       if (onProgress && e.total) {
@@ -40,7 +40,7 @@ export async function uploadImage(
     },
   });
 
-  return data;
+  return (data as any).data ?? data;
 }
 
 export async function uploadImages(
@@ -57,7 +57,7 @@ export async function uploadImages(
   files.forEach((file) => formData.append("files", file));
   formData.append("bucket", bucket);
 
-  const { data } = await api.post<UploadResult[]>("/upload/files", formData, {
+  const { data } = await api.post("/upload/files", formData, {
     headers: { "Content-Type": "multipart/form-data" },
     onUploadProgress: (e) => {
       if (onProgress && e.total) {
@@ -66,5 +66,6 @@ export async function uploadImages(
     },
   });
 
-  return Array.isArray(data) ? data : (data as any).data ?? [data];
+  const inner = (data as any).data ?? data;
+  return Array.isArray(inner) ? inner : [inner];
 }
