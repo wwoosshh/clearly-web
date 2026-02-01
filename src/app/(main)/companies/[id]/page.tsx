@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth.store";
@@ -12,6 +13,7 @@ interface ReviewItem {
   id: string;
   rating: number;
   content: string | null;
+  images?: string[];
   createdAt: string;
   user: { id: string; name: string };
   matching: {
@@ -43,6 +45,8 @@ export default function CompanyDetailPage() {
   const [reviewMeta, setReviewMeta] = useState<ReviewListResponse["meta"] | null>(null);
   const [reviewPage, setReviewPage] = useState(1);
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     async function fetchCompany() {
@@ -229,6 +233,32 @@ export default function CompanyDetailPage() {
             </p>
           </div>
         )}
+
+        {/* 업체 사진 */}
+        {company.profileImages && company.profileImages.length > 0 && (
+          <div className="mt-5 border-t border-gray-100 pt-5">
+            <h3 className="text-[13px] font-medium text-gray-500 mb-2">업체 사진</h3>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              {company.profileImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setLightboxImages(company.profileImages);
+                    setLightboxIndex(idx);
+                  }}
+                  className="aspect-square overflow-hidden rounded-lg border border-gray-200"
+                >
+                  <img
+                    src={img}
+                    alt={`업체 사진 ${idx + 1}`}
+                    className="h-full w-full object-cover hover:opacity-80 transition-opacity"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 리뷰 목록 */}
@@ -287,6 +317,29 @@ export default function CompanyDetailPage() {
                     <p className="mt-2 text-[14px] text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
                       {review.content}
                     </p>
+                  )}
+
+                  {/* 리뷰 첨부 사진 */}
+                  {review.images && review.images.length > 0 && (
+                    <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1">
+                      {review.images.map((img, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            setLightboxImages(review.images!);
+                            setLightboxIndex(idx);
+                          }}
+                          className="flex-shrink-0"
+                        >
+                          <img
+                            src={img}
+                            alt={`리뷰 사진 ${idx + 1}`}
+                            className="h-14 w-14 rounded-lg border border-gray-200 object-cover hover:opacity-80 transition-opacity"
+                          />
+                        </button>
+                      ))}
+                    </div>
                   )}
 
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -377,6 +430,15 @@ export default function CompanyDetailPage() {
 
       {/* 하단 고정 버튼 공간 확보 (모바일) */}
       <div className="h-20 md:hidden" />
+
+      {/* 이미지 라이트박스 */}
+      {lightboxImages.length > 0 && (
+        <ImageLightbox
+          images={lightboxImages}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxImages([])}
+        />
+      )}
     </div>
   );
 }

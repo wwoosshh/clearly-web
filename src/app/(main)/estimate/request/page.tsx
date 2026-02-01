@@ -12,6 +12,7 @@ import api from "@/lib/api";
 import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
 import { cn } from "@/lib/utils";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 
 const estimateRequestSchema = z.object({
   cleaningType: z.string().min(1, "청소 유형을 선택해주세요."),
@@ -38,6 +39,7 @@ export default function EstimateRequestPage() {
   const { user } = useAuthStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [images, setImages] = useState<string[]>([]);
 
   if (user?.role === "COMPANY") {
     return (
@@ -92,6 +94,7 @@ export default function EstimateRequestPage() {
       if (data.desiredDate) payload.desiredDate = data.desiredDate;
       if (data.desiredTime) payload.desiredTime = data.desiredTime;
       if (data.budget) payload.budget = parseInt(data.budget);
+      if (images.length > 0) payload.images = images;
 
       await api.post("/estimates/requests", payload);
       router.push("/matching");
@@ -252,6 +255,15 @@ export default function EstimateRequestPage() {
             <p className="mt-1.5 text-[12px] text-red-500">{errors.message.message}</p>
           )}
         </div>
+
+        {/* 참고 사진 */}
+        <ImageUpload
+          label="참고 사진 (선택)"
+          maxFiles={10}
+          bucket="estimates"
+          value={images}
+          onChange={setImages}
+        />
 
         {/* 제출 버튼 */}
         <button

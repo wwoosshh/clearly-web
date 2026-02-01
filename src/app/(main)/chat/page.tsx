@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import { getSocket, connectSocket, disconnectSocket } from "@/lib/socket";
 import { chatCache } from "@/lib/chatCache";
+import { uploadImage } from "@/lib/upload";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import type { ChatRoomDetail, ChatMessageDetail } from "@/types";
 
 export default function ChatPage() {
@@ -79,6 +81,10 @@ function ChatPageContent() {
   const [reportError, setReportError] = useState("");
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   const selectedRoomRef = useRef<ChatRoomDetail | null>(null);
@@ -315,6 +321,50 @@ function ChatPageContent() {
       setMessages((prev) => prev.filter((m) => m.id !== tempMsg.id));
     } finally {
       setIsSending(false);
+    }
+  };
+
+  // ─── 이미지 전송 ──────────────────────────────────
+  const handleImageSend = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedRoom || !user || isUploadingImage) return;
+    e.target.value = "";
+
+    setIsUploadingImage(true);
+    try {
+      const result = await uploadImage(file, "chat");
+      // Optimistic 메시지
+      const tempMsg = createTempMessage(
+        selectedRoom.id,
+        user.id,
+        user.name,
+        "[이미지]",
+      );
+      tempMsg.messageType = "IMAGE";
+      tempMsg.fileUrl = result.url;
+      setMessages((prev) => [...prev, tempMsg]);
+
+      if (socketRef.current?.connected) {
+        socketRef.current.emit("sendMessage", {
+          roomId: selectedRoom.id,
+          content: "[이미지]",
+          messageType: "IMAGE",
+          fileUrl: result.url,
+        });
+      } else {
+        const { data } = await api.post(
+          `/chat/rooms/${selectedRoom.id}/messages`,
+          { content: "[이미지]", messageType: "IMAGE", fileUrl: result.url },
+        );
+        const real = (data as any)?.data ?? data;
+        setMessages((prev) =>
+          prev.map((m) => (m.id === tempMsg.id ? real : m)),
+        );
+      }
+    } catch {
+      // silent
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -605,17 +655,32 @@ function ChatPageContent() {
                       {!isMe && msg.sender && (
                         <p className="mb-1 text-[12px] text-gray-500">{msg.sender.name}</p>
                       )}
-                      <div
-                        className={cn(
-                          "rounded-2xl px-4 py-2.5 text-[14px] transition-opacity",
-                          isMe
-                            ? "bg-gray-900 text-white rounded-br-md"
-                            : "bg-white text-gray-900 border border-gray-200 rounded-bl-md",
-                          isTemp && "opacity-60"
-                        )}
-                      >
-                        {msg.content}
-                      </div>
+                      {msg.messageType === "IMAGE" && msg.fileUrl ? (
+                        <img
+                          src={msg.fileUrl}
+                          alt="전송된 이미지"
+                          className={cn(
+                            "max-w-[200px] max-h-[200px] rounded-xl object-cover cursor-pointer border border-gray-200 transition-opacity",
+                            isTemp && "opacity-60"
+                          )}
+                          onClick={() => {
+                            setLightboxImages([msg.fileUrl!]);
+                            setLightboxIndex(0);
+                          }}
+                        />
+                      ) : (
+                        <div
+                          className={cn(
+                            "rounded-2xl px-4 py-2.5 text-[14px] transition-opacity",
+                            isMe
+                              ? "bg-gray-900 text-white rounded-br-md"
+                              : "bg-white text-gray-900 border border-gray-200 rounded-bl-md",
+                            isTemp && "opacity-60"
+                          )}
+                        >
+                          {msg.content}
+                        </div>
+                      )}
                       <div className="flex items-center gap-1 mt-1">
                         <span className="text-[11px] text-gray-400">
                           {isTemp
@@ -643,7 +708,28 @@ function ChatPageContent() {
               </div>
             ) : (
             <div className="border-t border-gray-200 bg-white p-4">
+              {isUploadingImage && (
+                <div className="mb-2 text-center text-[12px] text-gray-500">이미지 업로드 중...</div>
+              )}
               <div className="flex gap-2">
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleImageSend}
+                />
+                <button
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={isUploadingImage}
+                  className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                </button>
                 <input
                   type="text"
                   value={newMessage}
@@ -845,6 +931,14 @@ function ChatPageContent() {
           </div>
         )}
       </Modal>
+
+      {lightboxImages.length > 0 && (
+        <ImageLightbox
+          images={lightboxImages}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxImages([])}
+        />
+      )}
     </div>
   );
 }

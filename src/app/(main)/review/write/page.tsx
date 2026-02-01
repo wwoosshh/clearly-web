@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 
 export default function ReviewWritePage() {
   return (
@@ -35,6 +36,7 @@ function ReviewWriteContent() {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [images, setImages] = useState<string[]>([]);
 
   if (!user) {
     return (
@@ -75,6 +77,7 @@ function ReviewWriteContent() {
         matchingId,
         rating,
         content: content.trim() || undefined,
+        images: images.length > 0 ? images : undefined,
       });
       router.push(`/companies/${companyId}`);
     } catch (err: any) {
@@ -163,6 +166,17 @@ function ReviewWriteContent() {
         <div className="mt-1 text-right text-[12px] text-gray-400">
           {content.length}/2000
         </div>
+      </div>
+
+      {/* 사진 첨부 */}
+      <div className="mt-6">
+        <ImageUpload
+          label="사진 첨부 (선택)"
+          maxFiles={5}
+          bucket="reviews"
+          value={images}
+          onChange={setImages}
+        />
       </div>
 
       {/* 제출 버튼 */}

@@ -7,6 +7,8 @@ import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import type { EstimateRequest, CleaningType } from "@/types";
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { CLEANING_TYPE_LABELS } from "@/types";
 
 export default function EstimatesPage() {
@@ -25,6 +27,9 @@ export default function EstimatesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [estimateImages, setEstimateImages] = useState<string[]>([]);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -60,6 +65,7 @@ export default function EstimatesPage() {
         message: message || undefined,
         estimatedDuration: estimatedDuration || undefined,
         availableDate: availableDate || undefined,
+        images: estimateImages.length > 0 ? estimateImages : undefined,
       });
       setShowConfirmModal(false);
       setShowSubmitForm(false);
@@ -81,6 +87,7 @@ export default function EstimatesPage() {
     setEstimatedDuration("");
     setAvailableDate("");
     setSubmitError("");
+    setEstimateImages([]);
   };
 
   const formatDate = (dateStr?: string) => {
@@ -244,6 +251,32 @@ export default function EstimatesPage() {
               </p>
             </div>
 
+            {/* 견적요청 첨부 사진 */}
+            {selectedRequest.images && selectedRequest.images.length > 0 && (
+              <div className="mt-4">
+                <p className="text-[13px] font-medium text-gray-500 mb-2">첨부 사진</p>
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {selectedRequest.images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setLightboxImages(selectedRequest.images!);
+                        setLightboxIndex(idx);
+                      }}
+                      className="flex-shrink-0"
+                    >
+                      <img
+                        src={img}
+                        alt={`첨부 사진 ${idx + 1}`}
+                        className="h-16 w-16 rounded-lg border border-gray-200 object-cover hover:opacity-80 transition-opacity"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {!showSubmitForm ? (
               <button
                 onClick={() => setShowSubmitForm(true)}
@@ -303,6 +336,13 @@ export default function EstimatesPage() {
                       className="w-full rounded-lg border border-gray-200 px-3.5 py-3 text-[14px] resize-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
                     />
                   </div>
+                  <ImageUpload
+                    label="참고 사진 (선택)"
+                    maxFiles={10}
+                    bucket="estimates"
+                    value={estimateImages}
+                    onChange={setEstimateImages}
+                  />
                 </div>
 
                 <button
@@ -350,6 +390,15 @@ export default function EstimatesPage() {
           </button>
         </div>
       </Modal>
+
+      {/* 이미지 라이트박스 */}
+      {lightboxImages.length > 0 && (
+        <ImageLightbox
+          images={lightboxImages}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxImages([])}
+        />
+      )}
     </div>
   );
 }

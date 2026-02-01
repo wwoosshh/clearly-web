@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
 
@@ -16,6 +17,7 @@ interface SubmittedEstimate {
   message?: string;
   estimatedDuration?: string;
   availableDate?: string;
+  images?: string[];
   pointsUsed: number;
   status: string;
   createdAt: string;
@@ -29,6 +31,7 @@ interface SubmittedEstimate {
     desiredTime?: string;
     message?: string;
     budget?: number;
+    images?: string[];
     status: string;
     user?: { id: string; name: string };
   };
@@ -56,6 +59,8 @@ export default function SubmittedEstimatesPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<SubmittedEstimate | null>(null);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -299,6 +304,32 @@ export default function SubmittedEstimatesPage() {
               </div>
             )}
 
+            {/* 내 견적 첨부 사진 */}
+            {selected.images && selected.images.length > 0 && (
+              <div className="mt-4">
+                <p className="text-[13px] font-medium text-gray-500 mb-2">내 첨부 사진</p>
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {selected.images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setLightboxImages(selected.images!);
+                        setLightboxIndex(idx);
+                      }}
+                      className="flex-shrink-0"
+                    >
+                      <img
+                        src={img}
+                        alt={`견적 사진 ${idx + 1}`}
+                        className="h-16 w-16 rounded-lg border border-gray-200 object-cover hover:opacity-80 transition-opacity"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* 견적요청 정보 */}
             {selected.estimateRequest && (
               <div className="mt-5 border-t border-gray-100 pt-5">
@@ -366,6 +397,31 @@ export default function SubmittedEstimatesPage() {
                     </p>
                   </div>
                 )}
+                {/* 견적요청 첨부 사진 */}
+                {selected.estimateRequest.images && selected.estimateRequest.images.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-[12px] font-medium text-gray-500 mb-2">요청 첨부 사진</p>
+                    <div className="flex gap-2 overflow-x-auto pb-2">
+                      {selected.estimateRequest.images.map((img, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            setLightboxImages(selected.estimateRequest!.images!);
+                            setLightboxIndex(idx);
+                          }}
+                          className="flex-shrink-0"
+                        >
+                          <img
+                            src={img}
+                            alt={`요청 사진 ${idx + 1}`}
+                            className="h-14 w-14 rounded-lg border border-gray-200 object-cover hover:opacity-80 transition-opacity"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -384,6 +440,15 @@ export default function SubmittedEstimatesPage() {
           </div>
         )}
       </Modal>
+
+      {/* 이미지 라이트박스 */}
+      {lightboxImages.length > 0 && (
+        <ImageLightbox
+          images={lightboxImages}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxImages([])}
+        />
+      )}
     </div>
   );
 }

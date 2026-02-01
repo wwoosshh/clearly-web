@@ -256,6 +256,7 @@ export interface EstimateRequest {
   desiredTime?: string;
   message: string;
   budget?: number;
+  images?: string[];
   status: EstimateRequestStatus;
   createdAt: string;
   updatedAt: string;
@@ -273,6 +274,7 @@ export interface Estimate {
   estimatedDuration?: string;
   availableDate?: string;
   pointsUsed: number;
+  images?: string[];
   status: EstimateStatus;
   createdAt: string;
   company?: {
@@ -287,6 +289,7 @@ export interface Estimate {
     cleaningType: CleaningType;
     address: string;
     desiredDate?: string;
+    images?: string[];
     status: EstimateRequestStatus;
   };
 }

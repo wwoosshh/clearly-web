@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
+import { uploadImage } from "@/lib/upload";
 
 interface UserStats {
   estimateRequests: number;
@@ -26,8 +27,10 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export default function MyPage() {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const isCompany = user?.role === "COMPANY";
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [userStats, setUserStats] = useState<UserStats>({
     estimateRequests: 0,
@@ -104,6 +107,22 @@ export default function MyPage() {
     return name.charAt(0).toUpperCase();
   };
 
+  const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const result = await uploadImage(file, "profiles");
+      await api.patch("/users/me", { profileImage: result.url });
+      setUser({ ...user!, profileImage: result.url });
+    } catch {
+      // 업로드 실패 시 무시
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   if (!user) {
     return (
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-20 text-center">
@@ -116,9 +135,43 @@ export default function MyPage() {
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
       {/* 프로필 영역 */}
       <div className="flex items-center gap-4">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-900 text-[22px] font-bold text-white">
-          {getInitial(user.name)}
-        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={handleProfileImageChange}
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gray-900 text-[22px] font-bold text-white overflow-hidden group"
+        >
+          {user.profileImage ? (
+            <img
+              src={user.profileImage}
+              alt="프로필"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            getInitial(user.name)
+          )}
+          {/* 카메라 아이콘 오버레이 */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+            {isUploading ? (
+              <svg className="h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+            )}
+          </div>
+        </button>
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h1 className="text-[20px] font-bold text-gray-900">{user.name}</h1>
