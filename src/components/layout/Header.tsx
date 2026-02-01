@@ -103,10 +103,14 @@ function Header() {
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 text-sm text-gray-700 transition-colors hover:bg-gray-100"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-900 text-white">
-                  <span className="text-xs font-semibold leading-none">
-                    {user.name.charAt(0)}
-                  </span>
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-900 text-white overflow-hidden">
+                  {user.profileImage ? (
+                    <img src={user.profileImage} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-xs font-semibold leading-none">
+                      {user.name.charAt(0)}
+                    </span>
+                  )}
                 </div>
                 <span className="text-[13px] font-medium">{user.name}</span>
               </button>

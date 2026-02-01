@@ -480,6 +480,12 @@ function ChatPageContent() {
     return getRoomDisplayName(room).charAt(0);
   };
 
+  const getRoomProfileImage = (room: ChatRoomDetail) => {
+    if (!user) return undefined;
+    if (user.role === "COMPANY") return room.user.profileImage;
+    return room.company.user?.profileImage;
+  };
+
   const formatTime = (dateStr?: string) => {
     if (!dateStr) return "";
     const d = new Date(dateStr);
@@ -547,8 +553,12 @@ function ChatPageContent() {
                   selectedRoom?.id === room.id ? "bg-gray-50" : "hover:bg-gray-50"
                 )}
               >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-white">
-                  <span className="text-[14px] font-semibold">{getRoomAvatar(room)}</span>
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-white overflow-hidden">
+                  {getRoomProfileImage(room) ? (
+                    <img src={getRoomProfileImage(room)} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-[14px] font-semibold">{getRoomAvatar(room)}</span>
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
@@ -650,7 +660,16 @@ function ChatPageContent() {
                 }
 
                 return (
-                  <div key={msg.id} className={cn("mb-3 flex", isMe ? "justify-end" : "justify-start")}>
+                  <div key={msg.id} className={cn("mb-3 flex gap-2", isMe ? "justify-end" : "justify-start")}>
+                    {!isMe && msg.sender && (
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-600 overflow-hidden mt-5">
+                        {msg.sender.profileImage ? (
+                          <img src={msg.sender.profileImage} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <span className="text-[12px] font-semibold">{msg.sender.name.charAt(0)}</span>
+                        )}
+                      </div>
+                    )}
                     <div className={cn("max-w-[70%]", isMe ? "items-end" : "items-start")}>
                       {!isMe && msg.sender && (
                         <p className="mb-1 text-[12px] text-gray-500">{msg.sender.name}</p>
