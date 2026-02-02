@@ -75,6 +75,7 @@ export default function CompanyProfileEditPage() {
   const [newArea, setNewArea] = useState("");
   const [newVideo, setNewVideo] = useState("");
   const [newCertName, setNewCertName] = useState("");
+  const [newCert, setNewCert] = useState("");
 
   const profileImgRef = useRef<HTMLInputElement>(null);
   const bizRegRef = useRef<HTMLInputElement>(null);
@@ -325,6 +326,28 @@ export default function CompanyProfileEditPage() {
 
                 {key === "cert" && (
                   <>
+                    <div>
+                      <label className="text-[13px] font-medium text-gray-700 block mb-2">보유 자격증</label>
+                      {form.certificates.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-2">
+                          {form.certificates.map((cert, i) => (
+                            <button key={i} type="button" onClick={() => update("certificates", removeAt(form.certificates, i))} className="rounded-full bg-gray-100 px-3 py-1 text-[13px] text-gray-700 hover:bg-gray-200 transition-colors">
+                              {cert} <span className="ml-1 text-gray-400">x</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <input
+                          value={newCert}
+                          onChange={(e) => setNewCert(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (newCert.trim()) { update("certificates", [...form.certificates, newCert.trim()]); setNewCert(""); } } }}
+                          placeholder="자격증명 입력 (예: 청소관련 자격증)"
+                          className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-[14px] placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+                        />
+                        <button type="button" onClick={() => { if (newCert.trim()) { update("certificates", [...form.certificates, newCert.trim()]); setNewCert(""); } }} className="rounded-lg bg-gray-900 px-4 py-2 text-[13px] font-medium text-white hover:bg-gray-800">추가</button>
+                      </div>
+                    </div>
                     <div>
                       <label className="text-[13px] font-medium text-gray-700 block mb-2">사업자등록증</label>
                       <input ref={bizRegRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFileUpload(file, (url) => update("businessRegistration", url)); e.target.value = ""; }} />
