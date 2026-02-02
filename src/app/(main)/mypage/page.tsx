@@ -277,6 +277,21 @@ export default function MyPage() {
             /* 업체 전용 바로가기 */
             <>
               <Link
+                href="/mypage/company-edit"
+                className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-gray-50"
+              >
+                <div className="flex items-center gap-3">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  <span className="text-[14px] font-medium text-gray-800">프로필 편집</span>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </Link>
+              <Link
                 href="/estimates"
                 className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-gray-50"
               >

@@ -34,15 +34,44 @@ export interface Company {
   id: string;
   userId: string;
   name: string;
+  businessName?: string;
   businessNumber: string;
   description: string;
   address: string;
   phone: string;
   profileImage?: string;
+  profileImages?: string[];
   averageRating: number;
   totalReviews: number;
+  totalMatchings?: number;
   isVerified: boolean;
   serviceAreas: string[];
+  specialties?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  certificates?: string[];
+  responseTime?: number;
+  contactHours?: string;
+  employeeCount?: number;
+  companyUrl?: string;
+  experienceYears?: number;
+  experienceDescription?: string;
+  education?: string;
+  serviceDetail?: string;
+  portfolio?: { title: string; description: string; images: string[] }[];
+  certificationDocs?: { name: string; imageUrl: string }[];
+  businessRegistration?: string;
+  identityVerified?: boolean;
+  paymentMethods?: string[];
+  contactEmail?: string;
+  serviceRange?: number;
+  videos?: string[];
+  faq?: { question: string; answer: string }[];
+  user?: {
+    id: string;
+    name: string;
+    profileImage?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -178,6 +207,10 @@ export interface CompanySearchResult {
   totalReviews: number;
   totalMatchings: number;
   responseTime: number | null;
+  identityVerified?: boolean;
+  experienceYears?: number | null;
+  contactHours?: string | null;
+  employeeCount?: number | null;
   distance: number | null;
   score: number;
   user: {
