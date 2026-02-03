@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
@@ -27,10 +28,12 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export default function MyPage() {
-  const { user, setUser } = useAuthStore();
+  const { user, setUser, logout } = useAuthStore();
+  const router = useRouter();
   const isCompany = user?.role === "COMPANY";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const [userStats, setUserStats] = useState<UserStats>({
     estimateRequests: 0,
@@ -105,6 +108,28 @@ export default function MyPage() {
   const getInitial = (name?: string) => {
     if (!name) return "?";
     return name.charAt(0).toUpperCase();
+  };
+
+  const handleLogout = () => {
+    if (!confirm("로그아웃 하시겠습니까?")) return;
+    logout();
+    router.push("/login");
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm("정말 탈퇴하시겠습니까?")) return;
+    if (!confirm("탈퇴 후 7일 이내 복구 가능합니다. 정말 진행하시겠습니까?")) return;
+
+    setIsDeletingAccount(true);
+    try {
+      await api.delete("/users/me");
+      logout();
+      router.push("/login");
+    } catch {
+      alert("회원탈퇴 처리 중 오류가 발생했습니다.");
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -373,6 +398,26 @@ export default function MyPage() {
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </Link>
+        </div>
+      </div>
+
+      {/* 계정 관리 */}
+      <div className="mt-10">
+        <h2 className="text-[15px] font-semibold text-gray-900">계정 관리</h2>
+        <div className="mt-3 flex gap-3">
+          <button
+            onClick={handleLogout}
+            className="flex-1 rounded-xl border border-gray-200 bg-white px-5 py-3 text-[14px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            로그아웃
+          </button>
+          <button
+            onClick={handleDeleteAccount}
+            disabled={isDeletingAccount}
+            className="flex-1 rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-[14px] font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
+          >
+            {isDeletingAccount ? "처리 중..." : "회원탈퇴"}
+          </button>
         </div>
       </div>
     </div>

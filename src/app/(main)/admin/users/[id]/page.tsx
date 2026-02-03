@@ -13,6 +13,7 @@ interface UserDetail {
   phone: string;
   role: string;
   isActive: boolean;
+  deactivatedAt: string | null;
   createdAt: string;
   company: any | null;
   recentMatchings: any[];
@@ -46,13 +47,37 @@ export default function AdminUserDetailPage() {
     fetchUser();
   }, [userId, router]);
 
+  const getDeactivationDaysLeft = () => {
+    if (!user?.deactivatedAt) return null;
+    const deactivatedDate = new Date(user.deactivatedAt);
+    const deleteDate = new Date(deactivatedDate);
+    deleteDate.setDate(deleteDate.getDate() + 7);
+    const now = new Date();
+    const diffMs = deleteDate.getTime() - now.getTime();
+    const daysLeft = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    return daysLeft;
+  };
+
   const handleToggleActive = async () => {
     if (!user) return;
-    if (!confirm(`이 사용자를 ${user.isActive ? "비활성화" : "활성화"}하시겠습니까?`)) return;
+    const actionLabel = user.isActive
+      ? "비활성화"
+      : user.deactivatedAt
+        ? "복구 (탈퇴 취소)"
+        : "활성화";
+    if (!confirm(`이 사용자를 ${actionLabel}하시겠습니까?`)) return;
     setTogglingActive(true);
     try {
       await api.patch(`/admin/users/${userId}/toggle-active`);
-      setUser((prev) => prev ? { ...prev, isActive: !prev.isActive } : prev);
+      setUser((prev) => {
+        if (!prev) return prev;
+        const newIsActive = !prev.isActive;
+        return {
+          ...prev,
+          isActive: newIsActive,
+          deactivatedAt: newIsActive ? null : prev.deactivatedAt,
+        };
+      });
     } catch {
       alert("상태 변경에 실패했습니다.");
     } finally {
@@ -145,6 +170,14 @@ export default function AdminUserDetailPage() {
             >
               {user.isActive ? "활성" : "비활성"}
             </span>
+            {user.deactivatedAt && (() => {
+              const daysLeft = getDeactivationDaysLeft();
+              return (
+                <span className="rounded-full bg-orange-50 px-2.5 py-0.5 text-[11px] font-semibold text-orange-700">
+                  탈퇴 예정 (D-{daysLeft}일)
+                </span>
+              );
+            })()}
           </div>
         </div>
 
@@ -184,7 +217,11 @@ export default function AdminUserDetailPage() {
                 user.isActive ? "bg-gray-600 hover:bg-gray-700" : "bg-green-600 hover:bg-green-700"
               )}
             >
-              {user.isActive ? "비활성화" : "활성화"}
+              {user.isActive
+                ? "비활성화"
+                : user.deactivatedAt
+                  ? "복구 (탈퇴 취소)"
+                  : "활성화"}
             </button>
           </div>
         )}
