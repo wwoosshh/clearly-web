@@ -30,31 +30,68 @@ function CompanyCard({ company }: CompanyCardProps) {
   const priceRange = formatPrice(company.minPrice, company.maxPrice);
   const responseTimeText = formatResponseTime(company.responseTime);
 
+  const avatarUrl = company.user?.profileImage;
+  const photos = Array.isArray(company.profileImages) ? company.profileImages : [];
+
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 transition-shadow hover:shadow-md">
-      {/* 상단: 업체명 + 평점 */}
-      <div className="flex items-start justify-between gap-3">
+      {/* 상단: 프사 + 업체명 + 거리 */}
+      <div className="flex items-start gap-3">
+        {/* 프로필 사진 */}
+        <div className="flex-shrink-0">
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={company.businessName}
+              className="h-12 w-12 rounded-full border border-gray-200 object-cover"
+            />
+          ) : (
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-[18px] font-bold text-gray-400">
+              {company.businessName?.charAt(0) || "?"}
+            </div>
+          )}
+        </div>
+
         <div className="min-w-0 flex-1">
-          <h3 className="text-[16px] font-bold text-gray-900 truncate">
-            {company.businessName}
-          </h3>
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-[16px] font-bold text-gray-900 truncate">
+              {company.businessName}
+            </h3>
+            {company.distance != null && (
+              <span className="flex-shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-[12px] font-medium text-gray-700">
+                {company.distance < 1
+                  ? `${Math.round(company.distance * 1000)}m`
+                  : `${company.distance}km`}
+              </span>
+            )}
+          </div>
           {company.address && (
-            <p className="mt-1 text-[13px] text-gray-500 truncate">
+            <p className="mt-0.5 text-[13px] text-gray-500 truncate">
               {company.address}
               {company.detailAddress ? ` ${company.detailAddress}` : ""}
             </p>
           )}
         </div>
-
-        {/* 거리 */}
-        {company.distance != null && (
-          <span className="flex-shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-[12px] font-medium text-gray-700">
-            {company.distance < 1
-              ? `${Math.round(company.distance * 1000)}m`
-              : `${company.distance}km`}
-          </span>
-        )}
       </div>
+
+      {/* 업체 사진 */}
+      {photos.length > 0 && (
+        <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-hide">
+          {photos.slice(0, 4).map((img, idx) => (
+            <img
+              key={idx}
+              src={img}
+              alt={`${company.businessName} ${idx + 1}`}
+              className="h-20 w-20 flex-shrink-0 rounded-lg border border-gray-100 object-cover"
+            />
+          ))}
+          {photos.length > 4 && (
+            <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 text-[13px] font-medium text-gray-500">
+              +{photos.length - 4}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 평점 + 리뷰수 + 매칭수 + 응답속도 */}
       <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px]">
