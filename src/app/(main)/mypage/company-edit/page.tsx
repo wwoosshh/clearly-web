@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
 import { uploadImage } from "@/lib/upload";
+import { useAddressSuggestions } from "@/hooks/useAddressSuggestions";
 
 interface FormData {
   businessName: string;
@@ -77,6 +78,13 @@ export default function CompanyProfileEditPage() {
   const [newCertName, setNewCertName] = useState("");
   const [newCert, setNewCert] = useState("");
 
+  // 주소 자동완성
+  const [addressQuery, setAddressQuery] = useState("");
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  const { suggestions: addressSuggestions, isLoading: addressSearchLoading, clear: clearAddressSuggestions } =
+    useAddressSuggestions(addressQuery);
+  const addressWrapRef = useRef<HTMLDivElement>(null);
+
   const profileImgRef = useRef<HTMLInputElement>(null);
   const bizRegRef = useRef<HTMLInputElement>(null);
   const certDocRef = useRef<HTMLInputElement>(null);
@@ -84,6 +92,17 @@ export default function CompanyProfileEditPage() {
 
   useEffect(() => {
     loadCompany();
+  }, []);
+
+  // 주소 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (addressWrapRef.current && !addressWrapRef.current.contains(e.target as Node)) {
+        setShowAddressSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
   const loadCompany = async () => {
@@ -231,7 +250,83 @@ export default function CompanyProfileEditPage() {
                   <>
                     <Field label="상호명" value={form.businessName} onChange={(v) => update("businessName", v)} />
                     <Field label="대표자명" value={form.representative} onChange={(v) => update("representative", v)} />
-                    <Field label="주소" value={form.address} onChange={(v) => update("address", v)} />
+                    {/* 주소 자동완성 */}
+                    <div ref={addressWrapRef} className="relative">
+                      <label className="block text-[13px] font-medium text-gray-600 mb-1">주소</label>
+                      <div className="relative flex items-center">
+                        <svg className="absolute left-3 text-gray-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z" />
+                          <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <input
+                          className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-10 text-[14px] text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                          placeholder="주소 검색 (예: 강남구, 역삼동)"
+                          value={showAddressSuggestions ? addressQuery : form.address}
+                          onChange={(e) => {
+                            setAddressQuery(e.target.value);
+                            setShowAddressSuggestions(true);
+                          }}
+                          onFocus={() => {
+                            setAddressQuery("");
+                            setShowAddressSuggestions(true);
+                          }}
+                        />
+                        {form.address && (
+                          <button
+                            type="button"
+                            className="absolute right-3 text-gray-400 hover:text-gray-600"
+                            onClick={() => {
+                              update("address", "");
+                              setAddressQuery("");
+                              setShowAddressSuggestions(false);
+                              clearAddressSuggestions();
+                            }}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                      {showAddressSuggestions && (addressQuery.length >= 2 || addressSearchLoading) && (
+                        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-[220px] overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                          {addressSearchLoading ? (
+                            <div className="flex items-center justify-center py-4">
+                              <Spinner />
+                            </div>
+                          ) : addressSuggestions.length > 0 ? (
+                            addressSuggestions.map((s, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                className="w-full px-4 py-2.5 text-left hover:bg-gray-50 border-b border-gray-50 last:border-b-0"
+                                onClick={() => {
+                                  const display = s.roadAddress || s.jibunAddress || s.address;
+                                  update("address", display);
+                                  setAddressQuery("");
+                                  setShowAddressSuggestions(false);
+                                  clearAddressSuggestions();
+                                }}
+                              >
+                                <div className="text-[14px] font-semibold text-gray-900 truncate">
+                                  {s.placeName || s.roadAddress || s.address}
+                                </div>
+                                {s.placeName && s.roadAddress ? (
+                                  <div className="text-[12px] text-gray-500 mt-0.5 truncate">{s.roadAddress}</div>
+                                ) : s.jibunAddress ? (
+                                  <div className="text-[12px] text-gray-500 mt-0.5 truncate">{s.jibunAddress}</div>
+                                ) : null}
+                              </button>
+                            ))
+                          ) : addressQuery.length >= 2 ? (
+                            <div className="py-4 text-center text-[13px] text-gray-400">검색 결과가 없습니다</div>
+                          ) : null}
+                        </div>
+                      )}
+                      {form.address && !showAddressSuggestions && (
+                        <p className="mt-1 text-[13px] font-medium text-blue-600">{form.address}</p>
+                      )}
+                    </div>
                     <Field label="상세주소" value={form.detailAddress} onChange={(v) => update("detailAddress", v)} />
                     <Field label="이메일" value={form.contactEmail} onChange={(v) => update("contactEmail", v)} type="email" />
                     <Field label="웹사이트" value={form.companyUrl} onChange={(v) => update("companyUrl", v)} placeholder="https://" />
