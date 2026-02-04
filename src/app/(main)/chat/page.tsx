@@ -215,10 +215,24 @@ function ChatPageContent() {
           message,
         );
       }
+
+      // 현재 보고있는 방의 새 메시지이고 상대방이 보낸 경우 자동 읽음 처리
+      if (
+        selectedRoomRef.current?.id === message.roomId &&
+        message.senderId !== user?.id
+      ) {
+        api.patch(`/chat/rooms/${message.roomId}/read`).catch(() => {});
+      }
     });
 
-    socket.on("messageRead", () => {
-      setMessages((prev) => prev.map((m) => ({ ...m, isRead: true })));
+    socket.on("messageRead", (data: { roomId: string; readBy: string }) => {
+      // 상대방이 읽었을 때만 내 메시지를 읽음 처리
+      if (data.readBy === user?.id) return;
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.senderId === user?.id ? { ...m, isRead: true } : m
+        )
+      );
     });
 
     return () => {
@@ -248,9 +262,10 @@ function ChatPageContent() {
       setMessages(cached);
     }
 
-    // 2) 소켓 방 입장
+    // 2) 소켓 방 입장 + 읽음 처리
     if (socketRef.current) {
       socketRef.current.emit("joinRoom", selectedRoom.id);
+      socketRef.current.emit("markRead", selectedRoom.id);
     }
 
     // 3) 서버에서 최신 데이터 동기화 (백그라운드)
@@ -700,7 +715,10 @@ function ChatPageContent() {
                           {msg.content}
                         </div>
                       )}
-                      <div className="flex items-center gap-1 mt-1">
+                      <div className={cn("flex items-center gap-1 mt-1", isMe ? "flex-row-reverse" : "flex-row")}>
+                        {isMe && !isTemp && !msg.isRead && (
+                          <span className="text-[11px] font-semibold text-blue-500">1</span>
+                        )}
                         <span className="text-[11px] text-gray-400">
                           {isTemp
                             ? "전송중..."
@@ -709,9 +727,6 @@ function ChatPageContent() {
                                 minute: "2-digit",
                               })}
                         </span>
-                        {isMe && !isTemp && msg.isRead && (
-                          <span className="text-[11px] text-gray-400">읽음</span>
-                        )}
                       </div>
                     </div>
                   </div>
