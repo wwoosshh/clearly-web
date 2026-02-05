@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { useForm } from "react-hook-form";
@@ -40,6 +40,14 @@ export default function EstimateRequestPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [priceEstimate, setPriceEstimate] = useState<{
+    minPrice: number;
+    avgPrice: number;
+    maxPrice: number;
+    sampleCount: number;
+  } | null>(null);
+  const [priceLoading, setPriceLoading] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   if (user?.role === "COMPANY") {
     return (
@@ -78,6 +86,38 @@ export default function EstimateRequestPage() {
 
   const selectedType = watch("cleaningType");
   const address = watch("address");
+  const watchAreaSize = watch("areaSize");
+
+  // 예상 가격 조회 (디바운스)
+  useEffect(() => {
+    if (!selectedType) {
+      setPriceEstimate(null);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setPriceLoading(true);
+      try {
+        const params: Record<string, string> = { cleaningType: selectedType };
+        if (watchAreaSize) params.areaSize = watchAreaSize;
+        if (address) params.address = address;
+        const res = await api.get("/estimates/price-estimate", { params });
+        const data = res.data?.data ?? res.data;
+        if (data && data.sampleCount > 0) {
+          setPriceEstimate(data);
+        } else {
+          setPriceEstimate(null);
+        }
+      } catch {
+        setPriceEstimate(null);
+      } finally {
+        setPriceLoading(false);
+      }
+    }, 500);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [selectedType, watchAreaSize, address]);
 
   const onSubmit = async (data: EstimateRequestForm) => {
     setIsSubmitting(true);
@@ -196,6 +236,43 @@ export default function EstimateRequestPage() {
           {...register("areaSize")}
           error={errors.areaSize?.message}
         />
+
+        {/* 예상 가격 범위 */}
+        {priceLoading && (
+          <p className="text-center text-[13px] text-gray-400 py-2">
+            예상 가격 조회 중...
+          </p>
+        )}
+        {priceEstimate && !priceLoading && (
+          <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3.5">
+            <p className="text-[13px] font-semibold text-gray-800">
+              예상 가격 범위
+            </p>
+            <div className="mt-2 flex items-end justify-between">
+              <div className="text-center flex-1">
+                <p className="text-[13px] text-gray-500">
+                  {priceEstimate.minPrice.toLocaleString()}원
+                </p>
+                <p className="text-[11px] text-gray-400">최저</p>
+              </div>
+              <div className="text-center flex-1">
+                <p className="text-lg font-bold text-gray-900">
+                  {priceEstimate.avgPrice.toLocaleString()}원
+                </p>
+                <p className="text-[11px] text-gray-400">평균</p>
+              </div>
+              <div className="text-center flex-1">
+                <p className="text-[13px] text-gray-500">
+                  {priceEstimate.maxPrice.toLocaleString()}원
+                </p>
+                <p className="text-[11px] text-gray-400">최고</p>
+              </div>
+            </div>
+            <p className="mt-2 text-center text-[11px] text-gray-400">
+              최근 {priceEstimate.sampleCount}건의 거래 기준
+            </p>
+          </div>
+        )}
 
         {/* 희망 날짜 */}
         <Input

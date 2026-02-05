@@ -15,8 +15,10 @@ export function getNotificationSocket(): Socket {
     socket = io(`${SOCKET_URL}/notification`, {
       autoConnect: false,
       transports: ["polling", "websocket"],
-      reconnectionAttempts: 5,
+      reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 10000,
+      timeout: 10000,
     });
   }
   return socket;

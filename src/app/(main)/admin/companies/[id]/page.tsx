@@ -17,11 +17,28 @@ export default function AdminCompanyDetailPage() {
   const [chargeAmount, setChargeAmount] = useState("");
   const [chargeDescription, setChargeDescription] = useState("");
   const [isCharging, setIsCharging] = useState(false);
+  const [metrics, setMetrics] = useState<{
+    conversionRate: number;
+    cancellationRate: number;
+    repeatCustomerRate: number;
+    disputeRate: number;
+  } | null>(null);
 
   const fetchCompany = async () => {
     try {
-      const { data } = await api.get(`/admin/companies/${companyId}`);
-      setCompany(data.data);
+      const [companyRes, metricsRes] = await Promise.allSettled([
+        api.get(`/admin/companies/${companyId}`),
+        api.get(`/companies/${companyId}/metrics`),
+      ]);
+      if (companyRes.status === "fulfilled") {
+        setCompany(companyRes.value.data.data);
+      } else {
+        throw new Error("fetch failed");
+      }
+      if (metricsRes.status === "fulfilled") {
+        const m = metricsRes.value.data?.data ?? metricsRes.value.data;
+        if (m && m.conversionRate !== undefined) setMetrics(m);
+      }
     } catch {
       alert("업체 정보를 불러올 수 없습니다.");
       router.push("/admin/companies");
@@ -228,6 +245,31 @@ export default function AdminCompanyDetailPage() {
           </div>
         )}
       </div>
+
+      {/* 성과 지표 */}
+      {metrics && (
+        <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+          <h2 className="text-[15px] font-bold text-gray-900">성과 지표</h2>
+          <div className="mt-3 grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-4">
+            {[
+              { label: "견적전환율", value: metrics.conversionRate, warn: false },
+              { label: "취소율", value: metrics.cancellationRate, warn: metrics.cancellationRate > 15 },
+              { label: "재이용률", value: metrics.repeatCustomerRate, warn: false },
+              { label: "분쟁발생률", value: metrics.disputeRate, warn: metrics.disputeRate > 15 },
+            ].map((item) => (
+              <div key={item.label}>
+                <p className="text-gray-500">{item.label}</p>
+                <p className={cn(
+                  "mt-0.5 text-lg font-bold",
+                  item.warn ? "text-red-500" : "text-gray-900"
+                )}>
+                  {item.value.toFixed(1)}%
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 탭 */}
       <div className="mt-6 flex gap-1 rounded-lg bg-gray-100 p-1">
