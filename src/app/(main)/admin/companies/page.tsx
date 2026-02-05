@@ -10,6 +10,7 @@ interface Company {
   businessName: string;
   businessNumber: string;
   verificationStatus: string;
+  tier?: "STANDARD" | "CERTIFIED" | "PREMIUM";
   rejectionReason: string | null;
   approvedAt: string | null;
   createdAt: string;
@@ -186,6 +187,7 @@ export default function AdminCompaniesPage() {
                     <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">이메일</th>
                     <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">사업자번호</th>
                     <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">상태</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">등급</th>
                     <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">등록일</th>
                     <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">작업</th>
                   </tr>
@@ -193,7 +195,7 @@ export default function AdminCompaniesPage() {
                 <tbody>
                   {companies.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-gray-400">
+                      <td colSpan={8} className="px-4 py-12 text-center text-sm text-gray-400">
                         업체가 없습니다.
                       </td>
                     </tr>
@@ -214,6 +216,15 @@ export default function AdminCompaniesPage() {
                         </td>
                         <td className="px-4 py-3">
                           {statusBadge(company.verificationStatus)}
+                        </td>
+                        <td className="px-4 py-3">
+                          {company.tier === "PREMIUM" ? (
+                            <span className="inline-block rounded-full bg-green-50 px-2 py-0.5 text-[11px] font-semibold text-green-700">프리미엄</span>
+                          ) : company.tier === "CERTIFIED" ? (
+                            <span className="inline-block rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">인증</span>
+                          ) : (
+                            <span className="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">일반</span>
+                          )}
                         </td>
                         <td className="px-4 py-3 text-[13px] text-gray-500">
                           {new Date(company.createdAt).toLocaleDateString("ko-KR")}

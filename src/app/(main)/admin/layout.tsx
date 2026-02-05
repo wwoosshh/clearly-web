@@ -17,6 +17,7 @@ const sidebarLinks = [
   { href: "/admin/estimate-requests", label: "견적요청", icon: "📋" },
   { href: "/admin/faq", label: "FAQ 관리", icon: "❓" },
   { href: "/admin/inquiries", label: "문의 관리", icon: "📩" },
+  { href: "/admin/settings", label: "시스템 설정", icon: "⚙️" },
 ];
 
 export default function AdminLayout({
