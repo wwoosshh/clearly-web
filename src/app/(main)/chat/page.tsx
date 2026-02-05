@@ -221,7 +221,7 @@ function ChatPageContent() {
         selectedRoomRef.current?.id === message.roomId &&
         message.senderId !== user?.id
       ) {
-        api.patch(`/chat/rooms/${message.roomId}/read`).catch(() => {});
+        socket.emit("markRead", message.roomId);
       }
     });
 
