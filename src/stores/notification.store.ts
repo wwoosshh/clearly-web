@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import type { Notification } from "@/types";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+import api from "@/lib/api";
 
 interface NotificationState {
   notifications: Notification[];
@@ -18,12 +17,6 @@ interface NotificationState {
   reset: () => void;
 }
 
-function getToken(): string | null {
-  return typeof window !== "undefined"
-    ? localStorage.getItem("accessToken")
-    : null;
-}
-
 export const useNotificationStore = create<NotificationState>((set, get) => ({
   notifications: [],
   unreadCount: 0,
@@ -32,28 +25,31 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   page: 1,
 
   fetchNotifications: async (reset = false) => {
-    const token = getToken();
-    if (!token) return;
+    const { isLoading } = get();
+    if (isLoading) return;
 
     const page = reset ? 1 : get().page;
     set({ isLoading: true });
 
     try {
-      const res = await fetch(
-        `${API_URL}/notifications?page=${page}&limit=20`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (!res.ok) return;
+      const { data } = await api.get("/notifications", {
+        params: { page, limit: 20 },
+      });
 
-      const json = await res.json();
-      const newNotifications: Notification[] = json.data;
-      const hasMore = page < json.meta.totalPages;
+      const result = (data as any)?.data ?? data;
+      const newNotifications: Notification[] = Array.isArray(result)
+        ? result
+        : result?.data ?? [];
+      const meta = (data as any)?.meta ?? result?.meta;
+      const totalPages = meta?.totalPages ?? 1;
+      const hasMore = page < totalPages;
 
       set((state) => ({
         notifications: reset
           ? newNotifications
           : [...state.notifications, ...newNotifications],
-        unreadCount: json.unreadCount ?? state.unreadCount,
+        unreadCount:
+          (data as any)?.unreadCount ?? result?.unreadCount ?? state.unreadCount,
         hasMore,
         page: page + 1,
         isLoading: false,
@@ -64,17 +60,13 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 
   fetchUnreadCount: async () => {
-    const token = getToken();
-    if (!token) return;
-
     try {
-      const res = await fetch(`${API_URL}/notifications/unread-count`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) return;
-
-      const json = await res.json();
-      set({ unreadCount: json.unreadCount });
+      const { data } = await api.get("/notifications/unread-count");
+      const count =
+        (data as any)?.unreadCount ??
+        (data as any)?.data?.unreadCount ??
+        0;
+      set({ unreadCount: typeof count === "number" ? count : 0 });
     } catch {
       // silent
     }
@@ -88,14 +80,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 
   markAsRead: async (id) => {
-    const token = getToken();
-    if (!token) return;
-
     try {
-      await fetch(`${API_URL}/notifications/${id}/read`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.patch(`/notifications/${id}/read`);
 
       set((state) => ({
         notifications: state.notifications.map((n) =>
@@ -109,14 +95,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 
   markAllAsRead: async () => {
-    const token = getToken();
-    if (!token) return;
-
     try {
-      await fetch(`${API_URL}/notifications/read-all`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.patch("/notifications/read-all");
 
       set((state) => ({
         notifications: state.notifications.map((n) => ({
