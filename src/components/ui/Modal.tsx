@@ -57,17 +57,14 @@ function Modal({
     <div
       ref={overlayRef}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={(e) => {
-        if (e.target === overlayRef.current) onClose();
-      }}
     >
-      {/* 오버레이 배경 */}
-      <div className="absolute inset-0 bg-black/50" />
+      {/* 오버레이 배경 — 클릭 시 닫기 */}
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* 모달 본문 */}
       <div
         className={cn(
-          "relative w-full rounded-xl bg-white p-6 shadow-xl",
+          "relative w-full rounded-xl bg-white shadow-xl flex flex-col max-h-[85vh]",
           "animate-in fade-in zoom-in-95 duration-200",
           sizeStyles[size],
           className
@@ -76,9 +73,9 @@ function Modal({
         aria-modal="true"
         aria-labelledby={title ? "modal-title" : undefined}
       >
-        {/* 헤더 */}
+        {/* 헤더 — 항상 상단 고정 */}
         {title && (
-          <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0 border-b border-transparent">
             <h2
               id="modal-title"
               className="text-lg font-semibold text-gray-900"
@@ -108,8 +105,10 @@ function Modal({
           </div>
         )}
 
-        {/* 콘텐츠 */}
-        {children}
+        {/* 콘텐츠 — 내용이 길면 스크롤 */}
+        <div className={cn("overflow-y-auto overscroll-contain px-6 pb-6", title ? "pt-2" : "pt-6")}>
+          {children}
+        </div>
       </div>
     </div>
   );
