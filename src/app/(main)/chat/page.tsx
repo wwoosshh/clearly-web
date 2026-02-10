@@ -81,6 +81,7 @@ function ChatPageContent() {
   const [reportError, setReportError] = useState("");
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -116,6 +117,8 @@ function ChatPageContent() {
       const result = (data as any)?.data ?? data;
       const serverMessages: ChatMessageDetail[] =
         result?.data ?? (Array.isArray(result) ? result : []);
+      // 응답 도착 시 이미 다른 방으로 이동한 경우 무시
+      if (selectedRoomRef.current?.id !== roomId) return;
       setMessages((prev) => {
         // 전송중인 temp 메시지는 유지
         const pending = prev.filter((m) => isTempId(m.id));
@@ -130,6 +133,10 @@ function ChatPageContent() {
       chatCache.setMessages(roomId, serverMessages);
     } catch {
       // 캐시 데이터 유지
+    } finally {
+      if (selectedRoomRef.current?.id === roomId) {
+        setIsLoadingMessages(false);
+      }
     }
   }, []);
 
@@ -249,7 +256,8 @@ function ChatPageContent() {
   useEffect(() => {
     if (!selectedRoom) return;
 
-    // 0) 안읽은 카운트 즉시 0으로 초기화
+    // 0) 이전 방 메시지 즉시 제거 + 안읽은 카운트 초기화
+    setMessages([]);
     setRooms((prev) =>
       prev.map((r) =>
         r.id === selectedRoom.id ? { ...r, unreadCount: 0 } : r
@@ -262,13 +270,16 @@ function ChatPageContent() {
       setMessages(cached);
     }
 
-    // 2) 소켓 방 입장 + 읽음 처리
+    // 2) 로딩 상태 시작
+    setIsLoadingMessages(true);
+
+    // 3) 소켓 방 입장 + 읽음 처리
     if (socketRef.current) {
       socketRef.current.emit("joinRoom", selectedRoom.id);
       socketRef.current.emit("markRead", selectedRoom.id);
     }
 
-    // 3) 서버에서 최신 데이터 동기화 (백그라운드)
+    // 4) 서버에서 최신 데이터 동기화 (백그라운드)
     syncMessages(selectedRoom.id);
     api.patch(`/chat/rooms/${selectedRoom.id}/read`).catch(() => {});
 
@@ -659,6 +670,30 @@ function ChatPageContent() {
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-4">
+              {isLoadingMessages && messages.length === 0 && (
+                <div className="space-y-4 animate-pulse">
+                  {/* 상대방 메시지 스켈레톤 */}
+                  <div className="flex gap-2 justify-start">
+                    <div className="h-8 w-8 rounded-full bg-gray-200 flex-shrink-0 mt-5" />
+                    <div>
+                      <div className="h-3 w-12 bg-gray-200 rounded mb-2" />
+                      <div className="h-10 w-48 bg-gray-200 rounded-2xl rounded-bl-md" />
+                    </div>
+                  </div>
+                  {/* 내 메시지 스켈레톤 */}
+                  <div className="flex justify-end">
+                    <div className="h-10 w-40 bg-gray-300 rounded-2xl rounded-br-md" />
+                  </div>
+                  {/* 상대방 메시지 스켈레톤 */}
+                  <div className="flex gap-2 justify-start">
+                    <div className="h-8 w-8 rounded-full bg-gray-200 flex-shrink-0 mt-5" />
+                    <div>
+                      <div className="h-3 w-12 bg-gray-200 rounded mb-2" />
+                      <div className="h-10 w-56 bg-gray-200 rounded-2xl rounded-bl-md" />
+                    </div>
+                  </div>
+                </div>
+              )}
               {messages.map((msg) => {
                 const isMe = msg.senderId === user?.id;
                 const isSystem = msg.messageType === "SYSTEM";
