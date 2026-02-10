@@ -66,7 +66,7 @@ function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1.5 select-none">
           <span className="text-[22px] font-extrabold tracking-tight text-gray-900">
-            clearly
+            바른오더
           </span>
         </Link>
 

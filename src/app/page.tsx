@@ -241,7 +241,7 @@ export default function Home() {
         <section className="border-t border-gray-100 bg-gray-50 py-20 sm:py-28">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <p className="text-[13px] font-semibold tracking-widest text-gray-400">
-              왜 clearly인가요
+              왜 바른오더인가요
             </p>
             <h2 className="mt-2.5 text-[26px] font-bold tracking-[-0.02em] text-gray-900 sm:text-[32px]">
               다른 플랫폼과 다릅니다

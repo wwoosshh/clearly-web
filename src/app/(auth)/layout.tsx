@@ -8,7 +8,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       <div className="hidden w-[480px] flex-col justify-between bg-gray-900 p-10 lg:flex">
         <Link href="/" className="select-none">
           <span className="text-[22px] font-extrabold tracking-tight text-white">
-            clearly
+            바른오더
           </span>
         </Link>
 
@@ -19,14 +19,14 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             확실한 매칭.
           </p>
           <p className="mt-4 text-[15px] leading-relaxed text-gray-400">
-            이사청소 전문 매칭 플랫폼 clearly에서
+            이사청소 전문 매칭 플랫폼 바른오더에서
             <br />
             믿을 수 있는 청소 업체를 만나보세요.
           </p>
         </div>
 
         <p className="text-[12px] text-gray-600">
-          &copy; {new Date().getFullYear()} Clearly
+          &copy; {new Date().getFullYear()} 바른오더
         </p>
       </div>
 
@@ -36,7 +36,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div className="flex h-[60px] items-center px-5 lg:hidden">
           <Link href="/" className="select-none">
             <span className="text-[22px] font-extrabold tracking-tight text-gray-900">
-              clearly
+              바른오더
             </span>
           </Link>
         </div>

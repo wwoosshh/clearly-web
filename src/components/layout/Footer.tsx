@@ -9,7 +9,7 @@ function Footer() {
           <div className="col-span-2 sm:col-span-1">
             <Link href="/" className="select-none">
               <span className="text-[18px] font-extrabold tracking-tight text-gray-900">
-                clearly
+                바른오더
               </span>
             </Link>
             <p className="mt-3 text-[13px] leading-relaxed text-gray-500">
@@ -88,7 +88,7 @@ function Footer() {
         {/* Bottom */}
         <div className="mt-10 border-t border-gray-100 pt-6">
           <p className="text-[12px] leading-relaxed text-gray-400">
-            &copy; {new Date().getFullYear()} Clearly. All rights reserved.
+            &copy; {new Date().getFullYear()} 바른오더. All rights reserved.
           </p>
         </div>
       </div>

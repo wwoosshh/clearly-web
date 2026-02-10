@@ -6,8 +6,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Clearly - 검증된 이사청소 매칭 플랫폼",
-    template: "%s | Clearly",
+    default: "바른오더 - 검증된 이사청소 매칭 플랫폼",
+    template: "%s | 바른오더",
   },
   description:
     "검증된 이사청소 업체를 빠르고 간편하게 매칭해드립니다. 합리적인 가격, 믿을 수 있는 서비스.",
@@ -19,12 +19,12 @@ export const metadata: Metadata = {
     "이사청소견적",
   ],
   openGraph: {
-    title: "Clearly - 검증된 이사청소 매칭 플랫폼",
+    title: "바른오더 - 검증된 이사청소 매칭 플랫폼",
     description:
       "검증된 이사청소 업체를 빠르고 간편하게 매칭해드립니다.",
     type: "website",
     locale: "ko_KR",
-    siteName: "Clearly",
+    siteName: "바른오더",
   },
 };
 

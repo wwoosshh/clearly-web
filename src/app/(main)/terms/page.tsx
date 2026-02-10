@@ -8,7 +8,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold text-gray-900">제1조 (목적)</h2>
           <p className="mt-2">
-            본 약관은 Clearly(이하 &quot;회사&quot;)가 제공하는 이사청소 업체 매칭
+            본 약관은 바른오더(이하 &quot;회사&quot;)가 제공하는 이사청소 업체 매칭
             서비스(이하 &quot;서비스&quot;)의 이용과 관련하여 회사와 이용자 간의
             권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
           </p>
