@@ -1,6 +1,27 @@
+"use client";
+
 import Link from "next/link";
+import { useAuthStore } from "@/stores/auth.store";
 
 function Footer() {
+  const { user, isAuthenticated } = useAuthStore();
+
+  const isCompany = isAuthenticated && user?.role === "COMPANY";
+  const isAdmin = isAuthenticated && user?.role === "ADMIN";
+
+  const serviceLinks = [
+    { href: "/search", label: "업체 찾기" },
+    ...(!isCompany ? [{ href: "/matching", label: "매칭 내역" }] : []),
+    { href: "/chat", label: "채팅" },
+    ...(isCompany
+      ? [
+          { href: "/estimates", label: "견적 리스트" },
+          { href: "/estimates/submitted", label: "내 견적" },
+        ]
+      : []),
+    ...(isAdmin ? [{ href: "/admin", label: "관리자" }] : []),
+  ];
+
   return (
     <footer className="border-t border-gray-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
@@ -23,11 +44,7 @@ function Footer() {
               서비스
             </h3>
             <ul className="mt-3 space-y-2">
-              {[
-                { href: "/search", label: "업체 찾기" },
-                { href: "/matching", label: "매칭 신청" },
-                { href: "/register/company", label: "업체 등록" },
-              ].map((link) => (
+              {serviceLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
