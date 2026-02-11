@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/stores/notification.store";
 import type { NotificationType } from "@/types";
@@ -54,7 +54,7 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("ko-KR");
 }
 
-export function NotificationBell() {
+export const NotificationBell = React.memo(function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -219,4 +219,4 @@ export function NotificationBell() {
       )}
     </div>
   );
-}
+});

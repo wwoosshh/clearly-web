@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
@@ -10,8 +13,12 @@ import api from "@/lib/api";
 import { getSocket, connectSocket, disconnectSocket } from "@/lib/socket";
 import { chatCache } from "@/lib/chatCache";
 import { uploadImage } from "@/lib/upload";
-import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import type { ChatRoomDetail, ChatMessageDetail } from "@/types";
+
+const ImageLightbox = dynamic(
+  () => import("@/components/ui/ImageLightbox").then((m) => m.ImageLightbox),
+  { ssr: false },
+);
 
 export default function ChatPage() {
   return (
@@ -86,6 +93,7 @@ function ChatPageContent() {
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   const selectedRoomRef = useRef<ChatRoomDetail | null>(null);
@@ -581,7 +589,7 @@ function ChatPageContent() {
               >
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-white overflow-hidden">
                   {getRoomProfileImage(room) ? (
-                    <img src={getRoomProfileImage(room)} alt="" className="h-full w-full object-cover" />
+                    <Image src={getRoomProfileImage(room)!} alt="" width={40} height={40} className="h-full w-full object-cover" />
                   ) : (
                     <span className="text-[14px] font-semibold">{getRoomAvatar(room)}</span>
                   )}
@@ -669,105 +677,15 @@ function ChatPageContent() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 py-4">
-              {isLoadingMessages && messages.length === 0 && (
-                <div className="space-y-4 animate-pulse">
-                  {/* 상대방 메시지 스켈레톤 */}
-                  <div className="flex gap-2 justify-start">
-                    <div className="h-8 w-8 rounded-full bg-gray-200 flex-shrink-0 mt-5" />
-                    <div>
-                      <div className="h-3 w-12 bg-gray-200 rounded mb-2" />
-                      <div className="h-10 w-48 bg-gray-200 rounded-2xl rounded-bl-md" />
-                    </div>
-                  </div>
-                  {/* 내 메시지 스켈레톤 */}
-                  <div className="flex justify-end">
-                    <div className="h-10 w-40 bg-gray-300 rounded-2xl rounded-br-md" />
-                  </div>
-                  {/* 상대방 메시지 스켈레톤 */}
-                  <div className="flex gap-2 justify-start">
-                    <div className="h-8 w-8 rounded-full bg-gray-200 flex-shrink-0 mt-5" />
-                    <div>
-                      <div className="h-3 w-12 bg-gray-200 rounded mb-2" />
-                      <div className="h-10 w-56 bg-gray-200 rounded-2xl rounded-bl-md" />
-                    </div>
-                  </div>
-                </div>
-              )}
-              {messages.map((msg) => {
-                const isMe = msg.senderId === user?.id;
-                const isSystem = msg.messageType === "SYSTEM";
-                const isTemp = isTempId(msg.id);
-
-                if (isSystem) {
-                  return (
-                    <div key={msg.id} className="flex justify-center my-3">
-                      <span className="rounded-full bg-gray-200 px-3 py-1 text-[12px] text-gray-500">
-                        {msg.content}
-                      </span>
-                    </div>
-                  );
-                }
-
-                return (
-                  <div key={msg.id} className={cn("mb-3 flex gap-2", isMe ? "justify-end" : "justify-start")}>
-                    {!isMe && msg.sender && (
-                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-600 overflow-hidden mt-5">
-                        {msg.sender.profileImage ? (
-                          <img src={msg.sender.profileImage} alt="" className="h-full w-full object-cover" />
-                        ) : (
-                          <span className="text-[12px] font-semibold">{msg.sender.name.charAt(0)}</span>
-                        )}
-                      </div>
-                    )}
-                    <div className={cn("max-w-[70%]", isMe ? "items-end" : "items-start")}>
-                      {!isMe && msg.sender && (
-                        <p className="mb-1 text-[12px] text-gray-500">{msg.sender.name}</p>
-                      )}
-                      {msg.messageType === "IMAGE" && msg.fileUrl ? (
-                        <img
-                          src={msg.fileUrl}
-                          alt="전송된 이미지"
-                          className={cn(
-                            "max-w-[200px] max-h-[200px] rounded-xl object-cover cursor-pointer border border-gray-200 transition-opacity",
-                            isTemp && "opacity-60"
-                          )}
-                          onClick={() => {
-                            setLightboxImages([msg.fileUrl!]);
-                            setLightboxIndex(0);
-                          }}
-                        />
-                      ) : (
-                        <div
-                          className={cn(
-                            "rounded-2xl px-4 py-2.5 text-[14px] transition-opacity",
-                            isMe
-                              ? "bg-gray-900 text-white rounded-br-md"
-                              : "bg-white text-gray-900 border border-gray-200 rounded-bl-md",
-                            isTemp && "opacity-60"
-                          )}
-                        >
-                          {msg.content}
-                        </div>
-                      )}
-                      <div className={cn("flex items-center gap-1 mt-1", isMe ? "flex-row-reverse" : "flex-row")}>
-                        {isMe && !isTemp && !msg.isRead && (
-                          <span className="text-[11px] font-semibold text-blue-500">1</span>
-                        )}
-                        <span className="text-[11px] text-gray-400">
-                          {isTemp
-                            ? "전송중..."
-                            : new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <ChatMessages
+              chatScrollRef={chatScrollRef}
+              isLoadingMessages={isLoadingMessages}
+              messages={messages}
+              user={user}
+              isTempId={isTempId}
+              setLightboxImages={setLightboxImages}
+              setLightboxIndex={setLightboxIndex}
+            />
 
             {selectedRoom.userDeclined && selectedRoom.companyDeclined ? (
               <div className="border-t border-gray-200 bg-gray-50 px-5 py-4">
@@ -1007,6 +925,156 @@ function ChatPageContent() {
           initialIndex={lightboxIndex}
           onClose={() => setLightboxImages([])}
         />
+      )}
+    </div>
+  );
+}
+
+/** 가상 스크롤이 적용된 채팅 메시지 영역 */
+function ChatMessages({
+  chatScrollRef,
+  isLoadingMessages,
+  messages,
+  user,
+  isTempId,
+  setLightboxImages,
+  setLightboxIndex,
+}: {
+  chatScrollRef: React.RefObject<HTMLDivElement | null>;
+  isLoadingMessages: boolean;
+  messages: ChatMessageDetail[];
+  user: { id: string } | null;
+  isTempId: (id: string) => boolean;
+  setLightboxImages: (imgs: string[]) => void;
+  setLightboxIndex: (idx: number) => void;
+}) {
+  const virtualizer = useVirtualizer({
+    count: messages.length,
+    getScrollElement: () => chatScrollRef.current,
+    estimateSize: () => 72,
+    overscan: 10,
+  });
+
+  // 새 메시지 도착 시 맨 아래로 스크롤
+  useEffect(() => {
+    if (messages.length > 0) {
+      virtualizer.scrollToIndex(messages.length - 1, { align: "end" });
+    }
+  }, [messages.length, virtualizer]);
+
+  return (
+    <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-5 py-4">
+      {isLoadingMessages && messages.length === 0 && (
+        <div className="space-y-4 animate-pulse">
+          <div className="flex gap-2 justify-start">
+            <div className="h-8 w-8 rounded-full bg-gray-200 flex-shrink-0 mt-5" />
+            <div>
+              <div className="h-3 w-12 bg-gray-200 rounded mb-2" />
+              <div className="h-10 w-48 bg-gray-200 rounded-2xl rounded-bl-md" />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <div className="h-10 w-40 bg-gray-300 rounded-2xl rounded-br-md" />
+          </div>
+          <div className="flex gap-2 justify-start">
+            <div className="h-8 w-8 rounded-full bg-gray-200 flex-shrink-0 mt-5" />
+            <div>
+              <div className="h-3 w-12 bg-gray-200 rounded mb-2" />
+              <div className="h-10 w-56 bg-gray-200 rounded-2xl rounded-bl-md" />
+            </div>
+          </div>
+        </div>
+      )}
+      {messages.length > 0 && (
+        <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
+          {virtualizer.getVirtualItems().map((virtualRow) => {
+            const msg = messages[virtualRow.index];
+            const isMe = msg.senderId === user?.id;
+            const isSystem = msg.messageType === "SYSTEM";
+            const isTemp = isTempId(msg.id);
+
+            return (
+              <div
+                key={msg.id}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                {isSystem ? (
+                  <div className="flex justify-center my-3">
+                    <span className="rounded-full bg-gray-200 px-3 py-1 text-[12px] text-gray-500">
+                      {msg.content}
+                    </span>
+                  </div>
+                ) : (
+                  <div className={cn("mb-3 flex gap-2", isMe ? "justify-end" : "justify-start")}>
+                    {!isMe && msg.sender && (
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-600 overflow-hidden mt-5">
+                        {msg.sender.profileImage ? (
+                          <Image src={msg.sender.profileImage} alt="" width={32} height={32} className="h-full w-full object-cover" />
+                        ) : (
+                          <span className="text-[12px] font-semibold">{msg.sender.name.charAt(0)}</span>
+                        )}
+                      </div>
+                    )}
+                    <div className={cn("max-w-[70%]", isMe ? "items-end" : "items-start")}>
+                      {!isMe && msg.sender && (
+                        <p className="mb-1 text-[12px] text-gray-500">{msg.sender.name}</p>
+                      )}
+                      {msg.messageType === "IMAGE" && msg.fileUrl ? (
+                        <Image
+                          src={msg.fileUrl}
+                          alt="전송된 이미지"
+                          width={200}
+                          height={200}
+                          className={cn(
+                            "max-w-[200px] max-h-[200px] rounded-xl object-cover cursor-pointer border border-gray-200 transition-opacity",
+                            isTemp && "opacity-60"
+                          )}
+                          onClick={() => {
+                            setLightboxImages([msg.fileUrl!]);
+                            setLightboxIndex(0);
+                          }}
+                        />
+                      ) : (
+                        <div
+                          className={cn(
+                            "rounded-2xl px-4 py-2.5 text-[14px] transition-opacity",
+                            isMe
+                              ? "bg-gray-900 text-white rounded-br-md"
+                              : "bg-white text-gray-900 border border-gray-200 rounded-bl-md",
+                            isTemp && "opacity-60"
+                          )}
+                        >
+                          {msg.content}
+                        </div>
+                      )}
+                      <div className={cn("flex items-center gap-1 mt-1", isMe ? "flex-row-reverse" : "flex-row")}>
+                        {isMe && !isTemp && !msg.isRead && (
+                          <span className="text-[11px] font-semibold text-blue-500">1</span>
+                        )}
+                        <span className="text-[11px] text-gray-400">
+                          {isTemp
+                            ? "전송중..."
+                            : new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

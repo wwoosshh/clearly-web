@@ -2,6 +2,17 @@ import { create } from "zustand";
 import type { AuthTokens, LoginRequest, User } from "@/types";
 import api from "@/lib/api";
 
+/** JWT payload에서 기본 유저 정보를 디코딩 */
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const base64 = token.split(".")[1];
+    if (!base64) return null;
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+}
+
 interface AuthState {
   /** 현재 로그인한 사용자 */
   user: User | null;
@@ -92,7 +103,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
-    set({ isLoading: true });
+    // Optimistic UI: JWT에서 기본 유저 정보를 즉시 디코딩하여 먼저 표시
+    const payload = decodeJwtPayload(token);
+    if (payload?.sub && payload?.email && payload?.role) {
+      set({
+        user: {
+          id: payload.sub as string,
+          email: payload.email as string,
+          name: (payload.name as string) || "",
+          phone: "",
+          role: payload.role as User["role"],
+          createdAt: "",
+          updatedAt: "",
+        },
+        accessToken: token,
+        isAuthenticated: true,
+        isLoading: true,
+        isInitialized: true,
+      });
+    } else {
+      set({ isLoading: true });
+    }
+
+    // 백그라운드에서 최신 유저 데이터로 동기화
     try {
       const { data } = await api.get<{ data: User }>("/auth/me");
       set({
@@ -100,7 +133,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         accessToken: token,
         isAuthenticated: true,
         isLoading: false,
-        isInitialized: true,
       });
     } catch {
       localStorage.removeItem("accessToken");

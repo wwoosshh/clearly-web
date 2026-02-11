@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ImageLightbox } from "@/components/ui/ImageLightbox";
+import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
+
+const ImageLightbox = dynamic(
+  () => import("@/components/ui/ImageLightbox").then((m) => m.ImageLightbox),
+  { ssr: false },
+);
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";

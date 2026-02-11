@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "./NotificationBell";
 
-function Header() {
+const Header = React.memo(function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, isInitialized, logout } = useAuthStore();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -105,7 +106,7 @@ function Header() {
               >
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-900 text-white overflow-hidden">
                   {user.profileImage ? (
-                    <img src={user.profileImage} alt="" className="h-full w-full object-cover" />
+                    <Image src={user.profileImage} alt="" width={28} height={28} className="h-full w-full object-cover" />
                   ) : (
                     <span className="text-xs font-semibold leading-none">
                       {user.name.charAt(0)}
@@ -262,6 +263,6 @@ function Header() {
       )}
     </header>
   );
-}
+});
 
 export { Header };

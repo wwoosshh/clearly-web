@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
@@ -8,8 +9,12 @@ import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import type { EstimateRequest, CleaningType } from "@/types";
 import { ImageUpload } from "@/components/ui/ImageUpload";
-import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { CLEANING_TYPE_LABELS } from "@/types";
+
+const ImageLightbox = dynamic(
+  () => import("@/components/ui/ImageLightbox").then((m) => m.ImageLightbox),
+  { ssr: false },
+);
 
 export default function EstimatesPage() {
   const { user } = useAuthStore();

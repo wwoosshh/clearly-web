@@ -2,14 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
-import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
+
+const ImageLightbox = dynamic(
+  () => import("@/components/ui/ImageLightbox").then((m) => m.ImageLightbox),
+  { ssr: false },
+);
 
 interface SubmittedEstimate {
   id: string;

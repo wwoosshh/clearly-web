@@ -1,13 +1,15 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { CompanySearchResult } from "@/types";
 
 interface CompanyCardProps {
   company: CompanySearchResult;
 }
 
-function CompanyCard({ company }: CompanyCardProps) {
+const CompanyCard = React.memo(function CompanyCard({ company }: CompanyCardProps) {
   const formatPrice = (min: number | null, max: number | null) => {
     if (min == null && max == null) return null;
     const fmt = (n: number) =>
@@ -40,9 +42,11 @@ function CompanyCard({ company }: CompanyCardProps) {
         {/* 프로필 사진 */}
         <div className="flex-shrink-0">
           {avatarUrl ? (
-            <img
+            <Image
               src={avatarUrl}
               alt={company.businessName}
+              width={48}
+              height={48}
               className="h-12 w-12 rounded-full border border-gray-200 object-cover"
             />
           ) : (
@@ -78,10 +82,12 @@ function CompanyCard({ company }: CompanyCardProps) {
       {photos.length > 0 && (
         <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-hide">
           {photos.slice(0, 4).map((img, idx) => (
-            <img
+            <Image
               key={idx}
               src={img}
               alt={`${company.businessName} ${idx + 1}`}
+              width={80}
+              height={80}
               className="h-20 w-20 flex-shrink-0 rounded-lg border border-gray-100 object-cover"
             />
           ))}
@@ -171,7 +177,7 @@ function CompanyCard({ company }: CompanyCardProps) {
       </div>
     </div>
   );
-}
+});
 
 export { CompanyCard };
 export type { CompanyCardProps };

@@ -1,9 +1,8 @@
-import { useEffect } from "react";
 import { useAuthStore } from "@/stores/auth.store";
 
 /**
  * 인증 관련 커스텀 훅
- * 앱 마운트 시 세션 복원을 자동으로 수행합니다.
+ * 세션 복원은 AuthProvider에서 1회만 수행합니다.
  */
 export function useAuth() {
   const {
@@ -13,13 +12,8 @@ export function useAuth() {
     isInitialized,
     login,
     logout,
-    restoreSession,
     setUser,
   } = useAuthStore();
-
-  useEffect(() => {
-    restoreSession();
-  }, [restoreSession]);
 
   return {
     user,
