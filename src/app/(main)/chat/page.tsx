@@ -436,11 +436,10 @@ function ChatPageContent() {
       const result = (data as any)?.data ?? data;
       // 서버 응답으로 정확한 상태 동기화 (양측 취소 여부 반영)
       if (result.bothDeclined) {
-        setSelectedRoom((prev) =>
-          prev ? { ...prev, userDeclined: true, companyDeclined: true, refundStatus: "REQUESTED" as const } : prev
-        );
+        const bothPatch = { userDeclined: true, companyDeclined: true, refundStatus: "REQUESTED" as const };
+        setSelectedRoom((prev) => prev ? { ...prev, ...bothPatch } : prev);
+        setRooms((prev) => prev.map((r) => r.id === selectedRoom.id ? { ...r, ...bothPatch } : r));
       }
-      syncRooms();
       syncMessages(selectedRoom.id);
     } catch {
       // 실패 시 롤백
@@ -502,8 +501,18 @@ function ChatPageContent() {
     try {
       const { data } = await api.patch(`/chat/rooms/${selectedRoom.id}/complete`);
       const result = (data as any)?.data ?? data;
+      // 즉시 UI 반영: 매칭 완료 상태
+      const completedPatch = {
+        matching: {
+          ...selectedRoom.matching,
+          id: selectedRoom.matching?.id || result.matchingId || "",
+          status: "COMPLETED",
+          completedAt: new Date().toISOString(),
+        },
+      } as Partial<ChatRoomDetail>;
+      setSelectedRoom((prev) => prev ? { ...prev, ...completedPatch } : prev);
+      setRooms((prev) => prev.map((r) => r.id === selectedRoom.id ? { ...r, ...completedPatch } : r));
       syncMessages(selectedRoom.id);
-      // 리뷰 작성 페이지로 이동
       router.push(`/review/write?matchingId=${result.matchingId}&companyId=${result.companyId}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message || "거래완료 처리에 실패했습니다.";
@@ -545,13 +554,24 @@ function ChatPageContent() {
     setIsSubmittingReport(true);
 
     try {
+      const submittedImages = [...completionImages];
       await api.post(`/matchings/requests/${selectedRoom.matchingId}/report-completion`, {
-        images: completionImages,
+        images: submittedImages,
       });
       setShowCompletionReportModal(false);
       setCompletionImages([]);
-      // 방 목록 + 선택된 방 정보 갱신
-      syncRooms();
+      // 즉시 UI 반영: 완료보고 상태
+      const reportPatch = {
+        matching: {
+          ...selectedRoom.matching,
+          id: selectedRoom.matching?.id || selectedRoom.matchingId || "",
+          status: selectedRoom.matching?.status || "ACCEPTED",
+          completionImages: submittedImages,
+          completionReportedAt: new Date().toISOString(),
+        },
+      } as Partial<ChatRoomDetail>;
+      setSelectedRoom((prev) => prev ? { ...prev, ...reportPatch } : prev);
+      setRooms((prev) => prev.map((r) => r.id === selectedRoom.id ? { ...r, ...reportPatch } : r));
       syncMessages(selectedRoom.id);
     } catch (err: any) {
       const msg = err?.response?.data?.message || "완료 보고에 실패했습니다.";
@@ -569,6 +589,17 @@ function ChatPageContent() {
 
     try {
       await api.patch(`/matchings/requests/${selectedRoom.matchingId}/confirm-completion`);
+      // 즉시 UI 반영: 매칭 완료 상태
+      const completedPatch = {
+        matching: {
+          ...selectedRoom.matching,
+          id: selectedRoom.matching?.id || selectedRoom.matchingId || "",
+          status: "COMPLETED",
+          completedAt: new Date().toISOString(),
+        },
+      } as Partial<ChatRoomDetail>;
+      setSelectedRoom((prev) => prev ? { ...prev, ...completedPatch } : prev);
+      setRooms((prev) => prev.map((r) => r.id === selectedRoom.id ? { ...r, ...completedPatch } : r));
       syncMessages(selectedRoom.id);
       router.push(`/review/write?matchingId=${selectedRoom.matchingId}&companyId=${selectedRoom.companyId}`);
     } catch (err: any) {
