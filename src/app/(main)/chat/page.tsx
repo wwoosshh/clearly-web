@@ -92,6 +92,16 @@ function ChatPageContent() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  // 완료보고 (업체용)
+  const [showCompletionReportModal, setShowCompletionReportModal] = useState(false);
+  const [completionImages, setCompletionImages] = useState<string[]>([]);
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [isUploadingCompletionImage, setIsUploadingCompletionImage] = useState(false);
+  const completionImageInputRef = useRef<HTMLInputElement>(null);
+  // 완료확인 (사용자용)
+  const [showCompletionConfirmModal, setShowCompletionConfirmModal] = useState(false);
+  const [isConfirmingCompletion, setIsConfirmingCompletion] = useState(false);
+
   const imageInputRef = useRef<HTMLInputElement>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
@@ -503,6 +513,72 @@ function ChatPageContent() {
     }
   };
 
+  // ─── 완료보고 이미지 업로드 (업체용) ─────────────────
+  const handleCompletionImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || isUploadingCompletionImage) return;
+    e.target.value = "";
+
+    if (completionImages.length >= 5) {
+      alert("최대 5장까지 업로드할 수 있습니다.");
+      return;
+    }
+
+    setIsUploadingCompletionImage(true);
+    try {
+      const result = await uploadImage(file, "completion");
+      setCompletionImages((prev) => [...prev, result.url]);
+    } catch {
+      alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      setIsUploadingCompletionImage(false);
+    }
+  };
+
+  const handleRemoveCompletionImage = (index: number) => {
+    setCompletionImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ─── 완료보고 제출 (업체용) ──────────────────────────
+  const handleSubmitCompletionReport = async () => {
+    if (!selectedRoom?.matchingId || isSubmittingReport || completionImages.length === 0) return;
+    setIsSubmittingReport(true);
+
+    try {
+      await api.post(`/matchings/requests/${selectedRoom.matchingId}/report-completion`, {
+        images: completionImages,
+      });
+      setShowCompletionReportModal(false);
+      setCompletionImages([]);
+      // 방 목록 + 선택된 방 정보 갱신
+      syncRooms();
+      syncMessages(selectedRoom.id);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || "완료 보고에 실패했습니다.";
+      alert(msg);
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
+
+  // ─── 완료확인 (사용자용) ──────────────────────────────
+  const handleConfirmCompletion = async () => {
+    if (!selectedRoom?.matchingId || isConfirmingCompletion) return;
+    setIsConfirmingCompletion(true);
+    setShowCompletionConfirmModal(false);
+
+    try {
+      await api.patch(`/matchings/requests/${selectedRoom.matchingId}/confirm-completion`);
+      syncMessages(selectedRoom.id);
+      router.push(`/review/write?matchingId=${selectedRoom.matchingId}&companyId=${selectedRoom.companyId}`);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || "완료 확인에 실패했습니다.";
+      alert(msg);
+    } finally {
+      setIsConfirmingCompletion(false);
+    }
+  };
+
   // ─── 유틸 ──────────────────────────────────────
   const getRoomDisplayName = (room: ChatRoomDetail) => {
     if (!user) return "";
@@ -657,25 +733,111 @@ function ChatPageContent() {
                 >
                   신고
                 </button>
-                {!(selectedRoom.userDeclined && selectedRoom.companyDeclined) && user?.role === "USER" && (
-                  <button
-                    onClick={() => setShowCompleteModal(true)}
-                    disabled={isCompleting}
-                    className="rounded-lg border border-gray-900 bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
-                  >
-                    거래완료
-                  </button>
-                )}
-                {!(selectedRoom.userDeclined && selectedRoom.companyDeclined) && (
-                  <button
-                    onClick={() => setShowDeclineModal(true)}
-                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-500 transition-colors hover:bg-gray-50"
-                  >
-                    거래안함
-                  </button>
-                )}
+                {(() => {
+                  const bothDeclined = selectedRoom.userDeclined && selectedRoom.companyDeclined;
+                  const matching = selectedRoom.matching;
+                  const isCompleted = matching?.status === "COMPLETED";
+                  if (bothDeclined || isCompleted) return null;
+
+                  const isCompany = user?.role === "COMPANY";
+                  const hasReported = !!matching?.completionReportedAt;
+
+                  return (
+                    <>
+                      {/* 업체: 완료보고 버튼 */}
+                      {isCompany && !hasReported && matching?.status === "ACCEPTED" && (
+                        <button
+                          onClick={() => {
+                            setCompletionImages([]);
+                            setShowCompletionReportModal(true);
+                          }}
+                          className="rounded-lg border border-gray-900 bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-gray-800"
+                        >
+                          완료보고
+                        </button>
+                      )}
+                      {/* 업체: 보고 완료 상태 */}
+                      {isCompany && hasReported && (
+                        <span className="rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-[12px] font-medium text-green-700">
+                          보고 완료
+                        </span>
+                      )}
+                      {/* 사용자: 완료보고가 있으면 완료확인, 없으면 기존 거래완료 */}
+                      {!isCompany && hasReported && (
+                        <button
+                          onClick={() => setShowCompletionConfirmModal(true)}
+                          disabled={isConfirmingCompletion}
+                          className="rounded-lg border border-gray-900 bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                        >
+                          완료 확인
+                        </button>
+                      )}
+                      {!isCompany && !hasReported && (
+                        <button
+                          onClick={() => setShowCompleteModal(true)}
+                          disabled={isCompleting}
+                          className="rounded-lg border border-gray-900 bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                        >
+                          거래완료
+                        </button>
+                      )}
+                      {/* 거래안함 */}
+                      <button
+                        onClick={() => setShowDeclineModal(true)}
+                        className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-500 transition-colors hover:bg-gray-50"
+                      >
+                        거래안함
+                      </button>
+                    </>
+                  );
+                })()}
               </div>
             </div>
+
+            {/* 완료보고 배너 (사용자에게 표시 - 아직 완료 확인 전) */}
+            {user?.role !== "COMPANY" &&
+              selectedRoom.matching?.completionReportedAt &&
+              !selectedRoom.matching?.completedAt && (
+              <div className="flex items-center justify-between border-b border-blue-100 bg-blue-50 px-5 py-3">
+                <p className="text-[13px] text-blue-800">
+                  업체가 서비스 완료를 보고했습니다. 확인해주세요.
+                </p>
+                <button
+                  onClick={() => setShowCompletionConfirmModal(true)}
+                  disabled={isConfirmingCompletion}
+                  className="ml-3 flex-shrink-0 rounded-lg bg-blue-600 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                >
+                  완료 확인
+                </button>
+              </div>
+            )}
+
+            {/* 리뷰 작성 배너 (거래 완료 + 리뷰 미작성 시 사용자에게 표시) */}
+            {user?.role !== "COMPANY" &&
+              selectedRoom.matching?.status === "COMPLETED" &&
+              !selectedRoom.matching?.review && (
+              <div className="flex items-center justify-between border-b border-green-100 bg-green-50 px-5 py-3">
+                <p className="text-[13px] text-green-800">
+                  거래가 완료되었습니다. 리뷰를 작성해주세요!
+                </p>
+                <button
+                  onClick={() => router.push(`/review/write?matchingId=${selectedRoom.matching!.id}&companyId=${selectedRoom.companyId}`)}
+                  className="ml-3 flex-shrink-0 rounded-lg bg-green-600 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-green-700"
+                >
+                  리뷰 작성
+                </button>
+              </div>
+            )}
+
+            {/* 거래 완료 상태 배너 (리뷰 작성 완료 시) */}
+            {selectedRoom.matching?.status === "COMPLETED" &&
+              selectedRoom.matching?.review && (
+              <div className="border-b border-gray-100 bg-gray-50 px-5 py-3">
+                <p className="text-center text-[13px] text-gray-500">
+                  거래가 완료되었습니다.
+                </p>
+              </div>
+            )}
 
             <ChatMessages
               chatScrollRef={chatScrollRef}
@@ -691,6 +853,12 @@ function ChatPageContent() {
               <div className="border-t border-gray-200 bg-gray-50 px-5 py-4">
                 <p className="text-center text-[13px] text-gray-400">
                   양쪽 모두 거래를 취소하여 대화가 종료되었습니다.
+                </p>
+              </div>
+            ) : selectedRoom.matching?.status === "COMPLETED" ? (
+              <div className="border-t border-gray-200 bg-gray-50 px-5 py-4">
+                <p className="text-center text-[13px] text-gray-400">
+                  거래가 완료되어 대화가 종료되었습니다.
                 </p>
               </div>
             ) : (
@@ -917,6 +1085,130 @@ function ChatPageContent() {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* 완료보고 모달 (업체용) */}
+      <Modal
+        isOpen={showCompletionReportModal}
+        onClose={() => {
+          setShowCompletionReportModal(false);
+          setCompletionImages([]);
+        }}
+        title="서비스 완료 보고"
+        size="md"
+      >
+        <p className="text-[14px] text-gray-600">
+          서비스 완료 사진을 업로드해주세요. (최소 1장, 최대 5장)
+        </p>
+
+        <input
+          ref={completionImageInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={handleCompletionImageUpload}
+        />
+
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          {completionImages.map((url, idx) => (
+            <div key={idx} className="group relative aspect-square overflow-hidden rounded-lg border border-gray-200">
+              <Image src={url} alt={`완료 사진 ${idx + 1}`} fill className="object-cover" />
+              <button
+                onClick={() => handleRemoveCompletionImage(idx)}
+                className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+          ))}
+          {completionImages.length < 5 && (
+            <button
+              onClick={() => completionImageInputRef.current?.click()}
+              disabled={isUploadingCompletionImage}
+              className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-500 disabled:opacity-50"
+            >
+              {isUploadingCompletionImage ? (
+                <Spinner size="sm" className="text-gray-400" />
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
+
+        <div className="mt-5 flex gap-2">
+          <button
+            onClick={() => {
+              setShowCompletionReportModal(false);
+              setCompletionImages([]);
+            }}
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleSubmitCompletionReport}
+            disabled={completionImages.length === 0 || isSubmittingReport}
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+          >
+            {isSubmittingReport ? "제출중..." : "완료 보고"}
+          </button>
+        </div>
+      </Modal>
+
+      {/* 완료확인 모달 (사용자용) */}
+      <Modal
+        isOpen={showCompletionConfirmModal}
+        onClose={() => setShowCompletionConfirmModal(false)}
+        title="서비스 완료 확인"
+        size="md"
+      >
+        <p className="text-[14px] text-gray-600">
+          업체가 보낸 완료 사진을 확인하고 서비스 완료를 승인해주세요.
+        </p>
+
+        {selectedRoom?.matching?.completionImages && (selectedRoom.matching.completionImages as string[]).length > 0 && (
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {(selectedRoom.matching.completionImages as string[]).map((url, idx) => (
+              <div
+                key={idx}
+                className="relative aspect-square cursor-pointer overflow-hidden rounded-lg border border-gray-200"
+                onClick={() => {
+                  setLightboxImages(selectedRoom.matching!.completionImages as string[]);
+                  setLightboxIndex(idx);
+                }}
+              >
+                <Image src={url} alt={`완료 사진 ${idx + 1}`} fill className="object-cover" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <p className="mt-3 text-[13px] text-gray-500">
+          완료 확인 후 리뷰를 작성할 수 있습니다.
+        </p>
+
+        <div className="mt-5 flex gap-2">
+          <button
+            onClick={() => setShowCompletionConfirmModal(false)}
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            닫기
+          </button>
+          <button
+            onClick={handleConfirmCompletion}
+            disabled={isConfirmingCompletion}
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+          >
+            {isConfirmingCompletion ? "처리중..." : "완료 확인"}
+          </button>
+        </div>
       </Modal>
 
       {lightboxImages.length > 0 && (

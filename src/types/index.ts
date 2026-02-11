@@ -365,6 +365,14 @@ export interface ChatRoomDetail {
     businessName: string;
     user: { id: string; name: string; profileImage?: string };
   };
+  matching?: {
+    id: string;
+    status: string;
+    completionImages?: string[];
+    completionReportedAt?: string;
+    completedAt?: string;
+    review?: { id: string } | null;
+  };
 }
 
 /** 채팅 메시지 (확장) */
