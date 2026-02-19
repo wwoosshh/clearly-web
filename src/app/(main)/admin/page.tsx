@@ -81,7 +81,7 @@ export default function AdminDashboardPage() {
                   {card.label}
                 </p>
                 <p className="mt-2 text-2xl font-bold text-gray-900">
-                  {stats[card.key].toLocaleString()}
+                  {(stats[card.key] ?? 0).toLocaleString()}
                 </p>
                 <span
                   className={`mt-2 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${card.color}`}
