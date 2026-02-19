@@ -252,7 +252,6 @@ export type CleaningType =
   | "FULL"
   | "OFFICE"
   | "STORE"
-  | "CONSTRUCTION"
   | "AIRCON"
   | "CARPET"
   | "EXTERIOR";
@@ -264,7 +263,6 @@ export const CLEANING_TYPE_LABELS: Record<CleaningType, string> = {
   FULL: "거주청소",
   OFFICE: "사무실청소",
   STORE: "상가청소",
-  CONSTRUCTION: "준공청소",
   AIRCON: "에어컨청소",
   CARPET: "카펫청소",
   EXTERIOR: "외벽청소",
