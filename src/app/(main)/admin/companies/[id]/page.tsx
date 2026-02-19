@@ -404,6 +404,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
 
   const sub = company.activeSubscription;
   const history = company.subscriptions || [];
+  const stack: any[] = company.subscriptionStack || [];
 
   useEffect(() => {
     api.get("/admin/subscription-plans").then(({ data }) => {
@@ -437,6 +438,19 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
       await onRefresh();
     } catch (err: any) {
       alert(err.response?.data?.message || "구독 연장에 실패했습니다.");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleCancelSubscription = async (subscriptionId: string, planName: string) => {
+    if (!confirm(`"${planName}" 구독을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) return;
+    setLoading("cancel");
+    try {
+      await api.delete(`/admin/subscriptions/${subscriptionId}`);
+      await onRefresh();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "구독 취소에 실패했습니다.");
     } finally {
       setLoading(null);
     }
@@ -514,6 +528,50 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
           <p className="mt-3 text-[13px] text-gray-400">활성 구독이 없습니다.</p>
         )}
       </div>
+
+      {/* 구독 스택 (ACTIVE + PAUSED + QUEUED) */}
+      {stack.length > 0 && (
+        <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+          <h3 className="text-[14px] font-bold text-gray-900">구독 스택</h3>
+          <div className="mt-3 space-y-2">
+            {stack.map((s: any) => (
+              <div key={s.id} className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 px-4 py-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={cn(
+                    "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                    s.plan?.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
+                    s.plan?.tier === "PRO" ? "bg-blue-50 text-blue-700" :
+                    "bg-gray-900 text-white"
+                  )}>
+                    {s.plan?.tier || "-"}
+                  </span>
+                  <span className="text-[13px] font-medium text-gray-700">{s.plan?.name || "-"}</span>
+                  <span className={cn(
+                    "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                    s.status === "ACTIVE" ? "bg-green-50 text-green-700" :
+                    s.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" :
+                    s.status === "QUEUED" ? "bg-indigo-50 text-indigo-700" :
+                    "bg-gray-200 text-gray-600"
+                  )}>
+                    {s.status === "ACTIVE" ? "활성" : s.status === "PAUSED" ? "일시정지" : s.status === "QUEUED" ? "대기" : s.status}
+                  </span>
+                  {s.isTrial && <span className="text-[10px] text-purple-600">체험</span>}
+                  <span className="text-[11px] text-gray-400">
+                    {formatDate(s.currentPeriodStart)} ~ {formatDate(s.currentPeriodEnd)}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCancelSubscription(s.id, s.plan?.name || "구독")}
+                  disabled={loading === "cancel"}
+                  className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-[12px] font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
+                >
+                  {loading === "cancel" ? "처리중..." : "해지"}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 관리 액션 */}
       <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">

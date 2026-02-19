@@ -2,14 +2,36 @@ import { create } from "zustand";
 import api from "@/lib/api";
 import type { ActiveSubscription, EstimateLimitInfo, SubscriptionPlan } from "@/types";
 
+interface SubscriptionStackItem {
+  id: string;
+  companyId: string;
+  planId: string;
+  status: string;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  isTrial: boolean;
+  pausedAt: string | null;
+  plan: {
+    id: string;
+    name: string;
+    tier: string;
+    durationMonths: number;
+    price: number;
+    dailyEstimateLimit: number;
+    priorityWeight: number;
+  };
+}
+
 interface SubscriptionState {
   subscription: ActiveSubscription | null;
+  subscriptionStack: SubscriptionStackItem[];
   estimateLimit: EstimateLimitInfo | null;
   plans: { BASIC: SubscriptionPlan[]; PRO: SubscriptionPlan[]; PREMIUM: SubscriptionPlan[] } | null;
   showPaymentPopup: boolean;
   isLoading: boolean;
 
   fetchSubscription: () => Promise<void>;
+  fetchSubscriptionStack: () => Promise<void>;
   fetchEstimateLimit: () => Promise<void>;
   fetchPlans: () => Promise<void>;
   setShowPaymentPopup: (show: boolean) => void;
@@ -18,6 +40,7 @@ interface SubscriptionState {
 
 export const useSubscriptionStore = create<SubscriptionState>((set) => ({
   subscription: null,
+  subscriptionStack: [],
   estimateLimit: null,
   plans: null,
   showPaymentPopup: false,
@@ -29,6 +52,16 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
       set({ subscription: data?.data ?? null });
     } catch {
       set({ subscription: null });
+    }
+  },
+
+  fetchSubscriptionStack: async () => {
+    try {
+      const { data } = await api.get("/subscriptions/my/stack");
+      const stack = data?.data ?? data ?? [];
+      set({ subscriptionStack: Array.isArray(stack) ? stack : [] });
+    } catch {
+      set({ subscriptionStack: [] });
     }
   },
 
@@ -57,6 +90,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
   reset: () =>
     set({
       subscription: null,
+      subscriptionStack: [],
       estimateLimit: null,
       plans: null,
       showPaymentPopup: false,

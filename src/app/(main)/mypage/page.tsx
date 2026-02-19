@@ -33,7 +33,7 @@ export default function MyPage() {
   const { user, setUser, logout } = useAuthStore();
   const router = useRouter();
   const isCompany = user?.role === "COMPANY";
-  const { subscription, fetchSubscription } = useSubscriptionStore();
+  const { subscription, subscriptionStack, fetchSubscription, fetchSubscriptionStack } = useSubscriptionStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
@@ -56,6 +56,7 @@ export default function MyPage() {
     if (isCompany) {
       loadCompanyStats();
       fetchSubscription();
+      fetchSubscriptionStack();
     } else {
       loadUserStats();
     }
@@ -256,6 +257,39 @@ export default function MyPage() {
               </div>
             );
           })()}
+          {/* PAUSED/QUEUED 구독 스택 */}
+          {subscriptionStack.filter((s) => s.status === "PAUSED" || s.status === "QUEUED").length > 0 && (
+            <div className="mt-3 space-y-2">
+              <p className="text-[12px] font-medium text-gray-500">대기 중인 구독</p>
+              {subscriptionStack
+                .filter((s) => s.status === "PAUSED" || s.status === "QUEUED")
+                .map((s) => (
+                  <div key={s.id} className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        s.plan.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
+                        s.plan.tier === "PRO" ? "bg-blue-50 text-blue-700" :
+                        "bg-gray-900 text-white"
+                      }`}>
+                        {s.plan.tier}
+                      </span>
+                      <span className="text-[13px] font-medium text-gray-700">{s.plan.name}</span>
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        s.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" : "bg-indigo-50 text-indigo-700"
+                      }`}>
+                        {s.status === "PAUSED" ? "일시정지" : "대기"}
+                      </span>
+                      {s.isTrial && (
+                        <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">체험</span>
+                      )}
+                    </div>
+                    <span className="text-[12px] text-gray-400">
+                      {new Date(s.currentPeriodEnd).toLocaleDateString("ko-KR")}까지
+                    </span>
+                  </div>
+                ))}
+            </div>
+          )}
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <Link
               href="/estimates/submitted"
