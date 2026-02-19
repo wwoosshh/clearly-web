@@ -1,34 +1,49 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface SubscriptionRecord {
   id: string;
   companyId: string;
-  tier: string;
   status: string;
-  planName: string;
-  dailyEstimateLimit: number;
+  isTrial: boolean;
   currentPeriodStart: string;
   currentPeriodEnd: string;
-  isTrial: boolean;
   cancelledAt: string | null;
+  plan: {
+    id: string;
+    name: string;
+    tier: string;
+    durationMonths: number;
+    dailyEstimateLimit: number;
+    price: number;
+  };
   company?: {
     id: string;
     businessName: string;
-    user?: { name: string; email: string };
+    user?: { id: string; name: string; email: string };
   };
 }
 
 interface SubscriptionStats {
   total: number;
   active: number;
-  trial: number;
   expired: number;
-  cancelled: number;
+  trial: number;
   byTier: { BASIC: number; PRO: number; PREMIUM: number };
+  expiringIn7Days: number;
+}
+
+interface PlanOption {
+  id: string;
+  name: string;
+  tier: string;
+  durationMonths: number;
+  price: number;
+  dailyEstimateLimit: number;
 }
 
 const statusTabs = [
@@ -36,20 +51,40 @@ const statusTabs = [
   { key: "ACTIVE", label: "활성" },
   { key: "EXPIRED", label: "만료" },
   { key: "CANCELLED", label: "취소" },
-  { key: "PAST_DUE", label: "미결제" },
 ];
 
 export default function AdminSubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState<SubscriptionRecord[]>([]);
   const [stats, setStats] = useState<SubscriptionStats | null>(null);
+  const [plans, setPlans] = useState<PlanOption[]>([]);
   const [statusFilter, setStatusFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // 관리 모달 상태
+  const [actionTarget, setActionTarget] = useState<SubscriptionRecord | null>(null);
+  const [actionType, setActionType] = useState<"change" | "extend" | "trial" | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState("");
+  const [extendMonths, setExtendMonths] = useState(1);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
   useEffect(() => {
     fetchData();
   }, [page, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fetchPlans = async () => {
+    try {
+      const { data } = await api.get("/admin/subscription-plans");
+      setPlans(data.data ?? data ?? []);
+    } catch {
+      /* ignore */
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -109,6 +144,39 @@ export default function AdminSubscriptionsPage() {
     return <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", info.style)}>{info.label}</span>;
   };
 
+  // 관리 액션 실행
+  const handleAction = async () => {
+    if (!actionTarget) return;
+    setActionLoading(true);
+    try {
+      if (actionType === "change" && selectedPlanId) {
+        await api.patch(`/admin/companies/${actionTarget.companyId}/subscription`, { planId: selectedPlanId });
+      } else if (actionType === "extend") {
+        await api.post(`/admin/companies/${actionTarget.companyId}/subscription/extend`, { months: extendMonths });
+      } else if (actionType === "trial") {
+        await api.post(`/admin/companies/${actionTarget.companyId}/subscription/trial`);
+      }
+      closeModal();
+      fetchData();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "처리에 실패했습니다.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openModal = (sub: SubscriptionRecord, type: "change" | "extend" | "trial") => {
+    setActionTarget(sub);
+    setActionType(type);
+    setSelectedPlanId(plans[0]?.id || "");
+    setExtendMonths(1);
+  };
+
+  const closeModal = () => {
+    setActionTarget(null);
+    setActionType(null);
+  };
+
   return (
     <div>
       <h1 className="text-xl font-bold text-gray-900">구독 관리</h1>
@@ -118,9 +186,9 @@ export default function AdminSubscriptionsPage() {
       {stats && (
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {[
-            { label: "전체", value: stats.total },
-            { label: "활성", value: stats.active },
-            { label: "체험", value: stats.trial },
+            { label: "전체", value: stats.total ?? 0 },
+            { label: "활성", value: stats.active ?? 0 },
+            { label: "체험", value: stats.trial ?? 0 },
             { label: "Basic", value: stats.byTier?.BASIC ?? 0 },
             { label: "Pro", value: stats.byTier?.PRO ?? 0 },
             { label: "Premium", value: stats.byTier?.PREMIUM ?? 0 },
@@ -170,25 +238,54 @@ export default function AdminSubscriptionsPage() {
                   <th className="px-4 py-3 text-[11px] font-semibold text-gray-500">플랜</th>
                   <th className="px-4 py-3 text-[11px] font-semibold text-gray-500">일일한도</th>
                   <th className="px-4 py-3 text-[11px] font-semibold text-gray-500">기간</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-gray-500">관리</th>
                 </tr>
               </thead>
               <tbody>
                 {subscriptions.map((sub) => (
                   <tr key={sub.id} className="border-b border-gray-50 last:border-0">
                     <td className="px-4 py-3">
-                      <p className="text-[13px] font-medium text-gray-900">
-                        {sub.company?.businessName || "-"}
-                      </p>
+                      <Link href={`/admin/companies/${sub.companyId}`} className="hover:underline">
+                        <p className="text-[13px] font-medium text-gray-900">
+                          {sub.company?.businessName || "-"}
+                        </p>
+                      </Link>
                       <p className="text-[11px] text-gray-500">
                         {sub.company?.user?.email || ""}
                       </p>
                     </td>
-                    <td className="px-4 py-3">{tierBadge(sub.tier)}</td>
+                    <td className="px-4 py-3">{tierBadge(sub.plan?.tier || "-")}</td>
                     <td className="px-4 py-3">{statusBadge(sub.status, sub.isTrial)}</td>
-                    <td className="px-4 py-3 text-[12px] text-gray-700">{sub.planName}</td>
-                    <td className="px-4 py-3 text-[12px] text-gray-700">{sub.dailyEstimateLimit}건</td>
+                    <td className="px-4 py-3 text-[12px] text-gray-700">{sub.plan?.name || "-"}</td>
+                    <td className="px-4 py-3 text-[12px] text-gray-700">{sub.plan?.dailyEstimateLimit ?? "-"}건</td>
                     <td className="px-4 py-3 text-[12px] text-gray-500">
                       {formatDate(sub.currentPeriodStart)} ~ {formatDate(sub.currentPeriodEnd)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => openModal(sub, "change")}
+                          className="rounded-md bg-gray-100 px-2 py-1 text-[11px] font-medium text-gray-700 hover:bg-gray-200"
+                        >
+                          변경
+                        </button>
+                        {sub.status === "ACTIVE" && (
+                          <button
+                            onClick={() => openModal(sub, "extend")}
+                            className="rounded-md bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-100"
+                          >
+                            연장
+                          </button>
+                        )}
+                        {sub.status !== "ACTIVE" && (
+                          <button
+                            onClick={() => openModal(sub, "trial")}
+                            className="rounded-md bg-purple-50 px-2 py-1 text-[11px] font-medium text-purple-700 hover:bg-purple-100"
+                          >
+                            체험부여
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -216,6 +313,76 @@ export default function AdminSubscriptionsPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* 관리 모달 */}
+      {actionTarget && actionType && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={closeModal}>
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-[16px] font-bold text-gray-900">
+              {actionType === "change" && "구독 플랜 변경"}
+              {actionType === "extend" && "구독 기간 연장"}
+              {actionType === "trial" && "무료 체험 부여"}
+            </h3>
+            <p className="mt-1 text-[13px] text-gray-500">
+              {actionTarget.company?.businessName || "업체"}
+            </p>
+
+            <div className="mt-4">
+              {actionType === "change" && (
+                <div>
+                  <label className="block text-[13px] font-medium text-gray-700">변경할 플랜</label>
+                  <select
+                    value={selectedPlanId}
+                    onChange={(e) => setSelectedPlanId(e.target.value)}
+                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-[13px] text-gray-900 focus:border-gray-900 focus:outline-none"
+                  >
+                    {plans.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} ({p.tier} / {p.price.toLocaleString()}원 / 일일 {p.dailyEstimateLimit}건)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {actionType === "extend" && (
+                <div>
+                  <label className="block text-[13px] font-medium text-gray-700">연장 개월 수</label>
+                  <select
+                    value={extendMonths}
+                    onChange={(e) => setExtendMonths(Number(e.target.value))}
+                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-[13px] text-gray-900 focus:border-gray-900 focus:outline-none"
+                  >
+                    {[1, 2, 3, 6, 12].map((m) => (
+                      <option key={m} value={m}>{m}개월</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {actionType === "trial" && (
+                <p className="rounded-lg bg-purple-50 p-3 text-[13px] text-purple-700">
+                  이 업체에 Basic 3개월 무료 체험을 부여합니다.
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={closeModal}
+                className="rounded-lg border border-gray-200 px-4 py-2 text-[13px] font-medium text-gray-600 hover:bg-gray-50"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleAction}
+                disabled={actionLoading}
+                className="rounded-lg bg-gray-900 px-4 py-2 text-[13px] font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+              >
+                {actionLoading ? "처리중..." : "확인"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

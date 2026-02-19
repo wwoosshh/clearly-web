@@ -460,116 +460,250 @@ export default function AdminCompanyDetailPage() {
         )}
 
         {tab === "subscription" && (
-          <div>
-            {company.subscription ? (
-              <>
-                <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
-                  <h3 className="text-[14px] font-bold text-gray-900">현재 구독</h3>
-                  <div className="mt-3 grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-3">
-                    <div>
-                      <p className="text-gray-500">등급</p>
-                      <p className="mt-0.5 font-medium text-gray-900">
-                        <span className={cn(
-                          "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                          company.subscription.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
-                          company.subscription.tier === "PRO" ? "bg-blue-50 text-blue-700" :
-                          "bg-gray-900 text-white"
-                        )}>
-                          {company.subscription.tier}
-                        </span>
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">상태</p>
-                      <p className="mt-0.5 font-medium text-gray-900">
-                        <span className={cn(
-                          "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                          company.subscription.status === "ACTIVE" ? "bg-green-50 text-green-700" :
-                          company.subscription.status === "EXPIRED" ? "bg-red-50 text-red-600" :
-                          company.subscription.status === "CANCELLED" ? "bg-gray-200 text-gray-600" :
-                          "bg-amber-50 text-amber-700"
-                        )}>
-                          {company.subscription.status === "ACTIVE" ? "활성" :
-                           company.subscription.status === "EXPIRED" ? "만료" :
-                           company.subscription.status === "CANCELLED" ? "취소" : "미결제"}
-                        </span>
-                        {company.subscription.isTrial && (
-                          <span className="ml-1 inline-block rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">체험</span>
-                        )}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">플랜</p>
-                      <p className="mt-0.5 font-medium text-gray-900">{company.subscription.planName || "-"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">일일 견적 한도</p>
-                      <p className="mt-0.5 font-medium text-gray-900">{company.subscription.dailyEstimateLimit || "-"}건</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">시작일</p>
-                      <p className="mt-0.5 font-medium text-gray-900">{formatDate(company.subscription.currentPeriodStart)}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">만료일</p>
-                      <p className="mt-0.5 font-medium text-gray-900">{formatDate(company.subscription.currentPeriodEnd)}</p>
-                    </div>
-                  </div>
-                </div>
+          <SubscriptionTab companyId={companyId} company={company} onRefresh={fetchCompany} />
+        )}
+      </div>
+    </div>
+  );
+}
 
-                {/* 구독 이력 */}
-                {company.subscriptionHistory?.length > 0 && (
-                  <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
-                    <h3 className="border-b border-gray-100 px-4 py-3 text-[13px] font-bold text-gray-900">구독 이력</h3>
-                    <table className="w-full text-left text-sm">
-                      <thead>
-                        <tr className="border-b border-gray-100 bg-gray-50/50">
-                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">등급</th>
-                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
-                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">플랜</th>
-                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">기간</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {company.subscriptionHistory.map((h: any) => (
-                          <tr key={h.id} className="border-b border-gray-50 last:border-0">
-                            <td className="px-3 py-2">
-                              <span className={cn(
-                                "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                                h.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
-                                h.tier === "PRO" ? "bg-blue-50 text-blue-700" :
-                                "bg-gray-900 text-white"
-                              )}>
-                                {h.tier}
-                              </span>
-                            </td>
-                            <td className="px-3 py-2">
-                              <span className={cn(
-                                "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                                h.status === "ACTIVE" ? "bg-green-50 text-green-700" :
-                                h.status === "EXPIRED" ? "bg-red-50 text-red-600" :
-                                "bg-gray-200 text-gray-600"
-                              )}>
-                                {h.status === "ACTIVE" ? "활성" : h.status === "EXPIRED" ? "만료" : h.status === "CANCELLED" ? "취소" : h.status}
-                              </span>
-                            </td>
-                            <td className="px-3 py-2 text-[12px] text-gray-700">{h.planName || "-"}</td>
-                            <td className="px-3 py-2 text-[12px] text-gray-500">
-                              {formatDate(h.currentPeriodStart)} ~ {formatDate(h.currentPeriodEnd)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+// ─── 구독 관리 탭 ──────────────────────────────────────────
+function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string; company: any; onRefresh: () => Promise<void> }) {
+  const [plans, setPlans] = useState<any[]>([]);
+  const [selectedPlanId, setSelectedPlanId] = useState("");
+  const [extendMonths, setExtendMonths] = useState(1);
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const sub = company.activeSubscription;
+  const history = company.subscriptions || [];
+
+  useEffect(() => {
+    api.get("/admin/subscription-plans").then(({ data }) => {
+      const list = data.data ?? data ?? [];
+      setPlans(list);
+      if (list.length > 0) setSelectedPlanId(list[0].id);
+    }).catch(() => {});
+  }, []);
+
+  const formatDate = (d?: string) => d ? new Date(d).toLocaleDateString("ko-KR") : "-";
+
+  const handleChangePlan = async () => {
+    if (!selectedPlanId) return;
+    if (!confirm("이 업체의 구독 플랜을 변경하시겠습니까?")) return;
+    setLoading("change");
+    try {
+      await api.patch(`/admin/companies/${companyId}/subscription`, { planId: selectedPlanId });
+      await onRefresh();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "플랜 변경에 실패했습니다.");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleExtend = async () => {
+    if (!confirm(`구독을 ${extendMonths}개월 연장하시겠습니까?`)) return;
+    setLoading("extend");
+    try {
+      await api.post(`/admin/companies/${companyId}/subscription/extend`, { months: extendMonths });
+      await onRefresh();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "구독 연장에 실패했습니다.");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleGrantTrial = async () => {
+    if (!confirm("이 업체에 Basic 3개월 무료 체험을 부여하시겠습니까?")) return;
+    setLoading("trial");
+    try {
+      await api.post(`/admin/companies/${companyId}/subscription/trial`);
+      await onRefresh();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "무료 체험 부여에 실패했습니다.");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* 현재 구독 상태 */}
+      <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+        <h3 className="text-[14px] font-bold text-gray-900">현재 구독</h3>
+        {sub ? (
+          <div className="mt-3 grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-3">
+            <div>
+              <p className="text-gray-500">등급</p>
+              <p className="mt-0.5">
+                <span className={cn(
+                  "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                  sub.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
+                  sub.tier === "PRO" ? "bg-blue-50 text-blue-700" :
+                  "bg-gray-900 text-white"
+                )}>
+                  {sub.tier}
+                </span>
+                {sub.isTrial && (
+                  <span className="ml-1 inline-block rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">체험</span>
                 )}
-              </>
-            ) : (
-              <p className="py-8 text-center text-[13px] text-gray-400">구독 정보가 없습니다.</p>
-            )}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-500">상태</p>
+              <p className="mt-0.5">
+                <span className={cn(
+                  "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                  sub.status === "ACTIVE" ? "bg-green-50 text-green-700" :
+                  sub.status === "EXPIRED" ? "bg-red-50 text-red-600" :
+                  "bg-gray-200 text-gray-600"
+                )}>
+                  {sub.status === "ACTIVE" ? "활성" : sub.status === "EXPIRED" ? "만료" : sub.status === "CANCELLED" ? "취소" : sub.status}
+                </span>
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-500">플랜</p>
+              <p className="mt-0.5 font-medium text-gray-900">{sub.planName || "-"}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">일일 견적 한도</p>
+              <p className="mt-0.5 font-medium text-gray-900">{sub.dailyEstimateLimit ?? "-"}건</p>
+            </div>
+            <div>
+              <p className="text-gray-500">시작일</p>
+              <p className="mt-0.5 font-medium text-gray-900">{formatDate(sub.currentPeriodStart)}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">만료일</p>
+              <p className="mt-0.5 font-medium text-gray-900">{formatDate(sub.currentPeriodEnd)}</p>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3 text-[13px] text-gray-400">활성 구독이 없습니다.</p>
+        )}
+      </div>
+
+      {/* 관리 액션 */}
+      <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+        <h3 className="text-[14px] font-bold text-gray-900">구독 관리</h3>
+
+        {/* 플랜 변경 */}
+        <div className="mt-4 flex items-end gap-3">
+          <div className="flex-1">
+            <label className="block text-[12px] font-medium text-gray-500">플랜 변경</label>
+            <select
+              value={selectedPlanId}
+              onChange={(e) => setSelectedPlanId(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-[13px] text-gray-900 focus:border-gray-900 focus:outline-none"
+            >
+              {plans.map((p: any) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.tier} / {Number(p.price).toLocaleString()}원 / 일일 {p.dailyEstimateLimit}건)
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={handleChangePlan}
+            disabled={loading === "change"}
+            className="rounded-lg bg-gray-900 px-4 py-2 text-[13px] font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+          >
+            {loading === "change" ? "처리중..." : "변경"}
+          </button>
+        </div>
+
+        {/* 기간 연장 */}
+        {sub?.status === "ACTIVE" && (
+          <div className="mt-4 flex items-end gap-3 border-t border-gray-100 pt-4">
+            <div className="flex-1">
+              <label className="block text-[12px] font-medium text-gray-500">구독 연장</label>
+              <select
+                value={extendMonths}
+                onChange={(e) => setExtendMonths(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-[13px] text-gray-900 focus:border-gray-900 focus:outline-none"
+              >
+                {[1, 2, 3, 6, 12].map((m) => (
+                  <option key={m} value={m}>{m}개월</option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={handleExtend}
+              disabled={loading === "extend"}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading === "extend" ? "처리중..." : "연장"}
+            </button>
+          </div>
+        )}
+
+        {/* 무료 체험 부여 */}
+        {(!sub || sub.status !== "ACTIVE") && (
+          <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+            <div>
+              <p className="text-[13px] font-medium text-gray-700">무료 체험 부여</p>
+              <p className="text-[12px] text-gray-500">Basic 3개월 무료 체험을 부여합니다.</p>
+            </div>
+            <button
+              onClick={handleGrantTrial}
+              disabled={loading === "trial"}
+              className="rounded-lg bg-purple-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-purple-700 disabled:opacity-50"
+            >
+              {loading === "trial" ? "처리중..." : "체험 부여"}
+            </button>
           </div>
         )}
       </div>
+
+      {/* 구독 이력 */}
+      {history.length > 0 && (
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <h3 className="border-b border-gray-100 px-4 py-3 text-[13px] font-bold text-gray-900">구독 이력</h3>
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50/50">
+                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">등급</th>
+                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
+                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">플랜</th>
+                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">기간</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((h: any) => (
+                <tr key={h.id} className="border-b border-gray-50 last:border-0">
+                  <td className="px-3 py-2">
+                    <span className={cn(
+                      "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                      h.plan?.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
+                      h.plan?.tier === "PRO" ? "bg-blue-50 text-blue-700" :
+                      "bg-gray-900 text-white"
+                    )}>
+                      {h.plan?.tier || "-"}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className={cn(
+                      "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                      h.status === "ACTIVE" ? "bg-green-50 text-green-700" :
+                      h.status === "EXPIRED" ? "bg-red-50 text-red-600" :
+                      "bg-gray-200 text-gray-600"
+                    )}>
+                      {h.status === "ACTIVE" ? "활성" : h.status === "EXPIRED" ? "만료" : h.status === "CANCELLED" ? "취소" : h.status}
+                    </span>
+                    {h.isTrial && <span className="ml-1 text-[10px] text-purple-600">체험</span>}
+                  </td>
+                  <td className="px-3 py-2 text-[12px] text-gray-700">{h.plan?.name || "-"}</td>
+                  <td className="px-3 py-2 text-[12px] text-gray-500">
+                    {formatDate(h.currentPeriodStart)} ~ {formatDate(h.currentPeriodEnd)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
