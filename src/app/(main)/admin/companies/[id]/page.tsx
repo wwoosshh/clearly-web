@@ -601,7 +601,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
                       <span className="font-medium text-orange-600">환불 예상: {(dailyCost * d.remainingDays).toLocaleString()}원</span>
                     )}
                     <span className="text-gray-400">
-                      ~{formatDate(s.projectedEnd || s.currentPeriodEnd)}
+                      {formatDate(s.projectedStart || s.currentPeriodStart)} ~ {formatDate(s.projectedEnd || s.currentPeriodEnd)}
                       {s.status !== "ACTIVE" && " (예상)"}
                     </span>
                   </div>
