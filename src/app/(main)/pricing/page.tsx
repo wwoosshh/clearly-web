@@ -27,14 +27,17 @@ export default function PricingPage() {
     PRO: SubscriptionPlan[];
     PREMIUM: SubscriptionPlan[];
   } | null>(null);
-  const [bankAccount, setBankAccount] = useState<string | null>(null);
+  const [bankInfo, setBankInfo] = useState<{ bankName: string; bankAccount: string; accountHolder: string } | null>(null);
 
   useEffect(() => {
     api.get("/subscriptions/plans").then(({ data }) => {
       setPlans(data?.data ?? data);
     }).catch(() => {});
-    api.get("/settings/payment-bank-account").then(({ data }) => {
-      setBankAccount(data?.data ?? null);
+    api.get("/settings/payment-info").then(({ data }) => {
+      const info = data?.data ?? data;
+      if (info && (info.bankName || info.bankAccount || info.accountHolder)) {
+        setBankInfo(info);
+      }
     }).catch(() => {});
   }, []);
 
@@ -134,9 +137,11 @@ export default function PricingPage() {
         <p className="mt-2 text-[13px] text-gray-600 leading-relaxed">
           요금제 구매는 계좌이체로 진행됩니다. 아래 계좌로 입금 후 관리자에게 연락해 주시면 확인 후 구독이 활성화됩니다.
         </p>
-        {bankAccount ? (
+        {bankInfo ? (
           <div className="mt-3 rounded-lg bg-white border border-gray-200 px-4 py-3">
-            <p className="text-[14px] font-semibold text-gray-900">{bankAccount}</p>
+            <p className="text-[14px] font-semibold text-gray-900">
+              {[bankInfo.bankName, bankInfo.bankAccount, bankInfo.accountHolder ? `예금주: ${bankInfo.accountHolder}` : ""].filter(Boolean).join(" / ")}
+            </p>
           </div>
         ) : (
           <div className="mt-3 rounded-lg bg-white border border-gray-200 px-4 py-3">

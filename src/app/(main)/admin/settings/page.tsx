@@ -31,7 +31,7 @@ const CATEGORIES: Record<string, { label: string; keys: string[] }> = {
   },
   payment: {
     label: "결제 설정",
-    keys: ["payment_bank_account"],
+    keys: ["payment_bank_name", "payment_bank_account", "payment_account_holder"],
   },
 };
 

@@ -226,22 +226,40 @@ export default function MyPage() {
         ) : isCompany ? (
           /* 업체 전용 활동 요약 */
           <>
-          {subscription && (
-            <div className="mt-3 mb-3 rounded-xl border border-gray-200 bg-white p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-[13px] font-medium text-gray-700">구독 상태</span>
-                  <SubscriptionBadge tier={subscription.tier} />
-                  {subscription.isTrial && (
-                    <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">체험</span>
-                  )}
+          {subscription && (() => {
+            const start = new Date(subscription.currentPeriodStart).getTime();
+            const end = new Date(subscription.currentPeriodEnd).getTime();
+            const now = Date.now();
+            const totalDays = Math.max(1, Math.ceil((end - start) / 86400000));
+            const remainingDays = Math.max(0, Math.ceil((end - now) / 86400000));
+            const remainingPercent = Math.min(100, Math.round((remainingDays / totalDays) * 100));
+            const barColor = remainingPercent >= 50 ? "bg-green-500" : remainingPercent >= 20 ? "bg-yellow-500" : "bg-red-500";
+            return (
+              <div className="mt-3 mb-3 rounded-xl border border-gray-200 bg-white p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-medium text-gray-700">구독 상태</span>
+                    <SubscriptionBadge tier={subscription.tier} />
+                    {subscription.isTrial && (
+                      <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">체험</span>
+                    )}
+                  </div>
+                  <span className="text-[12px] text-gray-500">
+                    {new Date(subscription.currentPeriodEnd).toLocaleDateString("ko-KR")}까지
+                  </span>
                 </div>
-                <span className="text-[12px] text-gray-500">
-                  {new Date(subscription.currentPeriodEnd).toLocaleDateString("ko-KR")}까지
-                </span>
+                <div className="mt-3 relative h-7 rounded-full bg-gray-100 overflow-hidden">
+                  <div
+                    className={`absolute inset-y-0 left-0 rounded-full ${barColor} transition-all`}
+                    style={{ width: `${remainingPercent}%` }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-gray-700">
+                    {remainingDays}일 남음 / 총 {totalDays}일
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <Link
               href="/estimates/submitted"

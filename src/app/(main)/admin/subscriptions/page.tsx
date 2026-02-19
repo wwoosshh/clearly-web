@@ -32,6 +32,8 @@ interface SubscriptionStats {
   total: number;
   active: number;
   expired: number;
+  paused: number;
+  queued: number;
   trial: number;
   byTier: { BASIC: number; PRO: number; PREMIUM: number };
   expiringIn7Days: number;
@@ -49,6 +51,8 @@ interface PlanOption {
 const statusTabs = [
   { key: "", label: "전체" },
   { key: "ACTIVE", label: "활성" },
+  { key: "PAUSED", label: "일시정지" },
+  { key: "QUEUED", label: "대기" },
   { key: "EXPIRED", label: "만료" },
   { key: "CANCELLED", label: "취소" },
 ];
@@ -136,6 +140,8 @@ export default function AdminSubscriptionsPage() {
     }
     const map: Record<string, { label: string; style: string }> = {
       ACTIVE: { label: "활성", style: "bg-green-50 text-green-700" },
+      PAUSED: { label: "일시정지", style: "bg-yellow-50 text-yellow-700" },
+      QUEUED: { label: "대기", style: "bg-indigo-50 text-indigo-700" },
       CANCELLED: { label: "취소", style: "bg-gray-200 text-gray-600" },
       EXPIRED: { label: "만료", style: "bg-red-50 text-red-600" },
       PAST_DUE: { label: "미결제", style: "bg-amber-50 text-amber-700" },
@@ -184,11 +190,13 @@ export default function AdminSubscriptionsPage() {
 
       {/* 통계 카드 */}
       {stats && (
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
           {[
             { label: "전체", value: stats.total ?? 0 },
             { label: "활성", value: stats.active ?? 0 },
             { label: "체험", value: stats.trial ?? 0 },
+            { label: "일시정지", value: stats.paused ?? 0 },
+            { label: "대기", value: stats.queued ?? 0 },
             { label: "Basic", value: stats.byTier?.BASIC ?? 0 },
             { label: "Pro", value: stats.byTier?.PRO ?? 0 },
             { label: "Premium", value: stats.byTier?.PREMIUM ?? 0 },

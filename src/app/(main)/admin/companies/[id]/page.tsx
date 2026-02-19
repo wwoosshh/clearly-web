@@ -484,10 +484,12 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
                 <span className={cn(
                   "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
                   sub.status === "ACTIVE" ? "bg-green-50 text-green-700" :
+                  sub.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" :
+                  sub.status === "QUEUED" ? "bg-indigo-50 text-indigo-700" :
                   sub.status === "EXPIRED" ? "bg-red-50 text-red-600" :
                   "bg-gray-200 text-gray-600"
                 )}>
-                  {sub.status === "ACTIVE" ? "활성" : sub.status === "EXPIRED" ? "만료" : sub.status === "CANCELLED" ? "취소" : sub.status}
+                  {sub.status === "ACTIVE" ? "활성" : sub.status === "PAUSED" ? "일시정지" : sub.status === "QUEUED" ? "대기" : sub.status === "EXPIRED" ? "만료" : sub.status === "CANCELLED" ? "취소" : sub.status}
                 </span>
               </p>
             </div>
@@ -615,10 +617,12 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
                     <span className={cn(
                       "rounded-full px-2 py-0.5 text-[10px] font-semibold",
                       h.status === "ACTIVE" ? "bg-green-50 text-green-700" :
+                      h.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" :
+                      h.status === "QUEUED" ? "bg-indigo-50 text-indigo-700" :
                       h.status === "EXPIRED" ? "bg-red-50 text-red-600" :
                       "bg-gray-200 text-gray-600"
                     )}>
-                      {h.status === "ACTIVE" ? "활성" : h.status === "EXPIRED" ? "만료" : h.status === "CANCELLED" ? "취소" : h.status}
+                      {h.status === "ACTIVE" ? "활성" : h.status === "PAUSED" ? "일시정지" : h.status === "QUEUED" ? "대기" : h.status === "EXPIRED" ? "만료" : h.status === "CANCELLED" ? "취소" : h.status}
                     </span>
                     {h.isTrial && <span className="ml-1 text-[10px] text-purple-600">체험</span>}
                   </td>

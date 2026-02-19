@@ -22,12 +22,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, user, fetchSubscription]);
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === "COMPANY" && subscription === null) {
-      // subscription fetch 완료 후 null이면 팝업 표시
-      // fetchSubscription이 완료된 후에만 체크하기 위해 약간의 딜레이
+    if (isAuthenticated && user?.role === "COMPANY") {
       const timer = setTimeout(() => {
         const currentSub = useSubscriptionStore.getState().subscription;
-        if (currentSub === null) {
+        if (currentSub === null || currentSub.isTrial === true) {
           setShowPaymentPopup(true);
         }
       }, 1000);

@@ -402,7 +402,7 @@ export interface Notification {
 export type SubscriptionTier = "BASIC" | "PRO" | "PREMIUM";
 
 /** 구독 상태 */
-export type SubscriptionStatus = "ACTIVE" | "CANCELLED" | "EXPIRED" | "PAST_DUE";
+export type SubscriptionStatus = "ACTIVE" | "PAUSED" | "QUEUED" | "CANCELLED" | "EXPIRED" | "PAST_DUE";
 
 /** 구독 플랜 */
 export interface SubscriptionPlan {
