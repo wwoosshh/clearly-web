@@ -6,7 +6,7 @@ import type { SubscriptionPlan } from "@/types";
 import { cn } from "@/lib/utils";
 
 const TIER_INFO = {
-  BASIC: { label: "Basic", desc: "가입비", limit: "3건/일", weight: "1.0x" },
+  BASIC: { label: "Basic", desc: "기본형", limit: "3건/일", weight: "1.0x" },
   PRO: { label: "Pro", desc: "성장형", limit: "10건/일", weight: "2.0x" },
   PREMIUM: { label: "Premium", desc: "프리미엄", limit: "50건/일", weight: "3.0x" },
 };
@@ -27,10 +27,14 @@ export default function PricingPage() {
     PRO: SubscriptionPlan[];
     PREMIUM: SubscriptionPlan[];
   } | null>(null);
+  const [bankAccount, setBankAccount] = useState<string | null>(null);
 
   useEffect(() => {
     api.get("/subscriptions/plans").then(({ data }) => {
       setPlans(data?.data ?? data);
+    }).catch(() => {});
+    api.get("/settings/payment-bank-account").then(({ data }) => {
+      setBankAccount(data?.data ?? null);
     }).catch(() => {});
   }, []);
 
@@ -72,14 +76,14 @@ export default function PricingPage() {
               <div className={cn("mt-1 text-[12px]", tier === "PREMIUM" ? "text-gray-300" : "text-gray-500")}>
                 일일 견적 {info.limit}
               </div>
-              {tier === "BASIC" && tierPlans.length > 1 && (
-                <div className="mt-3 space-y-1 border-t border-gray-100 pt-3">
+              {tierPlans.length > 1 && (
+                <div className={cn("mt-3 space-y-1 border-t pt-3", tier === "PREMIUM" ? "border-gray-700" : "border-gray-100")}>
                   {tierPlans.map((p) => (
                     <div key={p.id} className="flex justify-between text-[12px]">
-                      <span className="text-gray-500">
+                      <span className={tier === "PREMIUM" ? "text-gray-400" : "text-gray-500"}>
                         {p.durationMonths}개월
                       </span>
-                      <span className="font-medium text-gray-900">
+                      <span className={cn("font-medium", tier === "PREMIUM" ? "text-white" : "text-gray-900")}>
                         {p.price.toLocaleString()}원
                       </span>
                     </div>
@@ -124,8 +128,28 @@ export default function PricingPage() {
         </div>
       </div>
 
-      <div className="mt-6 text-center text-[12px] text-gray-400">
-        Pro/Premium은 Basic 구독이 활성 상태인 업체만 추가 구매 가능합니다.
+      {/* 결제 안내 */}
+      <div className="mt-10 rounded-xl border border-gray-200 bg-gray-50 p-5">
+        <h2 className="text-[15px] font-bold text-gray-900">결제 안내</h2>
+        <p className="mt-2 text-[13px] text-gray-600 leading-relaxed">
+          요금제 구매는 계좌이체로 진행됩니다. 아래 계좌로 입금 후 관리자에게 연락해 주시면 확인 후 구독이 활성화됩니다.
+        </p>
+        {bankAccount ? (
+          <div className="mt-3 rounded-lg bg-white border border-gray-200 px-4 py-3">
+            <p className="text-[14px] font-semibold text-gray-900">{bankAccount}</p>
+          </div>
+        ) : (
+          <div className="mt-3 rounded-lg bg-white border border-gray-200 px-4 py-3">
+            <p className="text-[13px] text-gray-500">계좌 정보 준비 중입니다. 관리자에게 문의해 주세요.</p>
+          </div>
+        )}
+        <p className="mt-3 text-[12px] text-gray-400">
+          입금 확인 후 영업일 기준 1일 이내 구독이 활성화됩니다.
+        </p>
+      </div>
+
+      <div className="mt-4 text-center text-[12px] text-gray-400">
+        신규 업체는 Basic 3개월 무료 체험이 제공됩니다.
       </div>
     </div>
   );

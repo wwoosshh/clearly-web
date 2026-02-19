@@ -29,6 +29,10 @@ const CATEGORIES: Record<string, { label: string; keys: string[] }> = {
       "premium_daily_estimate_limit",
     ],
   },
+  payment: {
+    label: "결제 설정",
+    keys: ["payment_bank_account"],
+  },
 };
 
 export default function AdminSettingsPage() {
