@@ -26,8 +26,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
   fetchSubscription: async () => {
     try {
       const { data } = await api.get("/subscriptions/my");
-      const sub = data?.data ?? data;
-      set({ subscription: sub });
+      set({ subscription: data?.data ?? null });
     } catch {
       set({ subscription: null });
     }
