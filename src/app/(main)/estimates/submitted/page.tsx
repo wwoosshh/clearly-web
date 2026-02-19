@@ -23,7 +23,6 @@ interface SubmittedEstimate {
   estimatedDuration?: string;
   availableDate?: string;
   images?: string[];
-  pointsUsed: number;
   status: string;
   createdAt: string;
   estimateRequest?: {
@@ -286,12 +285,6 @@ export default function SubmittedEstimatesPage() {
                   </span>
                 </div>
               )}
-              <div className="flex justify-between">
-                <span className="text-[13px] text-gray-500">사용 포인트</span>
-                <span className="text-[14px] text-gray-700">
-                  {selected.pointsUsed}P
-                </span>
-              </div>
               <div className="flex justify-between">
                 <span className="text-[13px] text-gray-500">제출일</span>
                 <span className="text-[14px] text-gray-700">

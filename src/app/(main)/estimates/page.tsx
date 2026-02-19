@@ -10,6 +10,8 @@ import api from "@/lib/api";
 import type { EstimateRequest, CleaningType } from "@/types";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { CLEANING_TYPE_LABELS } from "@/types";
+import EstimateLimitBanner from "@/components/subscription/EstimateLimitBanner";
+import { useSubscriptionStore } from "@/stores/subscription.store";
 
 const ImageLightbox = dynamic(
   () => import("@/components/ui/ImageLightbox").then((m) => m.ImageLightbox),
@@ -22,7 +24,7 @@ export default function EstimatesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<EstimateRequest | null>(null);
   const [showSubmitForm, setShowSubmitForm] = useState(false);
-  const [balance, setBalance] = useState<number | null>(null);
+  const { estimateLimit, fetchEstimateLimit } = useSubscriptionStore();
 
   // 견적 작성 폼
   const [price, setPrice] = useState("");
@@ -44,14 +46,10 @@ export default function EstimatesPage() {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [reqRes, balRes] = await Promise.all([
-        api.get("/estimates/requests"),
-        api.get("/points/balance").catch(() => ({ data: { data: { balance: 0 } } })),
-      ]);
+      const reqRes = await api.get("/estimates/requests");
       const reqResult = (reqRes.data as any)?.data ?? reqRes.data;
       setRequests(reqResult?.data ?? (Array.isArray(reqResult) ? reqResult : []));
-      const balResult = (balRes.data as any)?.data ?? balRes.data;
-      setBalance(balResult?.balance ?? 0);
+      fetchEstimateLimit();
     } catch {
       setRequests([]);
     } finally {
@@ -120,21 +118,17 @@ export default function EstimatesPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
-            견적 요청 목록
-          </h1>
-          <p className="mt-1.5 text-[15px] text-gray-500">
-            고객의 견적 요청에 견적을 제출하세요
-          </p>
-        </div>
-        {balance !== null && (
-          <div className="rounded-lg border border-gray-200 px-4 py-2 text-center">
-            <p className="text-[12px] text-gray-500">보유 포인트</p>
-            <p className="text-[16px] font-bold text-gray-900">{balance.toLocaleString()}P</p>
-          </div>
-        )}
+      <div>
+        <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
+          견적 요청 목록
+        </h1>
+        <p className="mt-1.5 text-[15px] text-gray-500">
+          고객의 견적 요청에 견적을 제출하세요
+        </p>
+      </div>
+
+      <div className="mt-4">
+        <EstimateLimitBanner />
       </div>
 
       {requests.length === 0 ? (
@@ -366,7 +360,7 @@ export default function EstimatesPage() {
         )}
       </Modal>
 
-      {/* 포인트 차감 확인 모달 */}
+      {/* 견적 제출 확인 모달 */}
       <Modal
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
@@ -374,11 +368,16 @@ export default function EstimatesPage() {
         size="sm"
       >
         <p className="text-[14px] text-gray-600">
-          견적을 제출하면 <span className="font-bold">100P</span>가 차감됩니다.
+          이 견적요청에 견적을 제출하시겠습니까?
         </p>
-        <p className="mt-2 text-[13px] text-gray-500">
-          현재 보유 포인트: {balance?.toLocaleString() ?? 0}P
-        </p>
+        {estimateLimit && (
+          <p className="mt-2 text-[13px] text-gray-500">
+            오늘 제출: {estimateLimit.used} / {estimateLimit.limit}건
+            {estimateLimit.remaining <= 0 && (
+              <span className="ml-1 text-red-500">(한도 초과)</span>
+            )}
+          </p>
+        )}
         <div className="mt-5 flex gap-2">
           <button
             onClick={() => setShowConfirmModal(false)}

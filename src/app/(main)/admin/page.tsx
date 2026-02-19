@@ -15,6 +15,9 @@ interface DashboardStats {
   openEstimateRequests: number;
   activeChatRooms: number;
   pendingInquiries: number;
+  activeSubscriptions: number;
+  trialSubscriptions: number;
+  expiredSubscriptions: number;
 }
 
 const statCards: {
@@ -33,6 +36,9 @@ const statCards: {
   { key: "openEstimateRequests", label: "진행중 견적요청", color: "bg-orange-50 text-orange-700", href: "/admin/estimate-requests" },
   { key: "activeChatRooms", label: "활성 채팅방", color: "bg-cyan-50 text-cyan-700", href: "/admin/chat-rooms" },
   { key: "pendingInquiries", label: "미답변 문의", color: "bg-pink-50 text-pink-700", href: "/admin/inquiries" },
+  { key: "activeSubscriptions", label: "활성 구독", color: "bg-teal-50 text-teal-700", href: "/admin/subscriptions" },
+  { key: "trialSubscriptions", label: "체험 구독", color: "bg-violet-50 text-violet-700", href: "/admin/subscriptions" },
+  { key: "expiredSubscriptions", label: "만료 구독", color: "bg-stone-100 text-stone-700", href: "/admin/subscriptions" },
 ];
 
 export default function AdminDashboardPage() {

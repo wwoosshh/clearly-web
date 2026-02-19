@@ -13,13 +13,20 @@ const CATEGORIES: Record<string, { label: string; keys: string[] }> = {
   estimate: {
     label: "견적 시스템",
     keys: [
-      "estimate_point_cost",
-      "welcome_point_amount",
       "max_concurrent_requests",
       "estimate_expiry_days",
       "request_expiry_days",
       "auto_complete_hours",
-      "auto_refund_rate",
+    ],
+  },
+  subscription: {
+    label: "구독 설정",
+    keys: [
+      "free_trial_months",
+      "subscription_expiry_warning_days",
+      "basic_daily_estimate_limit",
+      "pro_daily_estimate_limit",
+      "premium_daily_estimate_limit",
     ],
   },
   tier: {

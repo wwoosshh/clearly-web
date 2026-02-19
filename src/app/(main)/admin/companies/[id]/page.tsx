@@ -12,11 +12,8 @@ export default function AdminCompanyDetailPage() {
   const companyId = params.id as string;
   const [company, setCompany] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [tab, setTab] = useState<"matchings" | "reviews" | "estimates" | "points" | "warnings">("matchings");
+  const [tab, setTab] = useState<"matchings" | "reviews" | "estimates" | "subscription" | "warnings">("matchings");
   const [actionLoading, setActionLoading] = useState(false);
-  const [chargeAmount, setChargeAmount] = useState("");
-  const [chargeDescription, setChargeDescription] = useState("");
-  const [isCharging, setIsCharging] = useState(false);
   const [metrics, setMetrics] = useState<{
     conversionRate: number;
     cancellationRate: number;
@@ -283,7 +280,7 @@ export default function AdminCompanyDetailPage() {
 
       {/* 탭 */}
       <div className="mt-6 flex gap-1 rounded-lg bg-gray-100 p-1">
-        {(["matchings", "reviews", "estimates", "points", "warnings"] as const).map((t) => (
+        {(["matchings", "reviews", "estimates", "subscription", "warnings"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -292,7 +289,7 @@ export default function AdminCompanyDetailPage() {
               tab === t ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
             )}
           >
-            {{ matchings: "매칭내역", reviews: "리뷰", estimates: "견적내역", points: "포인트", warnings: "경고이력" }[t]}
+            {{ matchings: "매칭내역", reviews: "리뷰", estimates: "견적내역", subscription: "구독", warnings: "경고이력" }[t]}
           </button>
         ))}
       </div>
@@ -462,129 +459,113 @@ export default function AdminCompanyDetailPage() {
           </div>
         )}
 
-        {tab === "points" && (
+        {tab === "subscription" && (
           <div>
-            {/* 포인트 지급 폼 */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
-              <h3 className="text-[14px] font-bold text-gray-900">포인트 지급</h3>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const amount = parseInt(chargeAmount);
-                  if (!amount || amount <= 0) {
-                    alert("올바른 금액을 입력해주세요.");
-                    return;
-                  }
-                  if (!confirm(`이 업체에 ${amount.toLocaleString()}P를 지급하시겠습니까?`)) return;
-                  setIsCharging(true);
-                  try {
-                    await api.post("/admin/points/charge", {
-                      companyId,
-                      amount,
-                      description: chargeDescription || "관리자 포인트 지급",
-                    });
-                    setChargeAmount("");
-                    setChargeDescription("");
-                    await fetchCompany();
-                    alert(`${amount.toLocaleString()}P가 지급되었습니다.`);
-                  } catch {
-                    alert("포인트 지급에 실패했습니다.");
-                  } finally {
-                    setIsCharging(false);
-                  }
-                }}
-                className="mt-3 flex flex-col gap-3"
-              >
-                <div className="flex gap-3">
-                  <div className="flex-1">
-                    <label className="block text-[12px] font-medium text-gray-500">지급 금액 (P)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="예: 1000"
-                      value={chargeAmount}
-                      onChange={(e) => setChargeAmount(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-[13px] outline-none focus:border-gray-400"
-                      required
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-[12px] font-medium text-gray-500">지급 사유 (선택)</label>
-                    <input
-                      type="text"
-                      placeholder="예: 프로모션 지급"
-                      value={chargeDescription}
-                      onChange={(e) => setChargeDescription(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-[13px] outline-none focus:border-gray-400"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {[100, 500, 1000, 5000].map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setChargeAmount(String(p))}
-                      className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:bg-gray-50"
-                    >
-                      {p.toLocaleString()}P
-                    </button>
-                  ))}
-                </div>
-                <button
-                  type="submit"
-                  disabled={isCharging || !chargeAmount}
-                  className="w-fit rounded-lg bg-green-600 px-5 py-2 text-[13px] font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
-                >
-                  {isCharging ? "지급 중..." : "포인트 지급"}
-                </button>
-              </form>
-            </div>
-
-            {/* 현재 잔액 + 거래내역 */}
-            <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
-              <p className="text-[13px] text-gray-500">현재 잔액</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900">
-                {(company.pointWallet?.balance || 0).toLocaleString()} P
-              </p>
-            </div>
-            {company.pointWallet?.transactions?.length > 0 && (
-              <div className="mt-3 overflow-hidden rounded-lg border border-gray-200 bg-white">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">유형</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">금액</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">설명</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {company.pointWallet.transactions.map((t: any) => (
-                      <tr key={t.id} className="border-b border-gray-50 last:border-0">
-                        <td className="px-3 py-2">
-                          <span className={cn(
-                            "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                            t.type === "CHARGE" ? "bg-green-50 text-green-700" :
-                            t.type === "USE" ? "bg-red-50 text-red-600" :
-                            "bg-blue-50 text-blue-700"
-                          )}>
-                            {t.type === "CHARGE" ? "충전" : t.type === "USE" ? "사용" : "환불"}
-                          </span>
-                        </td>
-                        <td className={cn(
-                          "px-3 py-2 text-[12px] font-medium",
-                          t.type === "USE" ? "text-red-600" : "text-green-700"
+            {company.subscription ? (
+              <>
+                <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+                  <h3 className="text-[14px] font-bold text-gray-900">현재 구독</h3>
+                  <div className="mt-3 grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-3">
+                    <div>
+                      <p className="text-gray-500">등급</p>
+                      <p className="mt-0.5 font-medium text-gray-900">
+                        <span className={cn(
+                          "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                          company.subscription.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
+                          company.subscription.tier === "PRO" ? "bg-blue-50 text-blue-700" :
+                          "bg-gray-900 text-white"
                         )}>
-                          {t.type === "USE" ? "-" : "+"}{t.amount?.toLocaleString()} P
-                        </td>
-                        <td className="px-3 py-2 text-[12px] text-gray-600">{t.description}</td>
-                        <td className="px-3 py-2 text-[12px] text-gray-500">{formatDate(t.createdAt)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                          {company.subscription.tier}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">상태</p>
+                      <p className="mt-0.5 font-medium text-gray-900">
+                        <span className={cn(
+                          "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                          company.subscription.status === "ACTIVE" ? "bg-green-50 text-green-700" :
+                          company.subscription.status === "EXPIRED" ? "bg-red-50 text-red-600" :
+                          company.subscription.status === "CANCELLED" ? "bg-gray-200 text-gray-600" :
+                          "bg-amber-50 text-amber-700"
+                        )}>
+                          {company.subscription.status === "ACTIVE" ? "활성" :
+                           company.subscription.status === "EXPIRED" ? "만료" :
+                           company.subscription.status === "CANCELLED" ? "취소" : "미결제"}
+                        </span>
+                        {company.subscription.isTrial && (
+                          <span className="ml-1 inline-block rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">체험</span>
+                        )}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">플랜</p>
+                      <p className="mt-0.5 font-medium text-gray-900">{company.subscription.planName || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">일일 견적 한도</p>
+                      <p className="mt-0.5 font-medium text-gray-900">{company.subscription.dailyEstimateLimit || "-"}건</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">시작일</p>
+                      <p className="mt-0.5 font-medium text-gray-900">{formatDate(company.subscription.currentPeriodStart)}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">만료일</p>
+                      <p className="mt-0.5 font-medium text-gray-900">{formatDate(company.subscription.currentPeriodEnd)}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 구독 이력 */}
+                {company.subscriptionHistory?.length > 0 && (
+                  <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+                    <h3 className="border-b border-gray-100 px-4 py-3 text-[13px] font-bold text-gray-900">구독 이력</h3>
+                    <table className="w-full text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-100 bg-gray-50/50">
+                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">등급</th>
+                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
+                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">플랜</th>
+                          <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">기간</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {company.subscriptionHistory.map((h: any) => (
+                          <tr key={h.id} className="border-b border-gray-50 last:border-0">
+                            <td className="px-3 py-2">
+                              <span className={cn(
+                                "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                                h.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
+                                h.tier === "PRO" ? "bg-blue-50 text-blue-700" :
+                                "bg-gray-900 text-white"
+                              )}>
+                                {h.tier}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2">
+                              <span className={cn(
+                                "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                                h.status === "ACTIVE" ? "bg-green-50 text-green-700" :
+                                h.status === "EXPIRED" ? "bg-red-50 text-red-600" :
+                                "bg-gray-200 text-gray-600"
+                              )}>
+                                {h.status === "ACTIVE" ? "활성" : h.status === "EXPIRED" ? "만료" : h.status === "CANCELLED" ? "취소" : h.status}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2 text-[12px] text-gray-700">{h.planName || "-"}</td>
+                            <td className="px-3 py-2 text-[12px] text-gray-500">
+                              {formatDate(h.currentPeriodStart)} ~ {formatDate(h.currentPeriodEnd)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="py-8 text-center text-[13px] text-gray-400">구독 정보가 없습니다.</p>
             )}
           </div>
         )}

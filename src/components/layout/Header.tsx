@@ -5,12 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
+import { useSubscriptionStore } from "@/stores/subscription.store";
+import SubscriptionBadge from "@/components/subscription/SubscriptionBadge";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "./NotificationBell";
 
 const Header = React.memo(function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, isInitialized, logout } = useAuthStore();
+  const { subscription } = useSubscriptionStore();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -114,6 +117,9 @@ const Header = React.memo(function Header() {
                   )}
                 </div>
                 <span className="text-[13px] font-medium">{user.name}</span>
+                {isCompany && subscription && (
+                  <SubscriptionBadge tier={subscription.tier} />
+                )}
               </button>
 
               {isProfileOpen && (

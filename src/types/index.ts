@@ -246,9 +246,6 @@ export type EstimateRequestStatus = "OPEN" | "CLOSED" | "EXPIRED";
 /** 견적 상태 */
 export type EstimateStatus = "SUBMITTED" | "ACCEPTED" | "REJECTED";
 
-/** 포인트 거래 유형 */
-export type PointTransactionType = "CHARGE" | "USE" | "REFUND";
-
 /** 환불 상태 */
 export type RefundStatus = "NONE" | "REQUESTED" | "APPROVED" | "REJECTED";
 
@@ -306,7 +303,6 @@ export interface Estimate {
   message?: string;
   estimatedDuration?: string;
   availableDate?: string;
-  pointsUsed: number;
   images?: string[];
   status: EstimateStatus;
   createdAt: string;
@@ -325,23 +321,6 @@ export interface Estimate {
     images?: string[];
     status: EstimateRequestStatus;
   };
-}
-
-/** 포인트 지갑 */
-export interface PointWallet {
-  id: string;
-  companyId: string;
-  balance: number;
-}
-
-/** 포인트 거래내역 */
-export interface PointTransaction {
-  id: string;
-  type: PointTransactionType;
-  amount: number;
-  description?: string;
-  relatedId?: string;
-  createdAt: string;
 }
 
 /** 채팅방 (확장) */
@@ -405,7 +384,9 @@ export type NotificationType =
   | "ESTIMATE_ACCEPTED"
   | "ESTIMATE_REJECTED"
   | "NEW_ESTIMATE_REQUEST"
-  | "POINT_CHANGE";
+  | "SUBSCRIPTION_CREATED"
+  | "SUBSCRIPTION_EXPIRING"
+  | "SUBSCRIPTION_EXPIRED";
 
 /** 알림 */
 export interface Notification {
@@ -417,4 +398,49 @@ export interface Notification {
   data?: Record<string, any>;
   isRead: boolean;
   createdAt: string;
+}
+
+// =====================
+// 구독 시스템
+// =====================
+
+/** 구독 등급 */
+export type SubscriptionTier = "BASIC" | "PRO" | "PREMIUM";
+
+/** 구독 상태 */
+export type SubscriptionStatus = "ACTIVE" | "CANCELLED" | "EXPIRED" | "PAST_DUE";
+
+/** 구독 플랜 */
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  tier: SubscriptionTier;
+  durationMonths: number;
+  price: number;
+  dailyEstimateLimit: number;
+  priorityWeight: number;
+  features: any;
+}
+
+/** 활성 구독 */
+export interface ActiveSubscription {
+  id: string;
+  companyId: string;
+  tier: SubscriptionTier;
+  status: SubscriptionStatus;
+  planName: string;
+  dailyEstimateLimit: number;
+  priorityWeight: number;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  isTrial: boolean;
+  cancelledAt: string | null;
+}
+
+/** 견적 제출 한도 정보 */
+export interface EstimateLimitInfo {
+  used: number;
+  limit: number;
+  remaining: number;
+  resetAt: string;
 }

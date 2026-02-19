@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth.store";
+import { useSubscriptionStore } from "@/stores/subscription.store";
+import SubscriptionBadge from "@/components/subscription/SubscriptionBadge";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
 import { uploadImage } from "@/lib/upload";
@@ -31,6 +33,7 @@ export default function MyPage() {
   const { user, setUser, logout } = useAuthStore();
   const router = useRouter();
   const isCompany = user?.role === "COMPANY";
+  const { subscription, fetchSubscription } = useSubscriptionStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
@@ -52,6 +55,7 @@ export default function MyPage() {
     if (!user) return;
     if (isCompany) {
       loadCompanyStats();
+      fetchSubscription();
     } else {
       loadUserStats();
     }
@@ -221,6 +225,23 @@ export default function MyPage() {
           </div>
         ) : isCompany ? (
           /* 업체 전용 활동 요약 */
+          <>
+          {subscription && (
+            <div className="mt-3 mb-3 rounded-xl border border-gray-200 bg-white p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] font-medium text-gray-700">구독 상태</span>
+                  <SubscriptionBadge tier={subscription.tier} />
+                  {subscription.isTrial && (
+                    <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">체험</span>
+                  )}
+                </div>
+                <span className="text-[12px] text-gray-500">
+                  {new Date(subscription.currentPeriodEnd).toLocaleDateString("ko-KR")}까지
+                </span>
+              </div>
+            </div>
+          )}
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <Link
               href="/estimates/submitted"
@@ -241,6 +262,7 @@ export default function MyPage() {
               <p className="mt-1 text-[13px] text-gray-500">완료 매칭</p>
             </div>
           </div>
+          </>
         ) : (
           /* 일반 유저 활동 요약 */
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -341,6 +363,21 @@ export default function MyPage() {
                     <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                   </svg>
                   <span className="text-[14px] font-medium text-gray-800">내 견적</span>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </Link>
+              <Link
+                href="/pricing"
+                className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-gray-50"
+              >
+                <div className="flex items-center gap-3">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <line x1="2" y1="10" x2="22" y2="10" />
+                  </svg>
+                  <span className="text-[14px] font-medium text-gray-800">요금제</span>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="9 18 15 12 9 6" />
