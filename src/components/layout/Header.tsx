@@ -41,21 +41,21 @@ const Header = React.memo(function Header() {
   }, []);
 
   const isCompany = isAuthenticated && user?.role === "COMPANY";
+  const isAdmin = isAuthenticated && user?.role === "ADMIN";
 
-  const navLinks = [
-    { href: "/search", label: "업체 찾기" },
-    ...(!isCompany ? [{ href: "/matching", label: "매칭 내역" }] : []),
-    { href: "/chat", label: "채팅" },
-    ...(isCompany
-      ? [
-          { href: "/estimates", label: "견적 리스트" },
-          { href: "/estimates/submitted", label: "내 견적" },
-        ]
-      : []),
-    ...(isAuthenticated && user?.role === "ADMIN"
-      ? [{ href: "/admin", label: "관리자" }]
-      : []),
-  ];
+  const navLinks = isAdmin
+    ? [{ href: "/admin", label: "관리자 페이지" }]
+    : [
+        { href: "/search", label: "업체 찾기" },
+        ...(!isCompany ? [{ href: "/matching", label: "매칭 내역" }] : []),
+        { href: "/chat", label: "채팅" },
+        ...(isCompany
+          ? [
+              { href: "/estimates", label: "견적 리스트" },
+              { href: "/estimates/submitted", label: "내 견적" },
+            ]
+          : []),
+      ];
 
   return (
     <header
@@ -128,22 +128,24 @@ const Header = React.memo(function Header() {
                     <p className="text-[13px] font-semibold text-gray-900">{user.name}</p>
                     <p className="text-[12px] text-gray-500 mt-0.5">{user.email}</p>
                   </div>
-                  <div className="py-1">
-                    <Link
-                      href="/mypage"
-                      className="flex items-center px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      마이페이지
-                    </Link>
-                    <Link
-                      href="/mypage/reviews"
-                      className="flex items-center px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      내 리뷰
-                    </Link>
-                  </div>
+                  {!isAdmin && (
+                    <div className="py-1">
+                      <Link
+                        href="/mypage"
+                        className="flex items-center px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        마이페이지
+                      </Link>
+                      <Link
+                        href="/mypage/reviews"
+                        className="flex items-center px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        내 리뷰
+                      </Link>
+                    </div>
+                  )}
                   <div className="border-t border-gray-100 pt-1">
                     <button
                       onClick={() => {
@@ -231,13 +233,15 @@ const Header = React.memo(function Header() {
                 <div className="h-11" />
               ) : isAuthenticated && user ? (
                 <>
-                  <Link
-                    href="/mypage"
-                    className="py-2 text-[15px] font-medium text-gray-700"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    마이페이지
-                  </Link>
+                  {!isAdmin && (
+                    <Link
+                      href="/mypage"
+                      className="py-2 text-[15px] font-medium text-gray-700"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      마이페이지
+                    </Link>
+                  )}
                   <button
                     onClick={() => { logout(); setIsMobileMenuOpen(false); }}
                     className="py-2 text-left text-[15px] font-medium text-gray-500"
