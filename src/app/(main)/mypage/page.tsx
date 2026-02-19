@@ -233,10 +233,12 @@ export default function MyPage() {
             const totalDays = Math.max(1, Math.ceil((end - start) / 86400000));
             const remainingDays = Math.max(0, Math.ceil((end - now) / 86400000));
             const remainingPercent = Math.min(100, Math.round((remainingDays / totalDays) * 100));
-            const barColor = remainingPercent >= 50 ? "bg-green-500" : remainingPercent >= 20 ? "bg-yellow-500" : "bg-red-500";
+            const fillColor = remainingPercent >= 50 ? "#22c55e" : remainingPercent >= 20 ? "#eab308" : "#ef4444";
             return (
-              <div className="mt-3 mb-3 rounded-xl border border-gray-200 bg-white p-4">
-                <div className="flex items-center justify-between">
+              <div className="mt-3 mb-3 relative rounded-xl border border-gray-200 overflow-hidden p-4"
+                style={{ background: `linear-gradient(to right, ${fillColor}20 ${remainingPercent}%, white ${remainingPercent}%)` }}
+              >
+                <div className="relative z-10 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-[13px] font-medium text-gray-700">구독 상태</span>
                     <SubscriptionBadge tier={subscription.tier} />
@@ -248,14 +250,8 @@ export default function MyPage() {
                     {new Date(subscription.currentPeriodEnd).toLocaleDateString("ko-KR")}까지
                   </span>
                 </div>
-                <div className="mt-3 relative h-7 rounded-full bg-gray-100 overflow-hidden">
-                  <div
-                    className={`absolute inset-y-0 left-0 rounded-full ${barColor} transition-all`}
-                    style={{ width: `${remainingPercent}%` }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-gray-700">
-                    {remainingDays}일 남음 / 총 {totalDays}일
-                  </div>
+                <div className="relative z-10 mt-1.5 text-[11px] font-medium text-gray-500">
+                  {remainingDays}일 남음 / 총 {totalDays}일
                 </div>
               </div>
             );
