@@ -736,7 +736,13 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
                     })()}
                   </td>
                   <td className="px-3 py-2 text-[12px] text-gray-500">
-                    {formatDate(h.currentPeriodStart)} ~ {formatDate(h.currentPeriodEnd)}
+                    {(() => {
+                      const proj = stack.find((s: any) => s.id === h.id);
+                      if (proj && (h.status === "PAUSED" || h.status === "QUEUED")) {
+                        return <>{formatDate(proj.projectedStart)} ~ {formatDate(proj.projectedEnd)} <span className="text-[10px] text-orange-500">(예상)</span></>;
+                      }
+                      return <>{formatDate(h.currentPeriodStart)} ~ {formatDate(h.currentPeriodEnd)}</>;
+                    })()}
                   </td>
                 </tr>
               ))}
