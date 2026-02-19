@@ -406,6 +406,30 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
   const history = company.subscriptions || [];
   const stack: any[] = company.subscriptionStack || [];
 
+  /** 사용일수/총일수/남은일수 계산 */
+  const calcDays = (h: any) => {
+    const start = new Date(h.currentPeriodStart).getTime();
+    const end = new Date(h.currentPeriodEnd).getTime();
+    const totalDays = Math.max(1, Math.ceil((end - start) / 86400000));
+
+    let usedDays: number;
+    if (h.status === "PAUSED" && h.pausedAt) {
+      usedDays = Math.ceil((new Date(h.pausedAt).getTime() - start) / 86400000);
+    } else if (h.status === "CANCELLED" && h.cancelledAt) {
+      usedDays = Math.ceil((new Date(h.cancelledAt).getTime() - start) / 86400000);
+    } else if (h.status === "EXPIRED") {
+      usedDays = totalDays;
+    } else if (h.status === "QUEUED") {
+      usedDays = 0;
+    } else {
+      // ACTIVE
+      usedDays = Math.ceil((Date.now() - start) / 86400000);
+    }
+    usedDays = Math.max(0, Math.min(usedDays, totalDays));
+    const remainingDays = totalDays - usedDays;
+    return { usedDays, totalDays, remainingDays };
+  };
+
   useEffect(() => {
     api.get("/admin/subscription-plans").then(({ data }) => {
       const list = data.data ?? data ?? [];
@@ -534,42 +558,56 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
         <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
           <h3 className="text-[14px] font-bold text-gray-900">구독 스택</h3>
           <div className="mt-3 space-y-2">
-            {stack.map((s: any) => (
-              <div key={s.id} className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/50 px-4 py-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className={cn(
-                    "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                    s.plan?.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
-                    s.plan?.tier === "PRO" ? "bg-blue-50 text-blue-700" :
-                    "bg-gray-900 text-white"
-                  )}>
-                    {s.plan?.tier || "-"}
-                  </span>
-                  <span className="text-[13px] font-medium text-gray-700">{s.plan?.name || "-"}</span>
-                  <span className={cn(
-                    "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                    s.status === "ACTIVE" ? "bg-green-50 text-green-700" :
-                    s.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" :
-                    s.status === "QUEUED" ? "bg-indigo-50 text-indigo-700" :
-                    "bg-gray-200 text-gray-600"
-                  )}>
-                    {s.status === "ACTIVE" ? "활성" : s.status === "PAUSED" ? "일시정지" : s.status === "QUEUED" ? "대기" : s.status}
-                  </span>
-                  {s.isTrial && <span className="text-[10px] text-purple-600">체험</span>}
-                  <span className="text-[11px] text-gray-400">
-                    ~{formatDate(s.projectedEnd || s.currentPeriodEnd)}
-                    {s.status !== "ACTIVE" && " (예상)"}
-                  </span>
+            {stack.map((s: any) => {
+              const d = calcDays(s);
+              const price = Number(s.plan?.price || 0);
+              const dailyCost = price > 0 && d.totalDays > 0 ? Math.round(price / d.totalDays) : 0;
+              return (
+                <div key={s.id} className="rounded-lg border border-gray-100 bg-gray-50/50 px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={cn(
+                        "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                        s.plan?.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
+                        s.plan?.tier === "PRO" ? "bg-blue-50 text-blue-700" :
+                        "bg-gray-900 text-white"
+                      )}>
+                        {s.plan?.tier || "-"}
+                      </span>
+                      <span className="text-[13px] font-medium text-gray-700">{s.plan?.name || "-"}</span>
+                      <span className={cn(
+                        "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                        s.status === "ACTIVE" ? "bg-green-50 text-green-700" :
+                        s.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" :
+                        s.status === "QUEUED" ? "bg-indigo-50 text-indigo-700" :
+                        "bg-gray-200 text-gray-600"
+                      )}>
+                        {s.status === "ACTIVE" ? "활성" : s.status === "PAUSED" ? "일시정지" : s.status === "QUEUED" ? "대기" : s.status}
+                      </span>
+                      {s.isTrial && <span className="text-[10px] text-purple-600">체험</span>}
+                    </div>
+                    <button
+                      onClick={() => handleCancelSubscription(s.id, s.plan?.name || "구독")}
+                      disabled={loading === "cancel"}
+                      className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-[12px] font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
+                    >
+                      {loading === "cancel" ? "처리중..." : "해지"}
+                    </button>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-500">
+                    <span>사용 {d.usedDays}일 / 총 {d.totalDays}일 (남은 {d.remainingDays}일)</span>
+                    {price > 0 && <span>{price.toLocaleString()}원 (일 {dailyCost.toLocaleString()}원)</span>}
+                    {price > 0 && d.remainingDays > 0 && (
+                      <span className="font-medium text-orange-600">환불 예상: {(dailyCost * d.remainingDays).toLocaleString()}원</span>
+                    )}
+                    <span className="text-gray-400">
+                      ~{formatDate(s.projectedEnd || s.currentPeriodEnd)}
+                      {s.status !== "ACTIVE" && " (예상)"}
+                    </span>
+                  </div>
                 </div>
-                <button
-                  onClick={() => handleCancelSubscription(s.id, s.plan?.name || "구독")}
-                  disabled={loading === "cancel"}
-                  className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-[12px] font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
-                >
-                  {loading === "cancel" ? "처리중..." : "해지"}
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -656,6 +694,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
                 <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">등급</th>
                 <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
                 <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">플랜</th>
+                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">사용일수</th>
                 <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">기간</th>
               </tr>
             </thead>
@@ -686,6 +725,16 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
                     {h.isTrial && <span className="ml-1 text-[10px] text-purple-600">체험</span>}
                   </td>
                   <td className="px-3 py-2 text-[12px] text-gray-700">{h.plan?.name || "-"}</td>
+                  <td className="px-3 py-2 text-[12px]">
+                    {(() => {
+                      const d = calcDays(h);
+                      return (
+                        <span className={d.remainingDays > 0 && h.status !== "ACTIVE" && h.status !== "QUEUED" ? "font-medium text-orange-600" : "text-gray-700"}>
+                          {d.usedDays} / {d.totalDays}일
+                        </span>
+                      );
+                    })()}
+                  </td>
                   <td className="px-3 py-2 text-[12px] text-gray-500">
                     {formatDate(h.currentPeriodStart)} ~ {formatDate(h.currentPeriodEnd)}
                   </td>
