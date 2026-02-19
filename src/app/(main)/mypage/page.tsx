@@ -284,7 +284,7 @@ export default function MyPage() {
                       )}
                     </div>
                     <span className="text-[12px] text-gray-400">
-                      {new Date(s.currentPeriodEnd).toLocaleDateString("ko-KR")}까지
+                      ~{new Date(s.projectedEnd || s.currentPeriodEnd).toLocaleDateString("ko-KR")} (예상)
                     </span>
                   </div>
                 ))}

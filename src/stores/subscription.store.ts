@@ -9,6 +9,7 @@ interface SubscriptionStackItem {
   status: string;
   currentPeriodStart: string;
   currentPeriodEnd: string;
+  projectedEnd: string;
   isTrial: boolean;
   pausedAt: string | null;
   plan: {

@@ -557,7 +557,8 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
                   </span>
                   {s.isTrial && <span className="text-[10px] text-purple-600">체험</span>}
                   <span className="text-[11px] text-gray-400">
-                    {formatDate(s.currentPeriodStart)} ~ {formatDate(s.currentPeriodEnd)}
+                    ~{formatDate(s.projectedEnd || s.currentPeriodEnd)}
+                    {s.status !== "ACTIVE" && " (예상)"}
                   </span>
                 </div>
                 <button
