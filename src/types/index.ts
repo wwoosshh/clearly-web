@@ -211,7 +211,7 @@ export interface CompanySearchResult {
   experienceYears?: number | null;
   contactHours?: string | null;
   employeeCount?: number | null;
-  distance: number | null;
+  subscriptionTier?: "BASIC" | "PRO" | "PREMIUM" | null;
   score: number;
   user: {
     id: string;
@@ -230,10 +230,6 @@ export interface CompanySearchResponse {
     limit: number;
     totalPages: number;
   };
-  searchLocation: {
-    latitude: number;
-    longitude: number;
-  } | null;
 }
 
 // =====================

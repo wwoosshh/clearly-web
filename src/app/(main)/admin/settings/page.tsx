@@ -29,19 +29,6 @@ const CATEGORIES: Record<string, { label: string; keys: string[] }> = {
       "premium_daily_estimate_limit",
     ],
   },
-  tier: {
-    label: "등급 기준",
-    keys: [
-      "tier_certified_min_rating",
-      "tier_certified_min_reviews",
-      "tier_premium_min_rating",
-      "tier_premium_min_reviews",
-    ],
-  },
-  action: {
-    label: "자동 조치 기준",
-    keys: ["warning_cancellation_threshold", "suspend_cancellation_threshold"],
-  },
 };
 
 export default function AdminSettingsPage() {

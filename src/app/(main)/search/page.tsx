@@ -8,8 +8,6 @@ import { CompanyCard } from "@/components/company/CompanyCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
-import { AddressAutocomplete } from "@/components/address/AddressAutocomplete";
-import type { AddressSuggestion } from "@/hooks/useAddressSuggestions";
 import type { CompanySearchResponse, CompanySearchResult } from "@/types";
 
 const SPECIALTY_OPTIONS = [
@@ -76,7 +74,6 @@ function SearchPageContent() {
   const isCompany = user?.role === "COMPANY";
 
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
-  const [address, setAddress] = useState(searchParams.get("address") || "");
   const [selectedSpecialty, setSelectedSpecialty] = useState(
     searchParams.get("specialty") || ""
   );
@@ -87,11 +84,6 @@ function SearchPageContent() {
     searchParams.get("sortBy") || "score"
   );
 
-  const [selectedCoords, setSelectedCoords] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
-
   const [companies, setCompanies] = useState<CompanySearchResult[]>([]);
   const [meta, setMeta] = useState<CompanySearchResponse["meta"] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,13 +93,10 @@ function SearchPageContent() {
   const fetchCompanies = useCallback(
     async (params: {
       keyword?: string;
-      address?: string;
       specialty?: string;
       region?: string;
       sortBy?: string;
       page?: number;
-      latitude?: number;
-      longitude?: number;
     }) => {
       setIsLoading(true);
       setHasSearched(true);
@@ -118,12 +107,9 @@ function SearchPageContent() {
           limit: 10,
         };
         if (params.keyword) query.keyword = params.keyword;
-        if (params.address) query.address = params.address;
         if (params.specialty) query.specialty = params.specialty;
         if (params.region) query.region = params.region;
         if (params.sortBy) query.sortBy = params.sortBy;
-        if (params.latitude != null) query.latitude = params.latitude;
-        if (params.longitude != null) query.longitude = params.longitude;
 
         const { data } = await api.get<CompanySearchResponse>(
           "/companies/search",
@@ -148,7 +134,6 @@ function SearchPageContent() {
   useEffect(() => {
     fetchCompanies({
       keyword: searchParams.get("keyword") || "",
-      address: searchParams.get("address") || "",
       specialty: searchParams.get("specialty") || "",
       region: searchParams.get("region") || "",
       sortBy: searchParams.get("sortBy") || "score",
@@ -158,19 +143,15 @@ function SearchPageContent() {
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (keyword) params.set("keyword", keyword);
-    if (address) params.set("address", address);
     if (selectedSpecialty) params.set("specialty", selectedSpecialty);
     if (selectedRegion) params.set("region", selectedRegion);
     if (sortBy !== "score") params.set("sortBy", sortBy);
     router.replace(`/search?${params.toString()}`);
     fetchCompanies({
       keyword,
-      address,
       specialty: selectedSpecialty,
       region: selectedRegion,
       sortBy,
-      latitude: selectedCoords?.latitude,
-      longitude: selectedCoords?.longitude,
     });
   };
 
@@ -178,26 +159,20 @@ function SearchPageContent() {
     setSortBy(newSort);
     fetchCompanies({
       keyword,
-      address,
       specialty: selectedSpecialty,
       region: selectedRegion,
       sortBy: newSort,
       page: 1,
-      latitude: selectedCoords?.latitude,
-      longitude: selectedCoords?.longitude,
     });
   };
 
   const handlePageChange = (page: number) => {
     fetchCompanies({
       keyword,
-      address,
       specialty: selectedSpecialty,
       region: selectedRegion,
       sortBy,
       page,
-      latitude: selectedCoords?.latitude,
-      longitude: selectedCoords?.longitude,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -222,62 +197,8 @@ function SearchPageContent() {
         )}
       </div>
 
-      {/* 주소 입력 필드 (자동완성) */}
-      <div className="mt-6 flex gap-2">
-        <AddressAutocomplete
-          value={address}
-          onChange={(val) => {
-            setAddress(val);
-            // 직접 타이핑 시 기존 좌표 초기화
-            setSelectedCoords(null);
-          }}
-          onSelect={(suggestion: AddressSuggestion) => {
-            const displayAddress =
-              suggestion.roadAddress ||
-              suggestion.jibunAddress ||
-              suggestion.address;
-            setAddress(displayAddress);
-            setSelectedCoords({
-              latitude: suggestion.latitude,
-              longitude: suggestion.longitude,
-            });
-            // 선택 즉시 검색 실행
-            fetchCompanies({
-              keyword,
-              address: displayAddress,
-              specialty: selectedSpecialty,
-              region: selectedRegion,
-              sortBy,
-              latitude: suggestion.latitude,
-              longitude: suggestion.longitude,
-            });
-          }}
-          onClear={() => {
-            setSelectedCoords(null);
-            fetchCompanies({
-              keyword,
-              address: "",
-              specialty: selectedSpecialty,
-              region: selectedRegion,
-              sortBy,
-            });
-          }}
-        />
-      </div>
-
-      {/* 주소 배지 */}
-      {address && (
-        <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-[13px] text-blue-700">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-          {address} 기준 거리순 검색
-        </div>
-      )}
-
       {/* 키워드 검색 바 */}
-      <div className="mt-3 flex gap-2">
+      <div className="mt-6 flex gap-2">
         <input
           type="text"
           value={keyword}
@@ -304,12 +225,9 @@ function SearchPageContent() {
               setSelectedSpecialty("");
               fetchCompanies({
                 keyword,
-                address,
                 specialty: "",
                 region: selectedRegion,
                 sortBy,
-                latitude: selectedCoords?.latitude,
-                longitude: selectedCoords?.longitude,
               });
             }}
             className={cn(
@@ -329,12 +247,9 @@ function SearchPageContent() {
                 setSelectedSpecialty(next);
                 fetchCompanies({
                   keyword,
-                  address,
                   specialty: next,
                   region: selectedRegion,
                   sortBy,
-                  latitude: selectedCoords?.latitude,
-                  longitude: selectedCoords?.longitude,
                 });
               }}
               className={cn(
@@ -359,12 +274,9 @@ function SearchPageContent() {
               setSelectedRegion("");
               fetchCompanies({
                 keyword,
-                address,
                 specialty: selectedSpecialty,
                 region: "",
                 sortBy,
-                latitude: selectedCoords?.latitude,
-                longitude: selectedCoords?.longitude,
               });
             }}
             className={cn(
@@ -384,12 +296,9 @@ function SearchPageContent() {
                 setSelectedRegion(next);
                 fetchCompanies({
                   keyword,
-                  address,
                   specialty: selectedSpecialty,
                   region: next,
                   sortBy,
-                  latitude: selectedCoords?.latitude,
-                  longitude: selectedCoords?.longitude,
                 });
               }}
               className={cn(

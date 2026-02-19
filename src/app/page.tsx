@@ -8,11 +8,11 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function Home() {
   const router = useRouter();
-  const [address, setAddress] = useState("");
+  const [keyword, setKeyword] = useState("");
 
   const handleSearch = () => {
-    if (address.trim()) {
-      router.push(`/search?address=${encodeURIComponent(address.trim())}`);
+    if (keyword.trim()) {
+      router.push(`/search?keyword=${encodeURIComponent(keyword.trim())}`);
     }
   };
 
@@ -56,9 +56,9 @@ export default function Home() {
                     </div>
                     <input
                       type="text"
-                      placeholder="청소할 주소를 입력하세요"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="업체명 또는 키워드로 검색"
+                      value={keyword}
+                      onChange={(e) => setKeyword(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                       className="h-[50px] flex-1 bg-transparent px-3 text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none"
                     />

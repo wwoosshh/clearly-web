@@ -180,6 +180,18 @@ export default function CompanyDetailPage() {
               <h1 className="text-[24px] font-bold text-gray-900">
                 {company.businessName}
               </h1>
+              {company.subscriptionTier && (
+                <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                  company.subscriptionTier === "PREMIUM"
+                    ? "bg-gray-900 text-white"
+                    : company.subscriptionTier === "PRO"
+                    ? "bg-blue-50 text-blue-700"
+                    : "bg-gray-100 text-gray-600"
+                }`}>
+                  {company.subscriptionTier === "PREMIUM" ? "프리미엄" :
+                   company.subscriptionTier === "PRO" ? "프로" : "베이직"}
+                </span>
+              )}
               {company.identityVerified && (
                 <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-[12px] font-semibold text-green-700">
                   본인인증
@@ -193,13 +205,6 @@ export default function CompanyDetailPage() {
               </p>
             )}
           </div>
-          {company.distance != null && (
-            <span className="flex-shrink-0 rounded-full bg-gray-100 px-3 py-1.5 text-[13px] font-medium text-gray-700">
-              {company.distance < 1
-                ? `${Math.round(company.distance * 1000)}m`
-                : `${company.distance}km`}
-            </span>
-          )}
         </div>
 
         {/* 통계 바 */}

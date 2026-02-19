@@ -58,16 +58,23 @@ const CompanyCard = React.memo(function CompanyCard({ company }: CompanyCardProp
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-[16px] font-bold text-gray-900 truncate">
-              {company.businessName}
-            </h3>
-            {company.distance != null && (
-              <span className="flex-shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-[12px] font-medium text-gray-700">
-                {company.distance < 1
-                  ? `${Math.round(company.distance * 1000)}m`
-                  : `${company.distance}km`}
-              </span>
-            )}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <h3 className="text-[16px] font-bold text-gray-900 truncate">
+                {company.businessName}
+              </h3>
+              {company.subscriptionTier && (
+                <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                  company.subscriptionTier === "PREMIUM"
+                    ? "bg-gray-900 text-white"
+                    : company.subscriptionTier === "PRO"
+                    ? "bg-blue-50 text-blue-700"
+                    : "bg-gray-100 text-gray-600"
+                }`}>
+                  {company.subscriptionTier === "PREMIUM" ? "프리미엄" :
+                   company.subscriptionTier === "PRO" ? "프로" : "베이직"}
+                </span>
+              )}
+            </div>
           </div>
           {company.address && (
             <p className="mt-0.5 text-[13px] text-gray-500 truncate">

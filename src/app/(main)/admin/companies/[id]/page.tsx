@@ -12,7 +12,7 @@ export default function AdminCompanyDetailPage() {
   const companyId = params.id as string;
   const [company, setCompany] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [tab, setTab] = useState<"matchings" | "reviews" | "estimates" | "subscription" | "warnings">("matchings");
+  const [tab, setTab] = useState<"matchings" | "reviews" | "estimates" | "subscription">("matchings");
   const [actionLoading, setActionLoading] = useState(false);
   const [metrics, setMetrics] = useState<{
     conversionRate: number;
@@ -20,9 +20,6 @@ export default function AdminCompanyDetailPage() {
     repeatCustomerRate: number;
     disputeRate: number;
   } | null>(null);
-  const [warnings, setWarnings] = useState<any[]>([]);
-  const [resolveLoading, setResolveLoading] = useState<string | null>(null);
-
   const fetchCompany = async () => {
     try {
       const [companyRes, metricsRes] = await Promise.allSettled([
@@ -32,7 +29,6 @@ export default function AdminCompanyDetailPage() {
       if (companyRes.status === "fulfilled") {
         const compData = companyRes.value.data.data;
         setCompany(compData);
-        setWarnings(compData.warnings || []);
       } else {
         throw new Error("fetch failed");
       }
@@ -157,12 +153,6 @@ export default function AdminCompanyDetailPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {company.tier === "PREMIUM" && (
-              <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-[11px] font-semibold text-green-700">프리미엄</span>
-            )}
-            {company.tier === "CERTIFIED" && (
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700">인증</span>
-            )}
             {statusBadge(company.verificationStatus)}
             <span className={cn(
               "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
@@ -280,7 +270,7 @@ export default function AdminCompanyDetailPage() {
 
       {/* 탭 */}
       <div className="mt-6 flex gap-1 rounded-lg bg-gray-100 p-1">
-        {(["matchings", "reviews", "estimates", "subscription", "warnings"] as const).map((t) => (
+        {(["matchings", "reviews", "estimates", "subscription"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -289,7 +279,7 @@ export default function AdminCompanyDetailPage() {
               tab === t ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
             )}
           >
-            {{ matchings: "매칭내역", reviews: "리뷰", estimates: "견적내역", subscription: "구독", warnings: "경고이력" }[t]}
+            {{ matchings: "매칭내역", reviews: "리뷰", estimates: "견적내역", subscription: "구독" }[t]}
           </button>
         ))}
       </div>
@@ -392,68 +382,6 @@ export default function AdminCompanyDetailPage() {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            )}
-          </div>
-        )}
-
-        {tab === "warnings" && (
-          <div>
-            {warnings.length === 0 ? (
-              <p className="py-8 text-center text-[13px] text-gray-400">경고 이력이 없습니다.</p>
-            ) : (
-              <div className="space-y-2">
-                {warnings.map((w: any) => (
-                  <div key={w.id} className="rounded-lg border border-gray-200 bg-white p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                          w.type === "AUTO_SUSPENDED" ? "bg-red-50 text-red-700" :
-                          w.type === "HIGH_CANCELLATION" ? "bg-amber-50 text-amber-700" :
-                          w.type === "HIGH_DISPUTE" ? "bg-orange-50 text-orange-700" :
-                          "bg-gray-100 text-gray-600"
-                        )}>
-                          {w.type === "AUTO_SUSPENDED" ? "자동정지" :
-                           w.type === "HIGH_CANCELLATION" ? "높은취소율" :
-                           w.type === "HIGH_DISPUTE" ? "높은분쟁율" :
-                           w.type === "LOW_RATING" ? "낮은평점" : w.type}
-                        </span>
-                        <span className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                          w.isResolved ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
-                        )}>
-                          {w.isResolved ? "해결됨" : "미해결"}
-                        </span>
-                      </div>
-                      {!w.isResolved && (
-                        <button
-                          onClick={async () => {
-                            if (!confirm("이 경고를 해제하시겠습니까?")) return;
-                            setResolveLoading(w.id);
-                            try {
-                              await api.patch(`/admin/warnings/${w.id}/resolve`);
-                              await fetchCompany();
-                            } catch {
-                              alert("경고 해제에 실패했습니다.");
-                            } finally {
-                              setResolveLoading(null);
-                            }
-                          }}
-                          disabled={resolveLoading === w.id}
-                          className="rounded-md bg-green-600 px-3 py-1 text-[11px] font-semibold text-white hover:bg-green-700 disabled:opacity-50"
-                        >
-                          해제
-                        </button>
-                      )}
-                    </div>
-                    <p className="mt-2 text-[13px] text-gray-700">{w.message}</p>
-                    <p className="mt-1 text-[11px] text-gray-400">
-                      {new Date(w.createdAt).toLocaleString("ko-KR")}
-                      {w.resolvedAt && ` | 해결: ${new Date(w.resolvedAt).toLocaleString("ko-KR")}`}
-                    </p>
-                  </div>
-                ))}
               </div>
             )}
           </div>
