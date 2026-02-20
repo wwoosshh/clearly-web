@@ -42,6 +42,7 @@ export default function CustomersPage() {
   const [filterTag, setFilterTag] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [detailUserId, setDetailUserId] = useState<string | null>(null);
+  const [searching, setSearching] = useState(false);
 
   const [showTagModal, setShowTagModal] = useState(false);
   const [showBatchMessage, setShowBatchMessage] = useState(false);
@@ -106,10 +107,14 @@ export default function CustomersPage() {
 
   // 검색/필터 변경 시 파이프라인 리로드 (디바운스)
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      loadPipeline(search, filterTag);
+    setSearching(true);
+    const timeout = setTimeout(async () => {
+      await loadPipeline(search, filterTag);
+      setSearching(false);
     }, 300);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [search, filterTag]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onDragEnd = (result: DropResult) => {
@@ -264,8 +269,13 @@ export default function CustomersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="이름, 전화번호 검색"
-            className="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-[14px] text-gray-900 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-9 text-[14px] text-gray-900 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none"
           />
+          {searching && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+            </div>
+          )}
         </div>
 
         <select
