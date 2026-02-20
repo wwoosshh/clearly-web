@@ -181,7 +181,7 @@ const Header = React.memo(function Header() {
         </div>
 
         {/* Mobile Right */}
-        <div className="flex items-center gap-1 md:hidden">
+        <div className="ml-auto flex items-center gap-1 md:hidden">
           {isInitialized && isAuthenticated && user && (
             <NotificationBell />
           )}
