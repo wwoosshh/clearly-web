@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCacheStore } from "@/stores/cache.store";
 import { CompanyCard } from "@/components/company/CompanyCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
@@ -98,8 +99,18 @@ function SearchPageContent() {
       sortBy?: string;
       page?: number;
     }) => {
-      setIsLoading(true);
       setHasSearched(true);
+      const cacheKey = `search:${params.keyword || ""}:${params.specialty || ""}:${params.region || ""}:${params.sortBy || "score"}:${params.page || 1}`;
+      const cache = useCacheStore.getState();
+      const cached = cache.get<{ companies: CompanySearchResult[]; meta: CompanySearchResponse["meta"] | null }>(cacheKey, 3 * 60 * 1000);
+
+      if (cached) {
+        setCompanies(cached.companies);
+        setMeta(cached.meta);
+        setCurrentPage(params.page || 1);
+      } else {
+        setIsLoading(true);
+      }
 
       try {
         const query: Record<string, string | number> = {
@@ -117,12 +128,17 @@ function SearchPageContent() {
         );
 
         const result = (data as any)?.data ?? data;
-        setCompanies(Array.isArray(result) ? result : result?.data ?? []);
-        setMeta(result?.meta ?? (data as any)?.meta ?? null);
+        const list = Array.isArray(result) ? result : result?.data ?? [];
+        const resultMeta = result?.meta ?? (data as any)?.meta ?? null;
+        cache.set(cacheKey, { companies: list, meta: resultMeta });
+        setCompanies(list);
+        setMeta(resultMeta);
         setCurrentPage(params.page || 1);
       } catch {
-        setCompanies([]);
-        setMeta(null);
+        if (!cached) {
+          setCompanies([]);
+          setMeta(null);
+        }
       } finally {
         setIsLoading(false);
       }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSubscriptionStore } from "@/stores/subscription.store";
+import { useCacheStore, fetchWithCache } from "@/stores/cache.store";
 import SubscriptionBadge from "@/components/subscription/SubscriptionBadge";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
@@ -72,35 +73,71 @@ export default function MyPage() {
   };
 
   const loadUserStats = async () => {
+    const cache = useCacheStore.getState();
+    const cached = cache.get<UserStats>("mypage:userStats", 3 * 60 * 1000);
+    if (cached) {
+      setUserStats(cached);
+      setIsLoading(false);
+      // 백그라운드 revalidate
+      fetchUserStatsFromApi().then((stats) => {
+        cache.set("mypage:userStats", stats);
+        setUserStats(stats);
+      });
+      return;
+    }
     setIsLoading(true);
+    const stats = await fetchUserStatsFromApi();
+    cache.set("mypage:userStats", stats);
+    setUserStats(stats);
+    setIsLoading(false);
+  };
+
+  const fetchUserStatsFromApi = async (): Promise<UserStats> => {
     const results = await Promise.allSettled([
       api.get("/estimates/requests", { params: { page: 1, limit: 1 } }),
       api.get("/estimates/my", { params: { page: 1, limit: 1 } }),
       api.get("/matchings/requests", { params: { page: 1, limit: 1 } }),
       api.get("/reviews/my", { params: { page: 1, limit: 1 } }),
     ]);
-    setUserStats({
+    return {
       estimateRequests: extractTotal(results[0]),
       estimates: extractTotal(results[1]),
       completedMatchings: extractTotal(results[2]),
       reviews: extractTotal(results[3]),
-    });
-    setIsLoading(false);
+    };
   };
 
   const loadCompanyStats = async () => {
+    const cache = useCacheStore.getState();
+    const cached = cache.get<CompanyStats>("mypage:companyStats", 3 * 60 * 1000);
+    if (cached) {
+      setCompanyStats(cached);
+      setIsLoading(false);
+      // 백그라운드 revalidate
+      fetchCompanyStatsFromApi().then((stats) => {
+        cache.set("mypage:companyStats", stats);
+        setCompanyStats(stats);
+      });
+      return;
+    }
     setIsLoading(true);
+    const stats = await fetchCompanyStatsFromApi();
+    cache.set("mypage:companyStats", stats);
+    setCompanyStats(stats);
+    setIsLoading(false);
+  };
+
+  const fetchCompanyStatsFromApi = async (): Promise<CompanyStats> => {
     const results = await Promise.allSettled([
       api.get("/estimates/company-estimates", { params: { page: 1, limit: 1 } }),
       api.get("/reviews/my", { params: { page: 1, limit: 1 } }),
       api.get("/matchings/requests", { params: { page: 1, limit: 1 } }),
     ]);
-    setCompanyStats({
+    return {
       submittedEstimates: extractTotal(results[0]),
       receivedReviews: extractTotal(results[1]),
       completedMatchings: extractTotal(results[2]),
-    });
-    setIsLoading(false);
+    };
   };
 
   const formatDate = (dateStr?: string) => {

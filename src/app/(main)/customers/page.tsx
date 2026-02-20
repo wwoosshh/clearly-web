@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCacheStore, fetchWithCache } from "@/stores/cache.store";
 import api from "@/lib/api";
 import {
   PipelineStage,
@@ -64,7 +65,9 @@ export default function CustomersPage() {
   }, [isInitialized, isCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadAll = async () => {
-    setLoading(true);
+    const cache = useCacheStore.getState();
+    const hasCached = cache.get("customers:pipeline") && cache.get("customers:stats");
+    if (!hasCached) setLoading(true);
     await Promise.all([loadPipeline(), loadStats(), loadTags()]);
     setLoading(false);
   };
@@ -72,16 +75,20 @@ export default function CustomersPage() {
   const loadPipeline = useCallback(
     async (s?: string, t?: string) => {
       try {
-        const params: Record<string, string> = {};
         const searchVal = s ?? search;
         const tagVal = t ?? filterTag;
+        const params: Record<string, string> = {};
         if (searchVal) params.search = searchVal;
         if (tagVal) params.tag = tagVal;
+        const cacheKey = `customers:pipeline:${searchVal}:${tagVal}`;
 
-        const res = await api.get("/companies/my/customers/pipeline", {
+        const data = await fetchWithCache<PipelineColumn[]>(
+          cacheKey,
+          "/companies/my/customers/pipeline",
           params,
-        });
-        setPipeline(res.data.data);
+          { maxAge: 2 * 60 * 1000, onUpdate: setPipeline },
+        );
+        setPipeline(data);
       } catch {
         // ignore
       }
@@ -91,8 +98,13 @@ export default function CustomersPage() {
 
   const loadStats = async () => {
     try {
-      const res = await api.get("/companies/my/customers/stats");
-      setStats(res.data.data);
+      const data = await fetchWithCache<CustomerStats>(
+        "customers:stats",
+        "/companies/my/customers/stats",
+        undefined,
+        { maxAge: 3 * 60 * 1000, onUpdate: setStats },
+      );
+      setStats(data);
     } catch {
       // ignore
     }
@@ -100,8 +112,13 @@ export default function CustomersPage() {
 
   const loadTags = async () => {
     try {
-      const res = await api.get("/companies/my/tags");
-      setCompanyTags(res.data.data);
+      const data = await fetchWithCache<CompanyTag[]>(
+        "customers:tags",
+        "/companies/my/tags",
+        undefined,
+        { maxAge: 5 * 60 * 1000, onUpdate: setCompanyTags },
+      );
+      setCompanyTags(data);
     } catch {
       // ignore
     }
@@ -148,9 +165,12 @@ export default function CustomersPage() {
       return next;
     });
 
-    // API call
+    // API call + 캐시 무효화
     api
       .patch(`/companies/my/customers/${userId}/stage`, { stage: newStage })
+      .then(() => {
+        useCacheStore.getState().invalidatePrefix("customers:");
+      })
       .catch(() => {
         loadPipeline();
       });
@@ -198,6 +218,7 @@ export default function CustomersPage() {
   const handleCreateTag = async (name: string, color: string) => {
     try {
       await api.post("/companies/my/tags", { name, color });
+      useCacheStore.getState().invalidate("customers:tags");
       await loadTags();
     } catch {
       // ignore
@@ -207,6 +228,7 @@ export default function CustomersPage() {
   const handleDeleteTag = async (tagId: string) => {
     try {
       await api.delete(`/companies/my/tags/${tagId}`);
+      useCacheStore.getState().invalidatePrefix("customers:");
       await loadTags();
       await loadPipeline();
     } catch {

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCacheStore, fetchWithCache } from "@/stores/cache.store";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
@@ -31,20 +32,37 @@ export default function MatchingPage() {
   }, [user, tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = async () => {
-    setIsLoading(true);
+    const cache = useCacheStore.getState();
+    const cacheKey = `matching:${tab}`;
+    const cached = cache.get<any[]>(cacheKey, 2 * 60 * 1000);
+
+    if (cached) {
+      if (tab === "estimates") setEstimates(cached);
+      else setRequests(cached);
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+
     try {
       if (tab === "estimates") {
         const { data } = await api.get("/estimates/my");
         const result = (data as any)?.data ?? data;
-        setEstimates(result?.data ?? (Array.isArray(result) ? result : []));
+        const list = result?.data ?? (Array.isArray(result) ? result : []);
+        cache.set(cacheKey, list);
+        setEstimates(list);
       } else {
         const { data } = await api.get("/estimates/requests");
         const result = (data as any)?.data ?? data;
-        setRequests(result?.data ?? (Array.isArray(result) ? result : []));
+        const list = result?.data ?? (Array.isArray(result) ? result : []);
+        cache.set(cacheKey, list);
+        setRequests(list);
       }
     } catch {
-      setEstimates([]);
-      setRequests([]);
+      if (!cached) {
+        setEstimates([]);
+        setRequests([]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +74,7 @@ export default function MatchingPage() {
       const { data } = await api.patch(`/estimates/${estimateId}/accept`);
       const result = (data as any)?.data ?? data;
       const chatRoomId = result?.chatRoom?.id;
+      useCacheStore.getState().invalidatePrefix("matching:");
       setSelectedEstimate(null);
       if (chatRoomId) {
         router.push(`/chat?roomId=${chatRoomId}`);
@@ -73,6 +92,7 @@ export default function MatchingPage() {
     setIsRejecting(true);
     try {
       await api.patch(`/estimates/${estimateId}/reject`);
+      useCacheStore.getState().invalidatePrefix("matching:");
       setSelectedEstimate(null);
       loadData();
     } catch {

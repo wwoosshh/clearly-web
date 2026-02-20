@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCacheStore } from "@/stores/cache.store";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
@@ -45,14 +46,24 @@ export default function EstimatesPage() {
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = async () => {
-    setIsLoading(true);
+    const cache = useCacheStore.getState();
+    const cached = cache.get<EstimateRequest[]>("estimates:requests", 2 * 60 * 1000);
+    if (cached) {
+      setRequests(cached);
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+
     try {
       const reqRes = await api.get("/estimates/requests");
       const reqResult = (reqRes.data as any)?.data ?? reqRes.data;
-      setRequests(reqResult?.data ?? (Array.isArray(reqResult) ? reqResult : []));
+      const list = reqResult?.data ?? (Array.isArray(reqResult) ? reqResult : []);
+      cache.set("estimates:requests", list);
+      setRequests(list);
       fetchEstimateLimit();
     } catch {
-      setRequests([]);
+      if (!cached) setRequests([]);
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +82,7 @@ export default function EstimatesPage() {
         availableDate: availableDate || undefined,
         images: estimateImages.length > 0 ? estimateImages : undefined,
       });
+      useCacheStore.getState().invalidatePrefix("estimates:");
       setShowConfirmModal(false);
       setShowSubmitForm(false);
       setSelectedRequest(null);

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCacheStore } from "@/stores/cache.store";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
@@ -73,17 +74,30 @@ export default function SubmittedEstimatesPage() {
   }, [user, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadEstimates = async () => {
-    setIsLoading(true);
+    const cache = useCacheStore.getState();
+    const cacheKey = `estimates:submitted:${page}`;
+    const cached = cache.get<{ list: SubmittedEstimate[]; meta: Meta | null }>(cacheKey, 2 * 60 * 1000);
+
+    if (cached) {
+      setEstimates(cached.list);
+      setMeta(cached.meta);
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+
     try {
       const { data } = await api.get("/estimates/company-estimates", {
         params: { page, limit: 20 },
       });
       const result = (data as any)?.data ?? data;
       const list = result?.data ?? (Array.isArray(result) ? result : []);
+      const resultMeta = result?.meta ?? null;
+      cache.set(cacheKey, { list, meta: resultMeta });
       setEstimates(list);
-      setMeta(result?.meta ?? null);
+      setMeta(resultMeta);
     } catch {
-      setEstimates([]);
+      if (!cached) setEstimates([]);
     } finally {
       setIsLoading(false);
     }

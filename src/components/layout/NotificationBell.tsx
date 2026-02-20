@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/stores/notification.store";
 import type { NotificationType } from "@/types";
@@ -139,8 +140,15 @@ export const NotificationBell = React.memo(function NotificationBell() {
         )}
       </button>
 
+      <AnimatePresence>
       {isOpen && (
-        <div className="fixed left-4 right-4 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-[380px] rounded-xl border border-gray-200 bg-white shadow-lg shadow-gray-200/50 overflow-hidden z-[60]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: -4 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: -4 }}
+          transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="fixed left-4 right-4 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-[380px] rounded-xl border border-gray-200 bg-white shadow-lg shadow-gray-200/50 overflow-hidden z-[60]"
+        >
           <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
             <h3 className="text-sm font-semibold text-gray-900">알림</h3>
             {unreadCount > 0 && (
@@ -217,8 +225,9 @@ export const NotificationBell = React.memo(function NotificationBell() {
               </>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 });
