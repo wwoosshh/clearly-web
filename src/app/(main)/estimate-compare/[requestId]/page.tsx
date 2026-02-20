@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -174,6 +174,9 @@ export default function EstimateComparePage() {
   // 최종 수락할 업체 (단일 선택)
   const [chosenEstimateId, setChosenEstimateId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  // 0→>0 전환 횟수: key로 사용해 재마운트 보장
+  const [chartsMountKey, setChartsMountKey] = useState(0);
+  const prevWasEmptyRef = useRef(true);
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
 
@@ -198,6 +201,14 @@ export default function EstimateComparePage() {
     if (!user) return;
     fetchData();
   }, [user, fetchData]);
+
+  // 0 → >0 전환 시에만 key 증가 → 차트 섹션 완전 재마운트
+  useEffect(() => {
+    if (selectedIds.length > 0 && prevWasEmptyRef.current) {
+      setChartsMountKey((k) => k + 1);
+    }
+    prevWasEmptyRef.current = selectedIds.length === 0;
+  }, [selectedIds.length]);
 
   // ── Selection ──────────────────────────────────────────────────────────────
 
@@ -393,6 +404,7 @@ export default function EstimateComparePage() {
           {/* ── Charts & Table: key가 바뀌면 완전히 재마운트 → recharts 애니메이션 재실행 ── */}
           {selected.length > 0 && (
             <motion.div
+              key={chartsMountKey}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35 }}

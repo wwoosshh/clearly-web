@@ -6,22 +6,154 @@ import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/stores/notification.store";
 import type { NotificationType } from "@/types";
 
-const TYPE_ICONS: Record<NotificationType, string> = {
-  ESTIMATE_SUBMITTED: "📩",
-  ESTIMATE_ACCEPTED: "✅",
-  ESTIMATE_REJECTED: "❌",
-  NEW_ESTIMATE_REQUEST: "📋",
-  NEW_MESSAGE: "💬",
-  NEW_REVIEW: "⭐",
-  SUBSCRIPTION_CREATED: "📋",
-  SUBSCRIPTION_EXPIRING: "⏳",
-  SUBSCRIPTION_EXPIRED: "⚠️",
-  MATCHING_REQUEST: "🔔",
-  MATCHING_ACCEPTED: "✅",
-  MATCHING_REJECTED: "❌",
-  SUBSCRIPTION: "📢",
-  SYSTEM: "🔔",
-};
+function TypeIcon({ type }: { type: NotificationType }) {
+  const base = "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg mt-0.5";
+
+  switch (type) {
+    // 견적 제출됨 — 문서 + 화살표 (파랑)
+    case "ESTIMATE_SUBMITTED":
+      return (
+        <span className={`${base} bg-blue-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" />
+            <polyline points="9 15 12 18 15 15" />
+          </svg>
+        </span>
+      );
+
+    // 견적 수락됨 — 원형 체크 (초록)
+    case "ESTIMATE_ACCEPTED":
+    case "MATCHING_ACCEPTED":
+      return (
+        <span className={`${base} bg-emerald-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+        </span>
+      );
+
+    // 견적 거절됨 — 원형 X (빨강)
+    case "ESTIMATE_REJECTED":
+    case "MATCHING_REJECTED":
+      return (
+        <span className={`${base} bg-red-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+        </span>
+      );
+
+    // 새 견적 요청 — 클립보드 + 돋보기 (인디고)
+    case "NEW_ESTIMATE_REQUEST":
+      return (
+        <span className={`${base} bg-indigo-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+            <rect x="9" y="3" width="6" height="4" rx="1" />
+            <line x1="9" y1="12" x2="15" y2="12" />
+            <line x1="9" y1="16" x2="12" y2="16" />
+          </svg>
+        </span>
+      );
+
+    // 새 메시지 — 말풍선 (하늘)
+    case "NEW_MESSAGE":
+      return (
+        <span className={`${base} bg-sky-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+        </span>
+      );
+
+    // 새 리뷰 — 별 (황금)
+    case "NEW_REVIEW":
+      return (
+        <span className={`${base} bg-amber-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+        </span>
+      );
+
+    // 구독 생성됨 — 신용카드 (보라)
+    case "SUBSCRIPTION_CREATED":
+      return (
+        <span className={`${base} bg-violet-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+            <line x1="1" y1="10" x2="23" y2="10" />
+          </svg>
+        </span>
+      );
+
+    // 구독 만료 예정 — 시계 (주황)
+    case "SUBSCRIPTION_EXPIRING":
+      return (
+        <span className={`${base} bg-orange-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </span>
+      );
+
+    // 구독 만료됨 — 경고 삼각형 (빨강)
+    case "SUBSCRIPTION_EXPIRED":
+      return (
+        <span className={`${base} bg-red-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </span>
+      );
+
+    // 매칭 요청 — 사람 + 화살표 (포레스트 그린)
+    case "MATCHING_REQUEST":
+      return (
+        <span className={`${base} bg-[#eef7f3]`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="19" y1="8" x2="19" y2="14" />
+            <line x1="22" y1="11" x2="16" y2="11" />
+          </svg>
+        </span>
+      );
+
+    // 구독 알림 — 스피커/메가폰 (보라)
+    case "SUBSCRIPTION":
+      return (
+        <span className={`${base} bg-violet-50`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg>
+        </span>
+      );
+
+    // 시스템 — 정보 원형 (회색)
+    case "SYSTEM":
+    default:
+      return (
+        <span className={`${base} bg-gray-100`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        </span>
+      );
+  }
+}
 
 function getNotificationLink(
   type: NotificationType,
@@ -189,9 +321,7 @@ export const NotificationBell = React.memo(function NotificationBell() {
                       !notification.isRead ? "bg-blue-50/50" : ""
                     }`}
                   >
-                    <span className="mt-0.5 text-base shrink-0">
-                      {TYPE_ICONS[notification.type] || "🔔"}
-                    </span>
+                    <TypeIcon type={notification.type} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium text-gray-900 truncate">
