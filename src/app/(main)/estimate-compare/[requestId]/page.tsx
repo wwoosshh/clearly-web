@@ -240,8 +240,6 @@ export default function EstimateComparePage() {
   const selected =
     data?.estimates.filter((e) => selectedIds.includes(e.estimateId)) ?? [];
 
-  // 선택 변경 시 recharts 재마운트를 위한 key
-  const chartsKey = selectedIds.slice().sort().join(",");
 
   const barData = selected.map((e) => ({
     name: e.businessName,
@@ -395,7 +393,6 @@ export default function EstimateComparePage() {
           {/* ── Charts & Table: key가 바뀌면 완전히 재마운트 → recharts 애니메이션 재실행 ── */}
           {selected.length > 0 && (
             <motion.div
-              key={chartsKey}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35 }}
