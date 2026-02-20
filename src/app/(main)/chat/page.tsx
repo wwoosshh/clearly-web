@@ -25,7 +25,7 @@ export default function ChatPage() {
     <Suspense
       fallback={
         <div className="flex h-[calc(100vh-60px)] items-center justify-center">
-          <Spinner size="lg" className="text-gray-400" />
+          <Spinner size="lg" className="text-[#4a8c6a]" />
         </div>
       }
     >
@@ -660,7 +660,7 @@ function ChatPageContent() {
   if (!user) {
     return (
       <div className="flex h-[calc(100vh-60px)] items-center justify-center">
-        <p className="text-[15px] text-gray-500">로그인이 필요합니다</p>
+        <p className="text-[15px] text-[#72706a]">로그인이 필요합니다</p>
       </div>
     );
   }
@@ -668,7 +668,7 @@ function ChatPageContent() {
   if (isLoading) {
     return (
       <div className="flex h-[calc(100vh-60px)] items-center justify-center">
-        <Spinner size="lg" className="text-gray-400" />
+        <Spinner size="lg" className="text-[#4a8c6a]" />
       </div>
     );
   }
@@ -678,23 +678,23 @@ function ChatPageContent() {
       {/* 좌측: 채팅방 목록 */}
       <div
         className={cn(
-          "w-full border-r border-gray-200 bg-white md:w-80 md:flex-shrink-0",
+          "w-full border-r border-[#e2ddd6] bg-white md:w-80 md:flex-shrink-0",
           showMobileChat ? "hidden md:block" : "block"
         )}
       >
-        <div className="flex h-14 items-center border-b border-gray-200 px-5">
-          <h2 className="text-[16px] font-bold text-gray-900">채팅</h2>
+        <div className="flex h-14 items-center border-b border-[#e2ddd6] px-5">
+          <h2 className="text-[16px] font-bold text-[#141412]">채팅</h2>
         </div>
 
         {rooms.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f0ede8]">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#72706a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </div>
-            <p className="mt-3 text-[14px] text-gray-500">채팅 내역이 없습니다</p>
-            <p className="mt-1 text-[13px] text-gray-400">업체에 채팅 상담을 시작해보세요</p>
+            <p className="mt-3 text-[14px] text-[#72706a]">채팅 내역이 없습니다</p>
+            <p className="mt-1 text-[13px] text-[#a8a49c]">업체에 채팅 상담을 시작해보세요</p>
           </div>
         ) : (
           <div className="overflow-y-auto">
@@ -706,11 +706,11 @@ function ChatPageContent() {
                   setShowMobileChat(true);
                 }}
                 className={cn(
-                  "flex w-full items-center gap-3 border-b border-gray-100 px-5 py-4 text-left transition-colors",
-                  selectedRoom?.id === room.id ? "bg-gray-50" : "hover:bg-gray-50"
+                  "flex w-full items-center gap-3 border-b border-[#e2ddd6]/50 px-5 py-4 text-left transition-colors",
+                  selectedRoom?.id === room.id ? "bg-[#f0ede8]" : "hover:bg-[#f5f3ee]"
                 )}
               >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-white overflow-hidden">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#141412] text-[#f5f3ee] overflow-hidden">
                   {getRoomProfileImage(room) ? (
                     <Image src={getRoomProfileImage(room)!} alt="" width={40} height={40} className="h-full w-full object-cover" />
                   ) : (
@@ -719,19 +719,19 @@ function ChatPageContent() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[14px] font-semibold text-gray-900 truncate">
+                    <span className="text-[14px] font-semibold text-[#141412] truncate">
                       {getRoomDisplayName(room)}
                     </span>
-                    <span className="flex-shrink-0 text-[12px] text-gray-400">
+                    <span className="flex-shrink-0 text-[12px] text-[#a8a49c]">
                       {formatTime(room.lastSentAt)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-0.5">
-                    <p className="text-[13px] text-gray-500 truncate">
+                    <p className="text-[13px] text-[#72706a] truncate">
                       {room.lastMessage || "대화를 시작해보세요"}
                     </p>
                     {room.unreadCount > 0 && (
-                      <span className="ml-2 flex h-5 min-w-[20px] flex-shrink-0 items-center justify-center rounded-full bg-gray-900 px-1.5 text-[11px] font-bold text-white">
+                      <span className="ml-2 flex h-5 min-w-[20px] flex-shrink-0 items-center justify-center rounded-full bg-[#2d6a4f] px-1.5 text-[11px] font-bold text-[#f5f3ee]">
                         {room.unreadCount}
                       </span>
                     )}
@@ -746,16 +746,16 @@ function ChatPageContent() {
       {/* 우측: 대화 영역 */}
       <div
         className={cn(
-          "flex flex-1 flex-col bg-gray-50",
+          "flex flex-1 flex-col bg-[#f5f3ee]",
           !showMobileChat && !selectedRoom ? "hidden md:flex" : "flex"
         )}
       >
         {selectedRoom ? (
           <>
-            <div className="flex h-14 items-center justify-between border-b border-gray-200 bg-white px-5">
+            <div className="flex h-14 items-center justify-between border-b border-[#e2ddd6] bg-white px-5">
               <div className="flex items-center gap-3">
                 <button
-                  className="md:hidden text-gray-500"
+                  className="md:hidden text-[#72706a]"
                   onClick={() => {
                     setShowMobileChat(false);
                     setSelectedRoom(null);
@@ -765,7 +765,7 @@ function ChatPageContent() {
                     <polyline points="15 18 9 12 15 6" />
                   </svg>
                 </button>
-                <span className="text-[15px] font-semibold text-gray-900">
+                <span className="text-[15px] font-semibold text-[#141412]">
                   {getRoomDisplayName(selectedRoom)}
                 </span>
               </div>
@@ -776,7 +776,7 @@ function ChatPageContent() {
                     setReportError("");
                     setShowReportModal(true);
                   }}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-red-500 transition-colors hover:bg-red-50"
+                  className="rounded-lg border border-[#e2ddd6] px-3 py-1.5 text-[12px] font-medium text-red-500 transition-colors hover:bg-red-50 active:scale-95"
                 >
                   신고
                 </button>
@@ -798,14 +798,14 @@ function ChatPageContent() {
                             setCompletionImages([]);
                             setShowCompletionReportModal(true);
                           }}
-                          className="rounded-lg border border-gray-900 bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-gray-800"
+                          className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] active:scale-95"
                         >
                           완료보고
                         </button>
                       )}
                       {/* 업체: 보고 완료 상태 */}
                       {isCompany && hasReported && (
-                        <span className="rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-[12px] font-medium text-green-700">
+                        <span className="rounded-lg border border-[#d4ede4] bg-[#eef7f3] px-3 py-1.5 text-[12px] font-medium text-[#2d6a4f]">
                           보고 완료
                         </span>
                       )}
@@ -814,7 +814,7 @@ function ChatPageContent() {
                         <button
                           onClick={() => setShowCompletionConfirmModal(true)}
                           disabled={isConfirmingCompletion}
-                          className="rounded-lg border border-gray-900 bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                          className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
                         >
                           완료 확인
                         </button>
@@ -823,7 +823,7 @@ function ChatPageContent() {
                         <button
                           onClick={() => setShowCompleteModal(true)}
                           disabled={isCompleting}
-                          className="rounded-lg border border-gray-900 bg-gray-900 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                          className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
                         >
                           거래완료
                         </button>
@@ -831,7 +831,7 @@ function ChatPageContent() {
                       {/* 거래안함 */}
                       <button
                         onClick={() => setShowDeclineModal(true)}
-                        className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-500 transition-colors hover:bg-gray-50"
+                        className="rounded-lg border border-[#e2ddd6] px-3 py-1.5 text-[12px] font-medium text-[#72706a] transition-colors hover:bg-[#f0ede8] active:scale-95"
                       >
                         거래안함
                       </button>
@@ -845,14 +845,14 @@ function ChatPageContent() {
             {user?.role !== "COMPANY" &&
               selectedRoom.matching?.completionReportedAt &&
               !selectedRoom.matching?.completedAt && (
-              <div className="flex items-center justify-between border-b border-blue-100 bg-blue-50 px-5 py-3">
-                <p className="text-[13px] text-blue-800">
+              <div className="flex items-center justify-between border-b border-[#d4ede4] bg-[#eef7f3] px-5 py-3">
+                <p className="text-[13px] text-[#2d6a4f]">
                   업체가 서비스 완료를 보고했습니다. 확인해주세요.
                 </p>
                 <button
                   onClick={() => setShowCompletionConfirmModal(true)}
                   disabled={isConfirmingCompletion}
-                  className="ml-3 flex-shrink-0 rounded-lg bg-blue-600 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                  className="ml-3 flex-shrink-0 rounded-lg bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
                 >
                   완료 확인
                 </button>
@@ -863,13 +863,13 @@ function ChatPageContent() {
             {user?.role !== "COMPANY" &&
               selectedRoom.matching?.status === "COMPLETED" &&
               !selectedRoom.matching?.review && (
-              <div className="flex items-center justify-between border-b border-green-100 bg-green-50 px-5 py-3">
-                <p className="text-[13px] text-green-800">
-                  거래가 완료되었습니다. 리뷰를 작성해주세요!
+              <div className="flex items-center justify-between border-b border-[#d4ede4] bg-[#eef7f3] px-5 py-3">
+                <p className="text-[13px] text-[#2d6a4f]">
+                  거래가 완료되었습니다. 리뷰를 작성해주세요.
                 </p>
                 <button
                   onClick={() => router.push(`/review/write?matchingId=${selectedRoom.matching!.id}&companyId=${selectedRoom.companyId}`)}
-                  className="ml-3 flex-shrink-0 rounded-lg bg-green-600 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-green-700"
+                  className="ml-3 flex-shrink-0 rounded-lg bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] active:scale-95"
                 >
                   리뷰 작성
                 </button>
@@ -879,8 +879,8 @@ function ChatPageContent() {
             {/* 거래 완료 상태 배너 (리뷰 작성 완료 시) */}
             {selectedRoom.matching?.status === "COMPLETED" &&
               selectedRoom.matching?.review && (
-              <div className="border-b border-gray-100 bg-gray-50 px-5 py-3">
-                <p className="text-center text-[13px] text-gray-500">
+              <div className="border-b border-[#e2ddd6] bg-[#f0ede8] px-5 py-3">
+                <p className="text-center text-[13px] text-[#72706a]">
                   거래가 완료되었습니다.
                 </p>
               </div>
@@ -897,21 +897,21 @@ function ChatPageContent() {
             />
 
             {selectedRoom.userDeclined && selectedRoom.companyDeclined ? (
-              <div className="border-t border-gray-200 bg-gray-50 px-5 py-4">
-                <p className="text-center text-[13px] text-gray-400">
+              <div className="border-t border-[#e2ddd6] bg-[#f0ede8] px-5 py-4">
+                <p className="text-center text-[13px] text-[#a8a49c]">
                   양쪽 모두 거래를 취소하여 대화가 종료되었습니다.
                 </p>
               </div>
             ) : selectedRoom.matching?.status === "COMPLETED" ? (
-              <div className="border-t border-gray-200 bg-gray-50 px-5 py-4">
-                <p className="text-center text-[13px] text-gray-400">
+              <div className="border-t border-[#e2ddd6] bg-[#f0ede8] px-5 py-4">
+                <p className="text-center text-[13px] text-[#a8a49c]">
                   거래가 완료되어 대화가 종료되었습니다.
                 </p>
               </div>
             ) : (
-            <div className="border-t border-gray-200 bg-white p-4">
+            <div className="border-t border-[#e2ddd6] bg-white p-4">
               {isUploadingImage && (
-                <div className="mb-2 text-center text-[12px] text-gray-500">이미지 업로드 중...</div>
+                <div className="mb-2 text-center text-[12px] text-[#72706a]">이미지 업로드 중...</div>
               )}
               <div className="flex gap-2">
                 <input
@@ -924,7 +924,7 @@ function ChatPageContent() {
                 <button
                   onClick={() => imageInputRef.current?.click()}
                   disabled={isUploadingImage}
-                  className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                  className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-lg border border-[#e2ddd6] text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-50 active:scale-95"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
@@ -943,12 +943,12 @@ function ChatPageContent() {
                     }
                   }}
                   placeholder="메시지를 입력하세요"
-                  className="h-[44px] flex-1 rounded-lg border border-gray-200 px-4 text-[14px] placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+                  className="h-[44px] flex-1 rounded-lg border border-[#e2ddd6] px-4 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 focus:outline-none"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!newMessage.trim() || isSending}
-                  className="flex h-[44px] w-[44px] items-center justify-center rounded-lg bg-gray-900 text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex h-[44px] w-[44px] items-center justify-center rounded-lg bg-[#2d6a4f] text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13" />
@@ -962,12 +962,12 @@ function ChatPageContent() {
         ) : (
           <div className="hidden md:flex flex-1 items-center justify-center">
             <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#f0ede8]">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#72706a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
               </div>
-              <p className="mt-4 text-[15px] text-gray-500">채팅방을 선택해주세요</p>
+              <p className="mt-4 text-[15px] text-[#72706a]">채팅방을 선택해주세요</p>
             </div>
           </div>
         )}
@@ -979,21 +979,21 @@ function ChatPageContent() {
         title="거래 취소"
         size="sm"
       >
-        <p className="text-[14px] text-gray-600">거래 취소를 요청하시겠습니까?</p>
-        <p className="mt-2 text-[13px] text-gray-500">
+        <p className="text-[14px] text-[#72706a]">거래 취소를 요청하시겠습니까?</p>
+        <p className="mt-2 text-[13px] text-[#72706a]">
           양쪽 모두 거래 취소를 요청하면 환불 절차가 진행됩니다.
         </p>
         <div className="mt-5 flex gap-2">
           <button
             onClick={() => setShowDeclineModal(false)}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-[#e2ddd6] text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#f0ede8] active:scale-95"
           >
             취소
           </button>
           <button
             onClick={handleDecline}
             disabled={isDeclining}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#141412] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#2a2a28] disabled:opacity-50 active:scale-95"
           >
             거래 취소 요청
           </button>
@@ -1007,21 +1007,21 @@ function ChatPageContent() {
         title="거래 완료"
         size="sm"
       >
-        <p className="text-[14px] text-gray-600">거래를 완료 처리하시겠습니까?</p>
-        <p className="mt-2 text-[13px] text-gray-500">
+        <p className="text-[14px] text-[#72706a]">거래를 완료 처리하시겠습니까?</p>
+        <p className="mt-2 text-[13px] text-[#72706a]">
           거래 완료 후 리뷰를 작성할 수 있습니다.
         </p>
         <div className="mt-5 flex gap-2">
           <button
             onClick={() => setShowCompleteModal(false)}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-[#e2ddd6] text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#f0ede8] active:scale-95"
           >
             취소
           </button>
           <button
             onClick={handleComplete}
             disabled={isCompleting}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
           >
             {isCompleting ? "처리중..." : "거래 완료"}
           </button>
@@ -1037,24 +1037,24 @@ function ChatPageContent() {
       >
         {reportSuccess ? (
           <div className="text-center py-4">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-50">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#eef7f3]">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <p className="mt-3 text-[15px] font-medium text-gray-900">신고가 접수되었습니다</p>
-            <p className="mt-1 text-[13px] text-gray-500">관리자가 검토 후 조치하겠습니다.</p>
+            <p className="mt-3 text-[15px] font-medium text-[#141412]">신고가 접수되었습니다</p>
+            <p className="mt-1 text-[13px] text-[#72706a]">관리자가 검토 후 조치하겠습니다.</p>
             <button
               onClick={resetReportModal}
-              className="mt-5 flex h-[38px] w-full items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800"
+              className="mt-5 flex h-[38px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] active:scale-95"
             >
               확인
             </button>
           </div>
         ) : (
           <div>
-            <p className="text-[14px] text-gray-600">
-              <span className="font-semibold">{selectedRoom ? getRoomDisplayName(selectedRoom) : ""}</span>
+            <p className="text-[14px] text-[#72706a]">
+              <span className="font-semibold text-[#141412]">{selectedRoom ? getRoomDisplayName(selectedRoom) : ""}</span>
               님을 신고합니다.
             </p>
 
@@ -1065,7 +1065,7 @@ function ChatPageContent() {
             )}
 
             <div className="mt-4">
-              <label className="text-[13px] font-medium text-gray-800 mb-2 block">
+              <label className="text-[13px] font-medium text-[#1a1918] mb-2 block">
                 신고 사유 <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-2">
@@ -1080,17 +1080,17 @@ function ChatPageContent() {
                     key={opt.value}
                     onClick={() => setReportReason(opt.value)}
                     className={cn(
-                      "flex items-center rounded-lg border px-4 py-3 text-[14px] text-left transition-colors",
+                      "flex items-center rounded-lg border px-4 py-3 text-[14px] text-left transition-colors active:scale-[0.98]",
                       reportReason === opt.value
-                        ? "border-gray-900 bg-gray-50 font-medium text-gray-900"
-                        : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                        ? "border-[#2d6a4f] bg-[#eef7f3] font-medium text-[#141412]"
+                        : "border-[#e2ddd6] text-[#72706a] hover:bg-[#f5f3ee]"
                     )}
                   >
                     <span className={cn(
                       "mr-3 flex h-5 w-5 items-center justify-center rounded-full border-2",
                       reportReason === opt.value
-                        ? "border-gray-900 bg-gray-900"
-                        : "border-gray-300"
+                        ? "border-[#2d6a4f] bg-[#2d6a4f]"
+                        : "border-[#e2ddd6]"
                     )}>
                       {reportReason === opt.value && (
                         <span className="h-2 w-2 rounded-full bg-white" />
@@ -1103,7 +1103,7 @@ function ChatPageContent() {
             </div>
 
             <div className="mt-4">
-              <label className="text-[13px] font-medium text-gray-800 mb-1.5 block">
+              <label className="text-[13px] font-medium text-[#1a1918] mb-1.5 block">
                 상세 설명 (선택)
               </label>
               <textarea
@@ -1111,21 +1111,21 @@ function ChatPageContent() {
                 onChange={(e) => setReportDescription(e.target.value)}
                 placeholder="구체적인 상황을 설명해주세요"
                 rows={3}
-                className="w-full rounded-lg border border-gray-200 px-3.5 py-3 text-[14px] resize-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+                className="w-full rounded-lg border border-[#e2ddd6] px-3.5 py-3 text-[14px] resize-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 focus:outline-none"
               />
             </div>
 
             <div className="mt-5 flex gap-2">
               <button
                 onClick={resetReportModal}
-                className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-[#e2ddd6] text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#f0ede8] active:scale-95"
               >
                 취소
               </button>
               <button
                 onClick={handleReport}
                 disabled={!reportReason || isReporting}
-                className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-red-600 text-[13px] font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-red-600 text-[13px] font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 active:scale-95"
               >
                 {isReporting ? "접수중..." : "신고 접수"}
               </button>
@@ -1144,7 +1144,7 @@ function ChatPageContent() {
         title="서비스 완료 보고"
         size="md"
       >
-        <p className="text-[14px] text-gray-600">
+        <p className="text-[14px] text-[#72706a]">
           서비스 완료 사진을 업로드해주세요. (최소 1장, 최대 5장)
         </p>
 
@@ -1158,7 +1158,7 @@ function ChatPageContent() {
 
         <div className="mt-4 grid grid-cols-3 gap-2">
           {completionImages.map((url, idx) => (
-            <div key={idx} className="group relative aspect-square overflow-hidden rounded-lg border border-gray-200">
+            <div key={idx} className="group relative aspect-square overflow-hidden rounded-lg border border-[#e2ddd6]">
               <Image src={url} alt={`완료 사진 ${idx + 1}`} fill className="object-cover" />
               <button
                 onClick={() => handleRemoveCompletionImage(idx)}
@@ -1175,10 +1175,10 @@ function ChatPageContent() {
             <button
               onClick={() => completionImageInputRef.current?.click()}
               disabled={isUploadingCompletionImage}
-              className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-500 disabled:opacity-50"
+              className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-[#e2ddd6] text-[#a8a49c] transition-colors hover:border-[#2d6a4f] hover:text-[#2d6a4f] disabled:opacity-50 active:scale-95"
             >
               {isUploadingCompletionImage ? (
-                <Spinner size="sm" className="text-gray-400" />
+                <Spinner size="sm" className="text-[#4a8c6a]" />
               ) : (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19" />
@@ -1195,14 +1195,14 @@ function ChatPageContent() {
               setShowCompletionReportModal(false);
               setCompletionImages([]);
             }}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-[#e2ddd6] text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#f0ede8] active:scale-95"
           >
             취소
           </button>
           <button
             onClick={handleSubmitCompletionReport}
             disabled={completionImages.length === 0 || isSubmittingReport}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
           >
             {isSubmittingReport ? "제출중..." : "완료 보고"}
           </button>
@@ -1216,7 +1216,7 @@ function ChatPageContent() {
         title="서비스 완료 확인"
         size="md"
       >
-        <p className="text-[14px] text-gray-600">
+        <p className="text-[14px] text-[#72706a]">
           업체가 보낸 완료 사진을 확인하고 서비스 완료를 승인해주세요.
         </p>
 
@@ -1225,7 +1225,7 @@ function ChatPageContent() {
             {(selectedRoom.matching.completionImages as string[]).map((url, idx) => (
               <div
                 key={idx}
-                className="relative aspect-square cursor-pointer overflow-hidden rounded-lg border border-gray-200"
+                className="relative aspect-square cursor-pointer overflow-hidden rounded-lg border border-[#e2ddd6]"
                 onClick={() => {
                   setLightboxImages(selectedRoom.matching!.completionImages as string[]);
                   setLightboxIndex(idx);
@@ -1237,21 +1237,21 @@ function ChatPageContent() {
           </div>
         )}
 
-        <p className="mt-3 text-[13px] text-gray-500">
+        <p className="mt-3 text-[13px] text-[#72706a]">
           완료 확인 후 리뷰를 작성할 수 있습니다.
         </p>
 
         <div className="mt-5 flex gap-2">
           <button
             onClick={() => setShowCompletionConfirmModal(false)}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-[#e2ddd6] text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#f0ede8] active:scale-95"
           >
             닫기
           </button>
           <button
             onClick={handleConfirmCompletion}
             disabled={isConfirmingCompletion}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
           >
             {isConfirmingCompletion ? "처리중..." : "완료 확인"}
           </button>
@@ -1306,20 +1306,20 @@ function ChatMessages({
       {isLoadingMessages && messages.length === 0 && (
         <div className="space-y-4 animate-pulse">
           <div className="flex gap-2 justify-start">
-            <div className="h-8 w-8 rounded-full bg-gray-200 flex-shrink-0 mt-5" />
+            <div className="h-8 w-8 rounded-full bg-[#e2ddd6] flex-shrink-0 mt-5" />
             <div>
-              <div className="h-3 w-12 bg-gray-200 rounded mb-2" />
-              <div className="h-10 w-48 bg-gray-200 rounded-2xl rounded-bl-md" />
+              <div className="h-3 w-12 bg-[#e2ddd6] rounded mb-2" />
+              <div className="h-10 w-48 bg-[#e2ddd6] rounded-2xl rounded-bl-md" />
             </div>
           </div>
           <div className="flex justify-end">
-            <div className="h-10 w-40 bg-gray-300 rounded-2xl rounded-br-md" />
+            <div className="h-10 w-40 bg-[#d4ede4] rounded-2xl rounded-br-md" />
           </div>
           <div className="flex gap-2 justify-start">
-            <div className="h-8 w-8 rounded-full bg-gray-200 flex-shrink-0 mt-5" />
+            <div className="h-8 w-8 rounded-full bg-[#e2ddd6] flex-shrink-0 mt-5" />
             <div>
-              <div className="h-3 w-12 bg-gray-200 rounded mb-2" />
-              <div className="h-10 w-56 bg-gray-200 rounded-2xl rounded-bl-md" />
+              <div className="h-3 w-12 bg-[#e2ddd6] rounded mb-2" />
+              <div className="h-10 w-56 bg-[#e2ddd6] rounded-2xl rounded-bl-md" />
             </div>
           </div>
         </div>
@@ -1347,14 +1347,14 @@ function ChatMessages({
               >
                 {isSystem ? (
                   <div className="flex justify-center my-3">
-                    <span className="rounded-full bg-gray-200 px-3 py-1 text-[12px] text-gray-500">
+                    <span className="rounded-full bg-[#e2ddd6] px-3 py-1 text-[12px] text-[#72706a]">
                       {msg.content}
                     </span>
                   </div>
                 ) : (
                   <div className={cn("mb-3 flex gap-2", isMe ? "justify-end" : "justify-start")}>
                     {!isMe && msg.sender && (
-                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-600 overflow-hidden mt-5">
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#e2ddd6] text-[#72706a] overflow-hidden mt-5">
                         {msg.sender.profileImage ? (
                           <Image src={msg.sender.profileImage} alt="" width={32} height={32} className="h-full w-full object-cover" />
                         ) : (
@@ -1364,7 +1364,7 @@ function ChatMessages({
                     )}
                     <div className={cn("max-w-[70%]", isMe ? "items-end" : "items-start")}>
                       {!isMe && msg.sender && (
-                        <p className="mb-1 text-[12px] text-gray-500">{msg.sender.name}</p>
+                        <p className="mb-1 text-[12px] text-[#72706a]">{msg.sender.name}</p>
                       )}
                       {msg.messageType === "IMAGE" && msg.fileUrl ? (
                         <Image
@@ -1373,7 +1373,7 @@ function ChatMessages({
                           width={200}
                           height={200}
                           className={cn(
-                            "max-w-[200px] max-h-[200px] rounded-xl object-cover cursor-pointer border border-gray-200 transition-opacity",
+                            "max-w-[200px] max-h-[200px] rounded-xl object-cover cursor-pointer border border-[#e2ddd6] transition-opacity",
                             isTemp && "opacity-60"
                           )}
                           onClick={() => {
@@ -1386,8 +1386,8 @@ function ChatMessages({
                           className={cn(
                             "rounded-2xl px-4 py-2.5 text-[14px] transition-opacity",
                             isMe
-                              ? "bg-gray-900 text-white rounded-br-md"
-                              : "bg-white text-gray-900 border border-gray-200 rounded-bl-md",
+                              ? "bg-[#2d6a4f] text-[#f5f3ee] rounded-br-md"
+                              : "bg-white text-[#1a1918] border border-[#e2ddd6] rounded-bl-md",
                             isTemp && "opacity-60"
                           )}
                         >
@@ -1396,9 +1396,9 @@ function ChatMessages({
                       )}
                       <div className={cn("flex items-center gap-1 mt-1", isMe ? "flex-row-reverse" : "flex-row")}>
                         {isMe && !isTemp && !msg.isRead && (
-                          <span className="text-[11px] font-semibold text-blue-500">1</span>
+                          <span className="text-[11px] font-semibold text-[#4a8c6a]">1</span>
                         )}
-                        <span className="text-[11px] text-gray-400">
+                        <span className="text-[11px] text-[#a8a49c]">
                           {isTemp
                             ? "전송중..."
                             : new Date(msg.createdAt).toLocaleTimeString("ko-KR", {

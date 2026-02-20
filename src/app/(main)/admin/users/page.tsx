@@ -2,8 +2,26 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+    },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.05 } },
+};
 
 interface User {
   id: string;
@@ -73,9 +91,9 @@ export default function AdminUsersPage() {
 
   const roleBadge = (role: string) => {
     const styles: Record<string, string> = {
-      USER: "bg-gray-100 text-gray-700",
-      COMPANY: "bg-blue-50 text-blue-700",
-      ADMIN: "bg-red-50 text-red-700",
+      USER: "bg-[#f0ede8] text-[#72706a]",
+      COMPANY: "bg-[#eef7f3] text-[#2d6a4f]",
+      ADMIN: "bg-red-50 text-red-600",
     };
     const labels: Record<string, string> = {
       USER: "일반",
@@ -92,25 +110,33 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div>
-      <h1 className="text-xl font-bold text-gray-900">사용자 관리</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        전체 사용자 목록을 관리합니다.
-      </p>
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      <motion.div variants={fadeUp}>
+        <h1 className="text-xl font-bold text-[#1a1918]">사용자 관리</h1>
+        <p className="mt-1 text-sm text-[#72706a]">전체 사용자 목록을 관리합니다.</p>
+      </motion.div>
 
       {/* 검색 + 필터 */}
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+      <motion.div variants={fadeUp} className="mt-6 flex flex-col gap-3 sm:flex-row">
         <form onSubmit={handleSearch} className="flex flex-1 gap-2">
-          <input
-            type="text"
-            placeholder="이름 또는 이메일로 검색..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-[13px] outline-none focus:border-gray-400"
-          />
+          <div className="relative flex-1">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#72706a]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder="이름 또는 이메일로 검색..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-full rounded-lg border border-[#e2ddd6] bg-white py-2 pl-9 pr-3 text-[13px] text-[#1a1918] outline-none placeholder:text-[#72706a] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+            />
+          </div>
           <button
             type="submit"
-            className="rounded-lg bg-gray-900 px-4 py-2 text-[13px] font-medium text-white hover:bg-gray-800"
+            className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a]"
           >
             검색
           </button>
@@ -121,52 +147,55 @@ export default function AdminUsersPage() {
             setRoleFilter(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-[13px] outline-none"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
         >
           <option value="">전체 역할</option>
           <option value="USER">일반</option>
           <option value="COMPANY">업체</option>
           <option value="ADMIN">관리자</option>
         </select>
-      </div>
+      </motion.div>
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
         </div>
       ) : (
         <>
-          <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <motion.div variants={fadeUp} className="mt-4 overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm min-w-[700px]">
+              <table className="w-full min-w-[700px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">이름</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">이메일</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">전화번호</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">역할</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">상태</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">가입일</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">작업</th>
+                  <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">이름</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">이메일</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">전화번호</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">역할</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">상태</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">가입일</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">작업</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-gray-400">
+                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#72706a]">
                         사용자가 없습니다.
                       </td>
                     </tr>
                   ) : (
                     users.map((user) => (
-                      <tr key={user.id} className="border-b border-gray-50 last:border-0">
-                        <td className="px-4 py-3 text-[13px] font-medium text-gray-900">
+                      <tr
+                        key={user.id}
+                        className="border-b border-[#e2ddd6] bg-white transition-colors last:border-0 hover:bg-[#f5f3ee]"
+                      >
+                        <td className="px-4 py-3 text-[13px] font-medium text-[#1a1918]">
                           {user.name}
                         </td>
-                        <td className="px-4 py-3 text-[13px] text-gray-600">
+                        <td className="px-4 py-3 text-[13px] text-[#72706a]">
                           {user.email}
                         </td>
-                        <td className="px-4 py-3 text-[13px] text-gray-600">
+                        <td className="px-4 py-3 text-[13px] text-[#72706a]">
                           {user.phone || "-"}
                         </td>
                         <td className="px-4 py-3">{roleBadge(user.role)}</td>
@@ -175,21 +204,21 @@ export default function AdminUsersPage() {
                             className={cn(
                               "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
                               user.isActive
-                                ? "bg-green-50 text-green-700"
-                                : "bg-gray-100 text-gray-500"
+                                ? "bg-[#eef7f3] text-[#2d6a4f]"
+                                : "bg-red-50 text-red-600"
                             )}
                           >
                             {user.isActive ? "활성" : "비활성"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-[13px] text-gray-500">
+                        <td className="px-4 py-3 text-[13px] text-[#72706a]">
                           {new Date(user.createdAt).toLocaleDateString("ko-KR")}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex gap-1.5">
                             <Link
                               href={`/admin/users/${user.id}`}
-                              className="rounded-md border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+                              className="rounded-md border border-[#e2ddd6] bg-[#f0ede8] px-2.5 py-1 text-[11px] font-semibold text-[#72706a] transition-colors hover:bg-[#e2ddd6]"
                             >
                               상세
                             </Link>
@@ -198,10 +227,10 @@ export default function AdminUsersPage() {
                                 onClick={() => handleToggleActive(user.id)}
                                 disabled={togglingId === user.id}
                                 className={cn(
-                                  "rounded-md px-2.5 py-1 text-[11px] font-semibold text-white transition-colors disabled:opacity-50",
+                                  "rounded-md px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors disabled:opacity-50",
                                   user.isActive
-                                    ? "bg-gray-500 hover:bg-gray-600"
-                                    : "bg-green-600 hover:bg-green-700"
+                                    ? "bg-[#72706a] hover:bg-[#1a1918]"
+                                    : "bg-[#2d6a4f] hover:bg-[#4a8c6a]"
                                 )}
                               >
                                 {user.isActive ? "비활성화" : "활성화"}
@@ -215,31 +244,31 @@ export default function AdminUsersPage() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </motion.div>
 
           {meta && meta.totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-center gap-2">
+            <motion.div variants={fadeUp} className="mt-4 flex items-center justify-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40"
+                className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-40"
               >
                 이전
               </button>
-              <span className="text-[13px] text-gray-500">
+              <span className="text-[13px] text-[#72706a]">
                 {page} / {meta.totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
                 disabled={page === meta.totalPages}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40"
+                className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-40"
               >
                 다음
               </button>
-            </div>
+            </motion.div>
           )}
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

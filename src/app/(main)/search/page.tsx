@@ -10,6 +10,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import FadeIn from "@/components/animation/FadeIn";
+import { motion } from "framer-motion";
 import type { CompanySearchResponse, CompanySearchResult } from "@/types";
 
 const SPECIALTY_OPTIONS = [
@@ -58,7 +59,7 @@ export default function SearchPage() {
       fallback={
         <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
           <div className="flex items-center justify-center py-20">
-            <Spinner size="lg" className="text-gray-400" />
+            <Spinner size="lg" className="text-[#4a8c6a]" />
           </div>
         </div>
       }
@@ -146,7 +147,6 @@ function SearchPageContent() {
     []
   );
 
-  // 초기 로드: 파라미터가 있으면 검색, 없으면 전체 목록
   useEffect(() => {
     fetchCompanies({
       keyword: searchParams.get("keyword") || "",
@@ -197,158 +197,155 @@ function SearchPageContent() {
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       {/* 헤더 */}
       <FadeIn>
-      <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
-        업체 찾기
-      </h1>
-      <div className="mt-1.5 flex items-center justify-between">
-        <p className="text-[15px] text-gray-500">
-          조건에 맞는 청소 업체를 찾아보세요
-        </p>
-        {!isCompany && (
-          <Link
-            href="/estimate/request"
-            className="rounded-lg border border-gray-200 px-4 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
-          >
-            견적 요청하기
-          </Link>
-        )}
-      </div>
-
+        <h1 className="text-[24px] font-bold tracking-tight text-[#141412]">
+          업체 찾기
+        </h1>
+        <div className="mt-1.5 flex items-center justify-between">
+          <p className="text-[15px] text-[#72706a]">
+            조건에 맞는 청소 업체를 찾아보세요
+          </p>
+          {!isCompany && (
+            <Link
+              href="/estimate/request"
+              className="press-scale rounded-lg border border-[#e2ddd6] bg-white px-4 py-2 text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#f0ede8]"
+            >
+              견적 요청하기
+            </Link>
+          )}
+        </div>
       </FadeIn>
 
       {/* 키워드 검색 바 */}
-      <FadeIn delay={0.1}>
-      <div className="mt-6 flex gap-2">
-        <input
-          type="text"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          placeholder="업체명 또는 키워드로 검색"
-          className="h-[46px] flex-1 rounded-lg border border-gray-200 px-4 text-[14px] placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
-        />
-        <button
-          onClick={handleSearch}
-          disabled={isLoading}
-          className="press-scale h-[46px] rounded-lg bg-gray-900 px-6 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          검색
-        </button>
-      </div>
-
+      <FadeIn delay={0.08}>
+        <div className="mt-6 flex gap-2">
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            placeholder="업체명 또는 키워드로 검색"
+            className="h-[46px] flex-1 rounded-lg border border-[#e2ddd6] bg-white px-4 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] outline-none transition-all focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+          />
+          <button
+            onClick={handleSearch}
+            disabled={isLoading}
+            className="press-scale h-[46px] rounded-lg px-6 text-[14px] font-semibold text-[#f5f3ee] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: "#2d6a4f" }}
+          >
+            검색
+          </button>
+        </div>
       </FadeIn>
 
       {/* 전문분야 필터 */}
-      <FadeIn delay={0.15}>
-      <div className="mt-4">
-        <p className="text-[13px] font-medium text-gray-600 mb-2">전문분야</p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => {
-              setSelectedSpecialty("");
-              fetchCompanies({
-                keyword,
-                specialty: "",
-                region: selectedRegion,
-                sortBy,
-              });
-            }}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
-              !selectedSpecialty
-                ? "border-gray-900 bg-gray-900 text-white"
-                : "border-gray-200 text-gray-600 hover:border-gray-400"
-            )}
-          >
-            전체
-          </button>
-          {SPECIALTY_OPTIONS.map((spec) => (
+      <FadeIn delay={0.12}>
+        <div className="mt-4">
+          <p className="text-[13px] font-medium text-[#72706a] mb-2">전문분야</p>
+          <div className="flex flex-wrap gap-2">
             <button
-              key={spec}
               onClick={() => {
-                const next = selectedSpecialty === spec ? "" : spec;
-                setSelectedSpecialty(next);
+                setSelectedSpecialty("");
                 fetchCompanies({
                   keyword,
-                  specialty: next,
+                  specialty: "",
                   region: selectedRegion,
                   sortBy,
                 });
               }}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
-                selectedSpecialty === spec
-                  ? "border-gray-900 bg-gray-900 text-white"
-                  : "border-gray-200 text-gray-600 hover:border-gray-400"
+                "press-scale rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors",
+                !selectedSpecialty
+                  ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                  : "border-[#e2ddd6] bg-white text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]"
               )}
             >
-              {spec}
+              전체
             </button>
-          ))}
+            {SPECIALTY_OPTIONS.map((spec) => (
+              <button
+                key={spec}
+                onClick={() => {
+                  const next = selectedSpecialty === spec ? "" : spec;
+                  setSelectedSpecialty(next);
+                  fetchCompanies({
+                    keyword,
+                    specialty: next,
+                    region: selectedRegion,
+                    sortBy,
+                  });
+                }}
+                className={cn(
+                  "press-scale rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors",
+                  selectedSpecialty === spec
+                    ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                    : "border-[#e2ddd6] bg-white text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]"
+                )}
+              >
+                {spec}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-
       </FadeIn>
 
       {/* 지역 필터 */}
-      <FadeIn delay={0.2}>
-      <div className="mt-3">
-        <p className="text-[13px] font-medium text-gray-600 mb-2">지역</p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => {
-              setSelectedRegion("");
-              fetchCompanies({
-                keyword,
-                specialty: selectedSpecialty,
-                region: "",
-                sortBy,
-              });
-            }}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
-              !selectedRegion
-                ? "border-gray-900 bg-gray-900 text-white"
-                : "border-gray-200 text-gray-600 hover:border-gray-400"
-            )}
-          >
-            전체
-          </button>
-          {REGION_OPTIONS.map((region) => (
+      <FadeIn delay={0.16}>
+        <div className="mt-3">
+          <p className="text-[13px] font-medium text-[#72706a] mb-2">지역</p>
+          <div className="flex flex-wrap gap-2">
             <button
-              key={region}
               onClick={() => {
-                const next = selectedRegion === region ? "" : region;
-                setSelectedRegion(next);
+                setSelectedRegion("");
                 fetchCompanies({
                   keyword,
                   specialty: selectedSpecialty,
-                  region: next,
+                  region: "",
                   sortBy,
                 });
               }}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
-                selectedRegion === region
-                  ? "border-gray-900 bg-gray-900 text-white"
-                  : "border-gray-200 text-gray-600 hover:border-gray-400"
+                "press-scale rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors",
+                !selectedRegion
+                  ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                  : "border-[#e2ddd6] bg-white text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]"
               )}
             >
-              {region}
+              전체
             </button>
-          ))}
+            {REGION_OPTIONS.map((region) => (
+              <button
+                key={region}
+                onClick={() => {
+                  const next = selectedRegion === region ? "" : region;
+                  setSelectedRegion(next);
+                  fetchCompanies({
+                    keyword,
+                    specialty: selectedSpecialty,
+                    region: next,
+                    sortBy,
+                  });
+                }}
+                className={cn(
+                  "press-scale rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors",
+                  selectedRegion === region
+                    ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                    : "border-[#e2ddd6] bg-white text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]"
+                )}
+              >
+                {region}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-
       </FadeIn>
 
       {/* 구분선 + 정렬 */}
-      <div className="mt-5 border-t border-gray-200 pt-4 flex items-center justify-between">
-        <p className="text-[14px] text-gray-500">
+      <div className="mt-5 border-t border-[#e2ddd6] pt-4 flex items-center justify-between">
+        <p className="text-[14px] text-[#72706a]">
           {meta ? (
             <>
               총{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-[#2d6a4f]">
                 {meta.total}
               </span>
               개의 업체
@@ -360,7 +357,7 @@ function SearchPageContent() {
         <select
           value={sortBy}
           onChange={(e) => handleSortChange(e.target.value)}
-          className="rounded-lg border border-gray-200 px-3 py-1.5 text-[13px] text-gray-700 focus:border-gray-900 focus:outline-none"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-1.5 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f]"
         >
           {SORT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -373,8 +370,8 @@ function SearchPageContent() {
       {/* 로딩 상태 */}
       {isLoading && (
         <div className="mt-12 flex flex-col items-center gap-3">
-          <Spinner size="lg" className="text-gray-400" />
-          <p className="text-[14px] text-gray-500">업체를 찾고 있습니다...</p>
+          <Spinner size="lg" className="text-[#4a8c6a]" />
+          <p className="text-[14px] text-[#72706a]">업체를 찾고 있습니다...</p>
         </div>
       )}
 
@@ -383,11 +380,27 @@ function SearchPageContent() {
         <>
           {companies.length > 0 ? (
             <>
-              <div className="mt-4 flex flex-col gap-4">
+              <motion.div
+                className="mt-4 flex flex-col gap-3"
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: {},
+                  show: { transition: { staggerChildren: 0.06 } },
+                }}
+              >
                 {companies.map((company) => (
-                  <CompanyCard key={company.id} company={company} />
+                  <motion.div
+                    key={company.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] } },
+                    }}
+                  >
+                    <CompanyCard company={company} />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
 
               {/* 페이지네이션 */}
               {meta && meta.totalPages > 1 && (
@@ -395,18 +408,9 @@ function SearchPageContent() {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage <= 1}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-[14px] text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-[14px] text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="15 18 9 12 15 6" />
                     </svg>
                   </button>
@@ -427,7 +431,7 @@ function SearchPageContent() {
                       item === "..." ? (
                         <span
                           key={`dots-${idx}`}
-                          className="flex h-9 w-9 items-center justify-center text-[14px] text-gray-400"
+                          className="flex h-9 w-9 items-center justify-center text-[14px] text-[#a8a49c]"
                         >
                           ...
                         </span>
@@ -437,8 +441,8 @@ function SearchPageContent() {
                           onClick={() => handlePageChange(item as number)}
                           className={`flex h-9 w-9 items-center justify-center rounded-lg text-[14px] font-medium transition-colors ${
                             currentPage === item
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-600 hover:bg-gray-100"
+                              ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                              : "text-[#72706a] hover:bg-[#f0ede8]"
                           }`}
                         >
                           {item}
@@ -449,18 +453,9 @@ function SearchPageContent() {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage >= meta.totalPages}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-[14px] text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-[14px] text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9 18 15 12 9 6" />
                     </svg>
                   </button>
@@ -468,14 +463,19 @@ function SearchPageContent() {
               )}
             </>
           ) : (
-            <div className="mt-12 flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="mt-12 flex flex-col items-center text-center"
+            >
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f0ede8]">
                 <svg
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="#9ca3af"
+                  stroke="#a8a49c"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -484,21 +484,22 @@ function SearchPageContent() {
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </div>
-              <p className="mt-4 text-[15px] font-medium text-gray-700">
+              <p className="mt-4 text-[15px] font-medium text-[#1a1918]">
                 조건에 맞는 업체가 없습니다
               </p>
-              <p className="mt-1.5 text-[13px] text-gray-500">
+              <p className="mt-1.5 text-[13px] text-[#72706a]">
                 필터를 변경하거나 다른 키워드로 검색해 보세요
               </p>
               {!isCompany && (
                 <Link
                   href="/estimate/request"
-                  className="mt-4 inline-flex items-center rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
+                  className="press-scale mt-4 inline-flex items-center rounded-lg px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee]"
+                  style={{ backgroundColor: "#2d6a4f" }}
                 >
                   견적 요청하기
                 </Link>
               )}
-            </div>
+            </motion.div>
           )}
         </>
       )}

@@ -3,8 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] } },
+};
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 
 interface UserDetail {
   id: string;
@@ -92,11 +99,11 @@ export default function AdminUserDetailPage() {
 
   const roleBadge = (role: string) => {
     const map: Record<string, { label: string; style: string }> = {
-      USER: { label: "일반", style: "bg-gray-100 text-gray-700" },
-      COMPANY: { label: "업체", style: "bg-blue-50 text-blue-700" },
-      ADMIN: { label: "관리자", style: "bg-red-50 text-red-700" },
+      USER: { label: "일반", style: "bg-[#f0ede8] text-[#72706a]" },
+      COMPANY: { label: "업체", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      ADMIN: { label: "관리자", style: "bg-red-50 text-red-600" },
     };
-    const info = map[role] || { label: role, style: "bg-gray-100 text-gray-600" };
+    const info = map[role] || { label: role, style: "bg-[#f0ede8] text-[#72706a]" };
     return (
       <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-semibold", info.style)}>
         {info.label}
@@ -106,11 +113,11 @@ export default function AdminUserDetailPage() {
 
   const estimateStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
-      SUBMITTED: { label: "대기중", style: "bg-gray-100 text-gray-700" },
-      ACCEPTED: { label: "수락됨", style: "bg-green-50 text-green-700" },
+      SUBMITTED: { label: "대기중", style: "bg-[#fef9ee] text-[#b45309]" },
+      ACCEPTED: { label: "수락됨", style: "bg-[#eef7f3] text-[#2d6a4f]" },
       REJECTED: { label: "거절됨", style: "bg-red-50 text-red-600" },
     };
-    const info = map[status] || { label: status, style: "bg-gray-100 text-gray-600" };
+    const info = map[status] || { label: status, style: "bg-[#f0ede8] text-[#72706a]" };
     return (
       <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", info.style)}>
         {info.label}
@@ -120,13 +127,13 @@ export default function AdminUserDetailPage() {
 
   const matchingStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
-      REQUESTED: { label: "요청", style: "bg-gray-100 text-gray-700" },
-      ACCEPTED: { label: "수락", style: "bg-blue-50 text-blue-700" },
-      COMPLETED: { label: "완료", style: "bg-green-50 text-green-700" },
-      CANCELLED: { label: "취소", style: "bg-gray-200 text-gray-500" },
+      REQUESTED: { label: "요청", style: "bg-[#fef9ee] text-[#b45309]" },
+      ACCEPTED: { label: "수락", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      COMPLETED: { label: "완료", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      CANCELLED: { label: "취소", style: "bg-red-50 text-red-600" },
       REJECTED: { label: "거절", style: "bg-red-50 text-red-600" },
     };
-    const info = map[status] || { label: status, style: "bg-gray-100 text-gray-600" };
+    const info = map[status] || { label: status, style: "bg-[#f0ede8] text-[#72706a]" };
     return (
       <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", info.style)}>
         {info.label}
@@ -137,7 +144,7 @@ export default function AdminUserDetailPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
       </div>
     );
   }
@@ -145,27 +152,31 @@ export default function AdminUserDetailPage() {
   if (!user) return null;
 
   return (
-    <div>
-      <button
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      <motion.button
+        variants={fadeUp}
         onClick={() => router.push("/admin/users")}
-        className="text-[13px] text-gray-500 hover:text-gray-700"
+        className="flex items-center gap-1.5 text-[13px] text-[#72706a] hover:text-[#1a1918] transition-colors"
       >
-        &larr; 사용자 목록으로
-      </button>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        사용자 목록으로
+      </motion.button>
 
       {/* 사용자 정보 카드 */}
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+      <motion.div variants={fadeUp} className="mt-4 rounded-xl border border-[#e2ddd6] bg-white p-4 sm:p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{user.name}</h1>
-            <p className="mt-1 text-[13px] text-gray-500">{user.email}</p>
+            <h1 className="text-xl font-bold text-[#141412]">{user.name}</h1>
+            <p className="mt-1 text-[13px] text-[#72706a]">{user.email}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             {roleBadge(user.role)}
             <span
               className={cn(
                 "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-                user.isActive ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
+                user.isActive ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-red-50 text-red-600"
               )}
             >
               {user.isActive ? "활성" : "비활성"}
@@ -173,7 +184,7 @@ export default function AdminUserDetailPage() {
             {user.deactivatedAt && (() => {
               const daysLeft = getDeactivationDaysLeft();
               return (
-                <span className="rounded-full bg-orange-50 px-2.5 py-0.5 text-[11px] font-semibold text-orange-700">
+                <span className="rounded-full bg-[#fef9ee] px-2.5 py-0.5 text-[11px] font-semibold text-[#b45309]">
                   탈퇴 예정 (D-{daysLeft}일)
                 </span>
               );
@@ -183,23 +194,23 @@ export default function AdminUserDetailPage() {
 
         <div className="mt-4 grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-4">
           <div>
-            <p className="text-gray-500">전화번호</p>
-            <p className="mt-0.5 font-medium text-gray-900">{user.phone || "-"}</p>
+            <p className="text-[#72706a]">전화번호</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">{user.phone || "-"}</p>
           </div>
           <div>
-            <p className="text-gray-500">가입일</p>
-            <p className="mt-0.5 font-medium text-gray-900">{formatDate(user.createdAt)}</p>
+            <p className="text-[#72706a]">가입일</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">{formatDate(user.createdAt)}</p>
           </div>
           <div>
-            <p className="text-gray-500">역할</p>
+            <p className="text-[#72706a]">역할</p>
             <p className="mt-0.5">{roleBadge(user.role)}</p>
           </div>
           {user.company && (
             <div>
-              <p className="text-gray-500">연결 업체</p>
+              <p className="text-[#72706a]">연결 업체</p>
               <Link
                 href={`/admin/companies/${user.company.id}`}
-                className="mt-0.5 text-[13px] font-medium text-blue-600 hover:underline"
+                className="mt-0.5 text-[13px] font-medium text-[#2d6a4f] hover:underline"
               >
                 {user.company.businessName}
               </Link>
@@ -208,13 +219,15 @@ export default function AdminUserDetailPage() {
         </div>
 
         {user.role !== "ADMIN" && (
-          <div className="mt-4 border-t border-gray-100 pt-4">
+          <div className="mt-4 border-t border-[#e2ddd6] pt-4">
             <button
               onClick={handleToggleActive}
               disabled={togglingActive}
               className={cn(
-                "rounded-lg px-4 py-2 text-[13px] font-medium text-white transition-colors disabled:opacity-50",
-                user.isActive ? "bg-gray-600 hover:bg-gray-700" : "bg-green-600 hover:bg-green-700"
+                "rounded-lg px-4 py-2 text-[13px] font-medium transition-colors disabled:opacity-50",
+                user.isActive
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-[#2d6a4f] text-[#f5f3ee] hover:bg-[#4a8c6a]"
               )}
             >
               {user.isActive
@@ -225,15 +238,15 @@ export default function AdminUserDetailPage() {
             </button>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* 탭 */}
-      <div className="mt-6 flex gap-1 rounded-lg bg-gray-100 p-1">
+      <motion.div variants={fadeUp} className="mt-6 flex gap-1 rounded-lg bg-[#f0ede8] p-1">
         <button
           onClick={() => setTab("activity")}
           className={cn(
             "flex-1 rounded-md py-2 text-[13px] font-medium transition-colors",
-            tab === "activity" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+            tab === "activity" ? "bg-white text-[#141412] shadow-sm" : "text-[#72706a] hover:text-[#1a1918]"
           )}
         >
           활동내역
@@ -242,191 +255,191 @@ export default function AdminUserDetailPage() {
           onClick={() => setTab("reports")}
           className={cn(
             "flex-1 rounded-md py-2 text-[13px] font-medium transition-colors",
-            tab === "reports" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+            tab === "reports" ? "bg-white text-[#141412] shadow-sm" : "text-[#72706a] hover:text-[#1a1918]"
           )}
         >
           신고내역
         </button>
-      </div>
+      </motion.div>
 
       {tab === "activity" ? (
-        <div className="mt-4 space-y-6">
+        <motion.div variants={stagger} initial="hidden" animate="show" className="mt-4 space-y-6">
           {/* 매칭 내역 */}
-          <div>
-            <h3 className="text-[14px] font-bold text-gray-900">최근 매칭 ({user.recentMatchings.length}건)</h3>
+          <motion.div variants={fadeUp}>
+            <h3 className="text-[14px] font-semibold text-[#141412]">최근 매칭 ({user.recentMatchings.length}건)</h3>
             {user.recentMatchings.length === 0 ? (
-              <p className="mt-2 text-[13px] text-gray-400">매칭 내역이 없습니다.</p>
+              <p className="mt-2 text-[13px] text-[#72706a]">매칭 내역이 없습니다.</p>
             ) : (
-              <div className="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-white">
+              <div className="mt-2 overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">
+                    <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">
                         {user.role === "COMPANY" ? "사용자" : "업체"}
                       </th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">청소유형</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">청소유형</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">상태</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">날짜</th>
                     </tr>
                   </thead>
                   <tbody>
                     {user.recentMatchings.map((m: any) => (
-                      <tr key={m.id} className="border-b border-gray-50 last:border-0">
-                        <td className="px-3 py-2 text-[12px] text-gray-700">
+                      <tr key={m.id} className="border-b border-[#e2ddd6] last:border-0">
+                        <td className="px-3 py-2.5 text-[12px] text-[#1a1918]">
                           {user.role === "COMPANY"
                             ? (m.user?.name || "-")
                             : (m.company?.businessName || "-")}
                         </td>
-                        <td className="px-3 py-2 text-[12px] text-gray-600">{m.cleaningType}</td>
-                        <td className="px-3 py-2">{matchingStatusBadge(m.status)}</td>
-                        <td className="px-3 py-2 text-[12px] text-gray-500">{formatDate(m.createdAt)}</td>
+                        <td className="px-3 py-2.5 text-[12px] text-[#72706a]">{m.cleaningType}</td>
+                        <td className="px-3 py-2.5">{matchingStatusBadge(m.status)}</td>
+                        <td className="px-3 py-2.5 text-[12px] text-[#72706a]">{formatDate(m.createdAt)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* 리뷰 내역 */}
-          <div>
-            <h3 className="text-[14px] font-bold text-gray-900">
+          <motion.div variants={fadeUp}>
+            <h3 className="text-[14px] font-semibold text-[#141412]">
               {user.role === "COMPANY" ? "받은 리뷰" : "최근 리뷰"} ({user.recentReviews.length}건)
             </h3>
             {user.recentReviews.length === 0 ? (
-              <p className="mt-2 text-[13px] text-gray-400">리뷰 내역이 없습니다.</p>
+              <p className="mt-2 text-[13px] text-[#72706a]">리뷰 내역이 없습니다.</p>
             ) : (
               <div className="mt-2 space-y-2">
                 {user.recentReviews.map((r: any) => (
-                  <div key={r.id} className="rounded-lg border border-gray-200 bg-white p-4">
+                  <div key={r.id} className="rounded-xl border border-[#e2ddd6] bg-white p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-[13px] font-medium text-gray-900">
+                      <span className="text-[13px] font-medium text-[#1a1918]">
                         {user.role === "COMPANY"
                           ? (r.user?.name || "-")
                           : (r.company?.businessName || "-")}
                       </span>
-                      <span className="text-[12px] text-gray-500">
+                      <span className="text-[12px] text-[#72706a]">
                         {"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}
                       </span>
                     </div>
-                    <p className="mt-1 text-[12px] text-gray-600 line-clamp-2">{r.content}</p>
-                    <p className="mt-1 text-[11px] text-gray-400">{formatDate(r.createdAt)}</p>
+                    <p className="mt-1 text-[12px] text-[#72706a] line-clamp-2">{r.content}</p>
+                    <p className="mt-1 text-[11px] text-[#72706a]">{formatDate(r.createdAt)}</p>
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* 업체: 최근 견적 작성 */}
           {user.role === "COMPANY" && user.recentEstimates && user.recentEstimates.length > 0 && (
-            <div>
-              <h3 className="text-[14px] font-bold text-gray-900">최근 견적 작성 ({user.recentEstimates.length}건)</h3>
-              <div className="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <motion.div variants={fadeUp}>
+              <h3 className="text-[14px] font-semibold text-[#141412]">최근 견적 작성 ({user.recentEstimates.length}건)</h3>
+              <div className="mt-2 overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">요청자</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">청소유형</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">견적금액</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
+                    <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">요청자</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">청소유형</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">견적금액</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">상태</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">날짜</th>
                     </tr>
                   </thead>
                   <tbody>
                     {user.recentEstimates.map((est: any) => (
-                      <tr key={est.id} className="border-b border-gray-50 last:border-0">
-                        <td className="px-3 py-2 text-[12px] text-gray-700">
+                      <tr key={est.id} className="border-b border-[#e2ddd6] last:border-0">
+                        <td className="px-3 py-2.5 text-[12px] text-[#1a1918]">
                           {est.estimateRequest?.user?.name || "-"}
                         </td>
-                        <td className="px-3 py-2 text-[12px] text-gray-600">
+                        <td className="px-3 py-2.5 text-[12px] text-[#72706a]">
                           {est.estimateRequest?.cleaningType || "-"}
                         </td>
-                        <td className="px-3 py-2 text-[12px] font-medium text-gray-900">
+                        <td className="px-3 py-2.5 text-[12px] font-medium text-[#1a1918]">
                           {est.price?.toLocaleString()}원
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2.5">
                           {estimateStatusBadge(est.status)}
                         </td>
-                        <td className="px-3 py-2 text-[12px] text-gray-500">{formatDate(est.createdAt)}</td>
+                        <td className="px-3 py-2.5 text-[12px] text-[#72706a]">{formatDate(est.createdAt)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* 일반사용자: 견적요청 */}
           {user.role !== "COMPANY" && user.estimateRequests.length > 0 && (
-            <div>
-              <h3 className="text-[14px] font-bold text-gray-900">견적요청 ({user.estimateRequests.length}건)</h3>
+            <motion.div variants={fadeUp}>
+              <h3 className="text-[14px] font-semibold text-[#141412]">견적요청 ({user.estimateRequests.length}건)</h3>
               <div className="mt-2 space-y-2">
                 {user.estimateRequests.map((er: any) => (
-                  <div key={er.id} className="rounded-lg border border-gray-200 bg-white p-4">
+                  <div key={er.id} className="rounded-xl border border-[#e2ddd6] bg-white p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-[13px] font-medium text-gray-900">{er.cleaningType}</span>
+                      <span className="text-[13px] font-medium text-[#1a1918]">{er.cleaningType}</span>
                       <span className={cn(
                         "rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                        er.status === "OPEN" ? "bg-green-50 text-green-700" :
-                        er.status === "CLOSED" ? "bg-gray-100 text-gray-500" :
+                        er.status === "OPEN" ? "bg-[#eef7f3] text-[#2d6a4f]" :
+                        er.status === "CLOSED" ? "bg-[#f0ede8] text-[#72706a]" :
                         "bg-red-50 text-red-600"
                       )}>
                         {er.status === "OPEN" ? "진행중" : er.status === "CLOSED" ? "마감" : "만료"}
                       </span>
                     </div>
-                    <p className="mt-1 text-[12px] text-gray-600">{er.address}</p>
-                    <p className="mt-1 text-[11px] text-gray-400">{formatDate(er.createdAt)}</p>
+                    <p className="mt-1 text-[12px] text-[#72706a]">{er.address}</p>
+                    <p className="mt-1 text-[11px] text-[#72706a]">{formatDate(er.createdAt)}</p>
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       ) : (
-        <div className="mt-4">
-          <h3 className="text-[14px] font-bold text-gray-900">신고 내역 ({user.recentReports.length}건)</h3>
+        <motion.div variants={fadeUp} initial="hidden" animate="show" className="mt-4">
+          <h3 className="text-[14px] font-semibold text-[#141412]">신고 내역 ({user.recentReports.length}건)</h3>
           {user.recentReports.length === 0 ? (
-            <p className="mt-2 text-[13px] text-gray-400">신고 내역이 없습니다.</p>
+            <p className="mt-2 text-[13px] text-[#72706a]">신고 내역이 없습니다.</p>
           ) : (
             <div className="mt-2 space-y-2">
               {user.recentReports.map((report: any) => (
                 <Link
                   key={report.id}
                   href={`/admin/reports/${report.id}`}
-                  className="block rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md"
+                  className="block rounded-xl border border-[#e2ddd6] bg-white p-4 transition-shadow hover:shadow-md"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className={cn(
                         "rounded-full px-2 py-0.5 text-[11px] font-semibold",
                         report.reporterId === userId
-                          ? "bg-blue-50 text-blue-700"
-                          : "bg-red-50 text-red-700"
+                          ? "bg-[#eef7f3] text-[#2d6a4f]"
+                          : "bg-red-50 text-red-600"
                       )}>
                         {report.reporterId === userId ? "신고함" : "신고당함"}
                       </span>
-                      <span className="text-[12px] text-gray-600">{report.reason}</span>
+                      <span className="text-[12px] text-[#72706a]">{report.reason}</span>
                     </div>
                     <span className={cn(
                       "rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                      report.status === "PENDING" ? "bg-amber-50 text-amber-700" :
-                      report.status === "RESOLVED" ? "bg-green-50 text-green-700" :
-                      report.status === "DISMISSED" ? "bg-gray-100 text-gray-500" :
-                      "bg-blue-50 text-blue-700"
+                      report.status === "PENDING" ? "bg-[#fef9ee] text-[#b45309]" :
+                      report.status === "RESOLVED" ? "bg-[#eef7f3] text-[#2d6a4f]" :
+                      report.status === "DISMISSED" ? "bg-[#f0ede8] text-[#72706a]" :
+                      "bg-[#eef7f3] text-[#2d6a4f]"
                     )}>
                       {report.status === "PENDING" ? "대기" :
                        report.status === "REVIEWED" ? "검토중" :
                        report.status === "RESOLVED" ? "해결" : "기각"}
                     </span>
                   </div>
-                  <p className="mt-1 text-[12px] text-gray-600 line-clamp-2">{report.description}</p>
-                  <p className="mt-1 text-[11px] text-gray-400">{formatDate(report.createdAt)}</p>
+                  <p className="mt-1 text-[12px] text-[#72706a] line-clamp-2">{report.description}</p>
+                  <p className="mt-1 text-[11px] text-[#72706a]">{formatDate(report.createdAt)}</p>
                 </Link>
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

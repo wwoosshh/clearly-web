@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth.store";
@@ -44,6 +45,20 @@ const registerSchema = z
   });
 
 type RegisterForm = z.infer<typeof registerSchema>;
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 22 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.04 } },
+};
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -87,18 +102,22 @@ export default function RegisterPage() {
   };
 
   return (
-    <>
-      <div className="mb-8">
-        <h1 className="text-[24px] font-extrabold tracking-tight text-gray-900">
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      {/* Heading */}
+      <motion.div variants={fadeUp} className="mb-8">
+        <h1
+          className="text-[28px] font-extrabold tracking-tight"
+          style={{ color: "#141412" }}
+        >
           회원가입
         </h1>
-        <p className="mt-1.5 text-[14px] text-gray-500">
+        <p className="mt-1.5 text-[14px]" style={{ color: "#72706a" }}>
           계정을 만들고 이사청소 매칭을 시작하세요
         </p>
-      </div>
+      </motion.div>
 
-      {/* Social Signup */}
-      <div className="flex gap-2.5">
+      {/* Social Signup — icon-only */}
+      <motion.div variants={fadeUp} className="flex gap-2.5">
         {[
           {
             id: "kakao",
@@ -135,10 +154,10 @@ export default function RegisterPage() {
           <button
             key={provider.id}
             type="button"
-            className="flex h-[46px] flex-1 items-center justify-center rounded-lg transition-opacity hover:opacity-90"
+            className="press-scale flex h-[46px] flex-1 items-center justify-center rounded-lg transition-opacity hover:opacity-90"
             style={{
               backgroundColor: provider.bg,
-              border: provider.border ? "1px solid #e5e7eb" : "none",
+              border: provider.border ? "1px solid #e2ddd6" : "none",
             }}
             onClick={() => {
               window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/oauth/${provider.id}`;
@@ -147,17 +166,23 @@ export default function RegisterPage() {
             {provider.icon}
           </button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Divider */}
-      <div className="my-7 flex items-center gap-4">
-        <div className="h-px flex-1 bg-gray-200" />
-        <span className="text-[12px] font-medium text-gray-400">이메일로 가입</span>
-        <div className="h-px flex-1 bg-gray-200" />
-      </div>
+      <motion.div variants={fadeUp} className="my-7 flex items-center gap-4">
+        <div className="h-px flex-1" style={{ backgroundColor: "#e2ddd6" }} />
+        <span className="text-[12px] font-medium" style={{ color: "#b0aca6" }}>
+          이메일로 가입
+        </span>
+        <div className="h-px flex-1" style={{ backgroundColor: "#e2ddd6" }} />
+      </motion.div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <motion.form
+        variants={fadeUp}
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+      >
         <Input
           label="이름"
           placeholder="홍길동"
@@ -197,23 +222,31 @@ export default function RegisterPage() {
           {...register("confirmPassword")}
         />
 
-        {/* Terms */}
+        {/* Terms Agreement */}
         <div className="mt-1">
           <label className="flex items-start gap-2.5 cursor-pointer">
             <input
               type="checkbox"
               className={cn(
-                "mt-0.5 h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900 cursor-pointer",
-                errors.agreeTerms && "border-red-500"
+                "mt-0.5 h-4 w-4 rounded cursor-pointer accent-[#2d6a4f]",
+                errors.agreeTerms ? "border-red-500" : "border-[#e2ddd6]"
               )}
               {...register("agreeTerms")}
             />
-            <span className="text-[13px] leading-snug text-gray-600">
-              <Link href="/terms" className="underline hover:text-gray-900" target="_blank">
+            <span className="text-[13px] leading-snug" style={{ color: "#72706a" }}>
+              <Link
+                href="/terms"
+                className="underline transition-colors hover:text-[#2d6a4f]"
+                target="_blank"
+              >
                 이용약관
               </Link>
               {" "}및{" "}
-              <Link href="/privacy" className="underline hover:text-gray-900" target="_blank">
+              <Link
+                href="/privacy"
+                className="underline transition-colors hover:text-[#2d6a4f]"
+                target="_blank"
+              >
                 개인정보처리방침
               </Link>
               에 동의합니다
@@ -227,7 +260,7 @@ export default function RegisterPage() {
         </div>
 
         {serverError && (
-          <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3 text-[13px] text-red-600">
+          <div className="rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-[13px] text-red-600">
             {serverError}
           </div>
         )}
@@ -235,10 +268,16 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-1 flex h-[46px] w-full items-center justify-center rounded-lg bg-gray-900 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="press-scale mt-1 flex h-[48px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
         >
           {isSubmitting ? (
-            <svg className="h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg
+              className="h-5 w-5 animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
@@ -246,27 +285,28 @@ export default function RegisterPage() {
             "가입하기"
           )}
         </button>
-      </form>
+      </motion.form>
 
-      <p className="mt-7 text-center text-[13px] text-gray-500">
-        청소 업체이신가요?{" "}
-        <Link
-          href="/register/company"
-          className="font-semibold text-gray-900 hover:underline"
-        >
-          업체 회원가입
-        </Link>
-      </p>
-
-      <p className="mt-2 text-center text-[13px] text-gray-500">
-        이미 계정이 있으신가요?{" "}
-        <Link
-          href="/login"
-          className="font-semibold text-gray-900 hover:underline"
-        >
-          로그인
-        </Link>
-      </p>
-    </>
+      <motion.div variants={fadeUp} className="mt-7 space-y-2 text-center">
+        <p className="text-[13px]" style={{ color: "#72706a" }}>
+          청소 업체이신가요?{" "}
+          <Link
+            href="/register/company"
+            className="font-semibold text-[#2d6a4f] hover:underline"
+          >
+            업체 회원가입
+          </Link>
+        </p>
+        <p className="text-[13px]" style={{ color: "#72706a" }}>
+          이미 계정이 있으신가요?{" "}
+          <Link
+            href="/login"
+            className="font-semibold text-[#2d6a4f] hover:underline"
+          >
+            로그인
+          </Link>
+        </p>
+      </motion.div>
+    </motion.div>
   );
 }

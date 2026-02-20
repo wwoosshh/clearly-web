@@ -3,8 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] } },
+};
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 
 export default function AdminCompanyDetailPage() {
   const params = useParams();
@@ -20,6 +27,7 @@ export default function AdminCompanyDetailPage() {
     repeatCustomerRate: number;
     disputeRate: number;
   } | null>(null);
+
   const fetchCompany = async () => {
     try {
       const [companyRes, metricsRes] = await Promise.allSettled([
@@ -106,31 +114,31 @@ export default function AdminCompanyDetailPage() {
 
   const statusBadge = (s: string) => {
     const map: Record<string, { label: string; style: string }> = {
-      PENDING: { label: "대기", style: "bg-amber-50 text-amber-700" },
-      APPROVED: { label: "승인", style: "bg-green-50 text-green-700" },
-      REJECTED: { label: "반려", style: "bg-red-50 text-red-700" },
-      SUSPENDED: { label: "정지", style: "bg-gray-200 text-gray-600" },
+      PENDING: { label: "대기", style: "bg-[#fef9ee] text-[#b45309]" },
+      APPROVED: { label: "승인", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      REJECTED: { label: "반려", style: "bg-red-50 text-red-600" },
+      SUSPENDED: { label: "정지", style: "bg-red-50 text-red-600" },
     };
-    const info = map[s] || { label: s, style: "bg-gray-100 text-gray-600" };
+    const info = map[s] || { label: s, style: "bg-[#f0ede8] text-[#72706a]" };
     return <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-semibold", info.style)}>{info.label}</span>;
   };
 
   const matchingStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
-      REQUESTED: { label: "요청", style: "bg-gray-100 text-gray-700" },
-      ACCEPTED: { label: "수락", style: "bg-blue-50 text-blue-700" },
-      COMPLETED: { label: "완료", style: "bg-green-50 text-green-700" },
-      CANCELLED: { label: "취소", style: "bg-gray-200 text-gray-500" },
+      REQUESTED: { label: "요청", style: "bg-[#fef9ee] text-[#b45309]" },
+      ACCEPTED: { label: "수락", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      COMPLETED: { label: "완료", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      CANCELLED: { label: "취소", style: "bg-red-50 text-red-600" },
       REJECTED: { label: "거절", style: "bg-red-50 text-red-600" },
     };
-    const info = map[status] || { label: status, style: "bg-gray-100 text-gray-600" };
+    const info = map[status] || { label: status, style: "bg-[#f0ede8] text-[#72706a]" };
     return <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", info.style)}>{info.label}</span>;
   };
 
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
       </div>
     );
   }
@@ -138,25 +146,32 @@ export default function AdminCompanyDetailPage() {
   if (!company) return null;
 
   return (
-    <div>
-      <button onClick={() => router.push("/admin/companies")} className="text-[13px] text-gray-500 hover:text-gray-700">
-        &larr; 업체 목록으로
-      </button>
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      <motion.button
+        variants={fadeUp}
+        onClick={() => router.push("/admin/companies")}
+        className="flex items-center gap-1.5 text-[13px] text-[#72706a] hover:text-[#1a1918] transition-colors"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        업체 목록으로
+      </motion.button>
 
       {/* 업체 정보 카드 */}
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+      <motion.div variants={fadeUp} className="mt-4 rounded-xl border border-[#e2ddd6] bg-white p-4 sm:p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{company.businessName}</h1>
-            <p className="mt-1 text-[13px] text-gray-500">
+            <h1 className="text-xl font-bold text-[#141412]">{company.businessName}</h1>
+            <p className="mt-1 text-[13px] text-[#72706a]">
               {company.user?.name} ({company.user?.email})
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             {statusBadge(company.verificationStatus)}
             <span className={cn(
               "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-              company.isActive ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
+              company.isActive ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-red-50 text-red-600"
             )}>
               {company.isActive ? "활성" : "비활성"}
             </span>
@@ -164,71 +179,71 @@ export default function AdminCompanyDetailPage() {
         </div>
 
         {/* 작업 버튼 */}
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-4">
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-[#e2ddd6] pt-4">
           {company.verificationStatus === "PENDING" && (
             <>
-              <button onClick={handleApprove} disabled={actionLoading} className="rounded-lg bg-green-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-green-700 disabled:opacity-50">승인</button>
+              <button onClick={handleApprove} disabled={actionLoading} className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50">승인</button>
               <button onClick={handleReject} disabled={actionLoading} className="rounded-lg bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50">반려</button>
             </>
           )}
           {company.verificationStatus === "APPROVED" && (
-            <button onClick={handleSuspend} disabled={actionLoading} className="rounded-lg bg-gray-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-gray-700 disabled:opacity-50">정지</button>
+            <button onClick={handleSuspend} disabled={actionLoading} className="rounded-lg bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50">정지</button>
           )}
           {company.verificationStatus === "SUSPENDED" && (
-            <button onClick={handleReactivate} disabled={actionLoading} className="rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700 disabled:opacity-50">정지해제</button>
+            <button onClick={handleReactivate} disabled={actionLoading} className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50">정지해제</button>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* 사업 정보 패널 */}
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
-        <h2 className="text-[15px] font-bold text-gray-900">사업 정보</h2>
+      <motion.div variants={fadeUp} className="mt-4 rounded-xl border border-[#e2ddd6] bg-white p-4 sm:p-6">
+        <h2 className="text-[15px] font-semibold text-[#141412]">사업 정보</h2>
         <div className="mt-3 grid grid-cols-1 gap-4 text-[13px] sm:grid-cols-2">
           <div>
-            <p className="text-gray-500">사업자번호</p>
-            <p className="mt-0.5 font-medium text-gray-900">{company.businessNumber || "-"}</p>
+            <p className="text-[#72706a]">사업자번호</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">{company.businessNumber || "-"}</p>
           </div>
           <div>
-            <p className="text-gray-500">대표자</p>
-            <p className="mt-0.5 font-medium text-gray-900">{company.representative || "-"}</p>
+            <p className="text-[#72706a]">대표자</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">{company.representative || "-"}</p>
           </div>
           <div>
-            <p className="text-gray-500">주소</p>
-            <p className="mt-0.5 font-medium text-gray-900">{company.address || "-"} {company.detailAddress || ""}</p>
+            <p className="text-[#72706a]">주소</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">{company.address || "-"} {company.detailAddress || ""}</p>
           </div>
           <div>
-            <p className="text-gray-500">서비스 지역</p>
-            <p className="mt-0.5 font-medium text-gray-900">
+            <p className="text-[#72706a]">서비스 지역</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">
               {Array.isArray(company.serviceAreas) ? company.serviceAreas.join(", ") : "-"}
             </p>
           </div>
           <div>
-            <p className="text-gray-500">전문분야</p>
-            <p className="mt-0.5 font-medium text-gray-900">
+            <p className="text-[#72706a]">전문분야</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">
               {Array.isArray(company.specialties) ? company.specialties.join(", ") : "-"}
             </p>
           </div>
           <div>
-            <p className="text-gray-500">가격대</p>
-            <p className="mt-0.5 font-medium text-gray-900">
+            <p className="text-[#72706a]">가격대</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">
               {company.minPrice ? `${company.minPrice.toLocaleString()}원` : "-"} ~ {company.maxPrice ? `${company.maxPrice.toLocaleString()}원` : "-"}
             </p>
           </div>
           <div>
-            <p className="text-gray-500">평점 / 리뷰</p>
-            <p className="mt-0.5 font-medium text-gray-900">
+            <p className="text-[#72706a]">평점 / 리뷰</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">
               {Number(company.averageRating || 0).toFixed(1)} ({company.totalReviews || 0}개)
             </p>
           </div>
           <div>
-            <p className="text-gray-500">승인일</p>
-            <p className="mt-0.5 font-medium text-gray-900">{formatDate(company.approvedAt)}</p>
+            <p className="text-[#72706a]">승인일</p>
+            <p className="mt-0.5 font-medium text-[#1a1918]">{formatDate(company.approvedAt)}</p>
           </div>
         </div>
         {company.description && (
           <div className="mt-4">
-            <p className="text-[13px] text-gray-500">소개글</p>
-            <p className="mt-1 whitespace-pre-wrap rounded-lg bg-gray-50 p-3 text-[13px] text-gray-700">
+            <p className="text-[13px] text-[#72706a]">소개글</p>
+            <p className="mt-1 whitespace-pre-wrap rounded-lg bg-[#f5f3ee] p-3 text-[13px] text-[#1a1918]">
               {company.description}
             </p>
           </div>
@@ -241,12 +256,12 @@ export default function AdminCompanyDetailPage() {
             </p>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* 성과 지표 */}
       {metrics && (
-        <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
-          <h2 className="text-[15px] font-bold text-gray-900">성과 지표</h2>
+        <motion.div variants={fadeUp} className="mt-4 rounded-xl border border-[#e2ddd6] bg-white p-4 sm:p-6">
+          <h2 className="text-[15px] font-semibold text-[#141412]">성과 지표</h2>
           <div className="mt-3 grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-4">
             {[
               { label: "견적전환율", value: metrics.conversionRate, warn: false },
@@ -255,60 +270,60 @@ export default function AdminCompanyDetailPage() {
               { label: "분쟁발생률", value: metrics.disputeRate, warn: metrics.disputeRate > 15 },
             ].map((item) => (
               <div key={item.label}>
-                <p className="text-gray-500">{item.label}</p>
+                <p className="text-[#72706a]">{item.label}</p>
                 <p className={cn(
                   "mt-0.5 text-lg font-bold",
-                  item.warn ? "text-red-500" : "text-gray-900"
+                  item.warn ? "text-red-500" : "text-[#141412]"
                 )}>
                   {item.value.toFixed(1)}%
                 </p>
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* 탭 */}
-      <div className="mt-6 flex gap-1 rounded-lg bg-gray-100 p-1">
+      <motion.div variants={fadeUp} className="mt-6 flex gap-1 rounded-lg bg-[#f0ede8] p-1">
         {(["matchings", "reviews", "estimates", "subscription"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={cn(
               "flex-1 rounded-md py-2 text-[13px] font-medium transition-colors",
-              tab === t ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+              tab === t ? "bg-white text-[#141412] shadow-sm" : "text-[#72706a] hover:text-[#1a1918]"
             )}
           >
             {{ matchings: "매칭내역", reviews: "리뷰", estimates: "견적내역", subscription: "구독" }[t]}
           </button>
         ))}
-      </div>
+      </motion.div>
 
-      <div className="mt-4">
+      <motion.div variants={fadeUp} className="mt-4">
         {tab === "matchings" && (
           <div>
             {company.matchings?.length === 0 ? (
-              <p className="py-8 text-center text-[13px] text-gray-400">매칭 내역이 없습니다.</p>
+              <p className="py-8 text-center text-[13px] text-[#72706a]">매칭 내역이 없습니다.</p>
             ) : (
-              <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+              <div className="overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">사용자</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">청소유형</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">가격</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
+                    <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">사용자</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">청소유형</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">상태</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">가격</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">날짜</th>
                     </tr>
                   </thead>
                   <tbody>
                     {company.matchings?.map((m: any) => (
-                      <tr key={m.id} className="border-b border-gray-50 last:border-0">
-                        <td className="px-3 py-2 text-[12px] text-gray-700">{m.user?.name || "-"}</td>
-                        <td className="px-3 py-2 text-[12px] text-gray-600">{m.cleaningType}</td>
-                        <td className="px-3 py-2">{matchingStatusBadge(m.status)}</td>
-                        <td className="px-3 py-2 text-[12px] text-gray-700">{m.estimatedPrice?.toLocaleString() || "-"}원</td>
-                        <td className="px-3 py-2 text-[12px] text-gray-500">{formatDate(m.createdAt)}</td>
+                      <tr key={m.id} className="border-b border-[#e2ddd6] last:border-0">
+                        <td className="px-3 py-2.5 text-[12px] text-[#1a1918]">{m.user?.name || "-"}</td>
+                        <td className="px-3 py-2.5 text-[12px] text-[#72706a]">{m.cleaningType}</td>
+                        <td className="px-3 py-2.5">{matchingStatusBadge(m.status)}</td>
+                        <td className="px-3 py-2.5 text-[12px] text-[#1a1918]">{m.estimatedPrice?.toLocaleString() || "-"}원</td>
+                        <td className="px-3 py-2.5 text-[12px] text-[#72706a]">{formatDate(m.createdAt)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -321,24 +336,24 @@ export default function AdminCompanyDetailPage() {
         {tab === "reviews" && (
           <div className="space-y-2">
             {company.reviews?.length === 0 ? (
-              <p className="py-8 text-center text-[13px] text-gray-400">리뷰가 없습니다.</p>
+              <p className="py-8 text-center text-[13px] text-[#72706a]">리뷰가 없습니다.</p>
             ) : (
               company.reviews?.map((r: any) => (
-                <div key={r.id} className="rounded-lg border border-gray-200 bg-white p-4">
+                <div key={r.id} className="rounded-xl border border-[#e2ddd6] bg-white p-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-[13px] font-medium text-gray-900">{r.user?.name || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#1a1918]">{r.user?.name || "-"}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-[12px] text-amber-500">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</span>
+                      <span className="text-[12px] text-[#72706a]">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</span>
                       <span className={cn(
                         "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                        r.isVisible ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
+                        r.isVisible ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-[#f0ede8] text-[#72706a]"
                       )}>
                         {r.isVisible ? "표시" : "숨김"}
                       </span>
                     </div>
                   </div>
-                  <p className="mt-1 text-[12px] text-gray-600">{r.content}</p>
-                  <p className="mt-1 text-[11px] text-gray-400">{formatDate(r.createdAt)}</p>
+                  <p className="mt-1 text-[12px] text-[#72706a]">{r.content}</p>
+                  <p className="mt-1 text-[11px] text-[#72706a]">{formatDate(r.createdAt)}</p>
                 </div>
               ))
             )}
@@ -348,36 +363,36 @@ export default function AdminCompanyDetailPage() {
         {tab === "estimates" && (
           <div>
             {company.estimates?.length === 0 ? (
-              <p className="py-8 text-center text-[13px] text-gray-400">견적 내역이 없습니다.</p>
+              <p className="py-8 text-center text-[13px] text-[#72706a]">견적 내역이 없습니다.</p>
             ) : (
-              <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+              <div className="overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">청소유형</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">주소</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">견적금액</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
-                      <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">날짜</th>
+                    <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">청소유형</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">주소</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">견적금액</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">상태</th>
+                      <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">날짜</th>
                     </tr>
                   </thead>
                   <tbody>
                     {company.estimates?.map((e: any) => (
-                      <tr key={e.id} className="border-b border-gray-50 last:border-0">
-                        <td className="px-3 py-2 text-[12px] text-gray-700">{e.estimateRequest?.cleaningType || "-"}</td>
-                        <td className="px-3 py-2 text-[12px] text-gray-600">{e.estimateRequest?.address || "-"}</td>
-                        <td className="px-3 py-2 text-[12px] font-medium text-gray-900">{e.price?.toLocaleString()}원</td>
-                        <td className="px-3 py-2">
+                      <tr key={e.id} className="border-b border-[#e2ddd6] last:border-0">
+                        <td className="px-3 py-2.5 text-[12px] text-[#1a1918]">{e.estimateRequest?.cleaningType || "-"}</td>
+                        <td className="px-3 py-2.5 text-[12px] text-[#72706a]">{e.estimateRequest?.address || "-"}</td>
+                        <td className="px-3 py-2.5 text-[12px] font-medium text-[#1a1918]">{e.price?.toLocaleString()}원</td>
+                        <td className="px-3 py-2.5">
                           <span className={cn(
                             "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                            e.status === "SUBMITTED" ? "bg-gray-100 text-gray-700" :
-                            e.status === "ACCEPTED" ? "bg-green-50 text-green-700" :
+                            e.status === "SUBMITTED" ? "bg-[#fef9ee] text-[#b45309]" :
+                            e.status === "ACCEPTED" ? "bg-[#eef7f3] text-[#2d6a4f]" :
                             "bg-red-50 text-red-600"
                           )}>
                             {e.status === "SUBMITTED" ? "대기" : e.status === "ACCEPTED" ? "수락" : "거절"}
                           </span>
                         </td>
-                        <td className="px-3 py-2 text-[12px] text-gray-500">{formatDate(e.createdAt)}</td>
+                        <td className="px-3 py-2.5 text-[12px] text-[#72706a]">{formatDate(e.createdAt)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -390,8 +405,8 @@ export default function AdminCompanyDetailPage() {
         {tab === "subscription" && (
           <SubscriptionTab companyId={companyId} company={company} onRefresh={fetchCompany} />
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -493,98 +508,99 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
     }
   };
 
+  const subStatusStyle = (status: string) => {
+    if (status === "ACTIVE") return "bg-[#eef7f3] text-[#2d6a4f]";
+    if (status === "PAUSED") return "bg-[#fef9ee] text-[#b45309]";
+    if (status === "QUEUED") return "bg-[#fef9ee] text-[#b45309]";
+    if (status === "EXPIRED") return "bg-red-50 text-red-600";
+    if (status === "CANCELLED") return "bg-red-50 text-red-600";
+    return "bg-[#f0ede8] text-[#72706a]";
+  };
+
+  const subStatusLabel = (status: string) => {
+    if (status === "ACTIVE") return "활성";
+    if (status === "PAUSED") return "일시정지";
+    if (status === "QUEUED") return "대기";
+    if (status === "EXPIRED") return "만료";
+    if (status === "CANCELLED") return "취소";
+    return status;
+  };
+
+  const tierStyle = (tier: string) => {
+    if (tier === "BASIC") return "bg-[#f0ede8] text-[#72706a]";
+    if (tier === "PRO") return "bg-[#eef7f3] text-[#2d6a4f]";
+    return "bg-[#141412] text-white";
+  };
+
   return (
     <div className="space-y-4">
       {/* 현재 구독 상태 */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
-        <h3 className="text-[14px] font-bold text-gray-900">현재 구독</h3>
+      <div className="rounded-xl border border-[#e2ddd6] bg-white p-4 sm:p-5">
+        <h3 className="text-[14px] font-semibold text-[#141412]">현재 구독</h3>
         {sub ? (
           <div className="mt-3 grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-3">
             <div>
-              <p className="text-gray-500">등급</p>
+              <p className="text-[#72706a]">등급</p>
               <p className="mt-0.5">
-                <span className={cn(
-                  "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                  sub.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
-                  sub.tier === "PRO" ? "bg-blue-50 text-blue-700" :
-                  "bg-gray-900 text-white"
-                )}>
+                <span className={cn("inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold", tierStyle(sub.tier))}>
                   {sub.tier}
                 </span>
                 {sub.isTrial && (
-                  <span className="ml-1 inline-block rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">체험</span>
+                  <span className="ml-1 inline-block rounded-full bg-[#f5f3ee] px-2 py-0.5 text-[10px] font-semibold text-[#72706a]">체험</span>
                 )}
               </p>
             </div>
             <div>
-              <p className="text-gray-500">상태</p>
+              <p className="text-[#72706a]">상태</p>
               <p className="mt-0.5">
-                <span className={cn(
-                  "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                  sub.status === "ACTIVE" ? "bg-green-50 text-green-700" :
-                  sub.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" :
-                  sub.status === "QUEUED" ? "bg-indigo-50 text-indigo-700" :
-                  sub.status === "EXPIRED" ? "bg-red-50 text-red-600" :
-                  "bg-gray-200 text-gray-600"
-                )}>
-                  {sub.status === "ACTIVE" ? "활성" : sub.status === "PAUSED" ? "일시정지" : sub.status === "QUEUED" ? "대기" : sub.status === "EXPIRED" ? "만료" : sub.status === "CANCELLED" ? "취소" : sub.status}
+                <span className={cn("inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold", subStatusStyle(sub.status))}>
+                  {subStatusLabel(sub.status)}
                 </span>
               </p>
             </div>
             <div>
-              <p className="text-gray-500">플랜</p>
-              <p className="mt-0.5 font-medium text-gray-900">{sub.planName || "-"}</p>
+              <p className="text-[#72706a]">플랜</p>
+              <p className="mt-0.5 font-medium text-[#1a1918]">{sub.planName || "-"}</p>
             </div>
             <div>
-              <p className="text-gray-500">일일 견적 한도</p>
-              <p className="mt-0.5 font-medium text-gray-900">{sub.dailyEstimateLimit ?? "-"}건</p>
+              <p className="text-[#72706a]">일일 견적 한도</p>
+              <p className="mt-0.5 font-medium text-[#1a1918]">{sub.dailyEstimateLimit ?? "-"}건</p>
             </div>
             <div>
-              <p className="text-gray-500">시작일</p>
-              <p className="mt-0.5 font-medium text-gray-900">{formatDate(sub.currentPeriodStart)}</p>
+              <p className="text-[#72706a]">시작일</p>
+              <p className="mt-0.5 font-medium text-[#1a1918]">{formatDate(sub.currentPeriodStart)}</p>
             </div>
             <div>
-              <p className="text-gray-500">만료일</p>
-              <p className="mt-0.5 font-medium text-gray-900">{formatDate(sub.currentPeriodEnd)}</p>
+              <p className="text-[#72706a]">만료일</p>
+              <p className="mt-0.5 font-medium text-[#1a1918]">{formatDate(sub.currentPeriodEnd)}</p>
             </div>
           </div>
         ) : (
-          <p className="mt-3 text-[13px] text-gray-400">활성 구독이 없습니다.</p>
+          <p className="mt-3 text-[13px] text-[#72706a]">활성 구독이 없습니다.</p>
         )}
       </div>
 
-      {/* 구독 스택 (ACTIVE + PAUSED + QUEUED) */}
+      {/* 구독 스택 */}
       {stack.length > 0 && (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
-          <h3 className="text-[14px] font-bold text-gray-900">구독 스택</h3>
+        <div className="rounded-xl border border-[#e2ddd6] bg-white p-4 sm:p-5">
+          <h3 className="text-[14px] font-semibold text-[#141412]">구독 스택</h3>
           <div className="mt-3 space-y-2">
             {stack.map((s: any) => {
               const d = calcDays(s);
               const price = Number(s.plan?.price || 0);
               const dailyCost = price > 0 && d.totalDays > 0 ? Math.round(price / d.totalDays) : 0;
               return (
-                <div key={s.id} className="rounded-lg border border-gray-100 bg-gray-50/50 px-4 py-3">
+                <div key={s.id} className="rounded-lg border border-[#e2ddd6] bg-[#f5f3ee] px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={cn(
-                        "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                        s.plan?.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
-                        s.plan?.tier === "PRO" ? "bg-blue-50 text-blue-700" :
-                        "bg-gray-900 text-white"
-                      )}>
+                      <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", tierStyle(s.plan?.tier || ""))}>
                         {s.plan?.tier || "-"}
                       </span>
-                      <span className="text-[13px] font-medium text-gray-700">{s.plan?.name || "-"}</span>
-                      <span className={cn(
-                        "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                        s.status === "ACTIVE" ? "bg-green-50 text-green-700" :
-                        s.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" :
-                        s.status === "QUEUED" ? "bg-indigo-50 text-indigo-700" :
-                        "bg-gray-200 text-gray-600"
-                      )}>
-                        {s.status === "ACTIVE" ? "활성" : s.status === "PAUSED" ? "일시정지" : s.status === "QUEUED" ? "대기" : s.status}
+                      <span className="text-[13px] font-medium text-[#1a1918]">{s.plan?.name || "-"}</span>
+                      <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", subStatusStyle(s.status))}>
+                        {subStatusLabel(s.status)}
                       </span>
-                      {s.isTrial && <span className="text-[10px] text-purple-600">체험</span>}
+                      {s.isTrial && <span className="text-[10px] text-[#72706a]">체험</span>}
                     </div>
                     <button
                       onClick={() => handleCancelSubscription(s.id, s.plan?.name || "구독")}
@@ -594,13 +610,13 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
                       {loading === "cancel" ? "처리중..." : "해지"}
                     </button>
                   </div>
-                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-500">
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#72706a]">
                     <span>사용 {d.usedDays}일 / 총 {d.totalDays}일 (남은 {d.remainingDays}일)</span>
                     {price > 0 && <span>{price.toLocaleString()}원 (일 {dailyCost.toLocaleString()}원)</span>}
                     {price > 0 && d.remainingDays > 0 && (
-                      <span className="font-medium text-orange-600">환불 예상: {(dailyCost * d.remainingDays).toLocaleString()}원</span>
+                      <span className="font-medium text-[#b45309]">환불 예상: {(dailyCost * d.remainingDays).toLocaleString()}원</span>
                     )}
-                    <span className="text-gray-400">
+                    <span className="text-[#72706a]">
                       {formatDate(s.projectedStart || s.currentPeriodStart)} ~ {formatDate(s.projectedEnd || s.currentPeriodEnd)}
                       {s.status !== "ACTIVE" && " (예상)"}
                     </span>
@@ -613,17 +629,17 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
       )}
 
       {/* 관리 액션 */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
-        <h3 className="text-[14px] font-bold text-gray-900">구독 관리</h3>
+      <div className="rounded-xl border border-[#e2ddd6] bg-white p-4 sm:p-5">
+        <h3 className="text-[14px] font-semibold text-[#141412]">구독 관리</h3>
 
         {/* 플랜 변경 */}
         <div className="mt-4 flex items-end gap-3">
           <div className="flex-1">
-            <label className="block text-[12px] font-medium text-gray-500">플랜 변경</label>
+            <label className="block text-[12px] font-medium text-[#72706a]">플랜 변경</label>
             <select
               value={selectedPlanId}
               onChange={(e) => setSelectedPlanId(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-[13px] text-gray-900 focus:border-gray-900 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#2d6a4f] focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/10"
             >
               {plans.map((p: any) => (
                 <option key={p.id} value={p.id}>
@@ -635,7 +651,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
           <button
             onClick={handleChangePlan}
             disabled={loading === "change"}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-[13px] font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+            className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
           >
             {loading === "change" ? "처리중..." : "변경"}
           </button>
@@ -643,13 +659,13 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
 
         {/* 기간 연장 */}
         {sub?.status === "ACTIVE" && (
-          <div className="mt-4 flex items-end gap-3 border-t border-gray-100 pt-4">
+          <div className="mt-4 flex items-end gap-3 border-t border-[#e2ddd6] pt-4">
             <div className="flex-1">
-              <label className="block text-[12px] font-medium text-gray-500">구독 연장</label>
+              <label className="block text-[12px] font-medium text-[#72706a]">구독 연장</label>
               <select
                 value={extendMonths}
                 onChange={(e) => setExtendMonths(Number(e.target.value))}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-[13px] text-gray-900 focus:border-gray-900 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#2d6a4f] focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/10"
               >
                 {[1, 2, 3, 6, 12].map((m) => (
                   <option key={m} value={m}>{m}개월</option>
@@ -659,7 +675,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
             <button
               onClick={handleExtend}
               disabled={loading === "extend"}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
             >
               {loading === "extend" ? "처리중..." : "연장"}
             </button>
@@ -668,15 +684,15 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
 
         {/* 무료 체험 부여 */}
         {(!sub || sub.status !== "ACTIVE") && (
-          <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+          <div className="mt-4 flex items-center justify-between border-t border-[#e2ddd6] pt-4">
             <div>
-              <p className="text-[13px] font-medium text-gray-700">무료 체험 부여</p>
-              <p className="text-[12px] text-gray-500">Basic 3개월 무료 체험을 부여합니다.</p>
+              <p className="text-[13px] font-medium text-[#1a1918]">무료 체험 부여</p>
+              <p className="text-[12px] text-[#72706a]">Basic 3개월 무료 체험을 부여합니다.</p>
             </div>
             <button
               onClick={handleGrantTrial}
               disabled={loading === "trial"}
-              className="rounded-lg bg-purple-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-purple-700 disabled:opacity-50"
+              className="rounded-lg bg-[#f0ede8] px-4 py-2 text-[13px] font-medium text-[#1a1918] border border-[#e2ddd6] hover:bg-[#e2ddd6] disabled:opacity-50"
             >
               {loading === "trial" ? "처리중..." : "체험 부여"}
             </button>
@@ -686,60 +702,48 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
 
       {/* 구독 이력 */}
       {history.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-          <h3 className="border-b border-gray-100 px-4 py-3 text-[13px] font-bold text-gray-900">구독 이력</h3>
+        <div className="overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
+          <h3 className="border-b border-[#e2ddd6] px-4 py-3 text-[13px] font-semibold text-[#141412]">구독 이력</h3>
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">등급</th>
-                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">상태</th>
-                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">플랜</th>
-                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">사용일수</th>
-                <th className="px-3 py-2 text-[11px] font-semibold text-gray-500">기간</th>
+              <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">등급</th>
+                <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">상태</th>
+                <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">플랜</th>
+                <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">사용일수</th>
+                <th className="px-3 py-2.5 text-[11px] font-semibold text-[#72706a]">기간</th>
               </tr>
             </thead>
             <tbody>
               {history.map((h: any) => (
-                <tr key={h.id} className="border-b border-gray-50 last:border-0">
-                  <td className="px-3 py-2">
-                    <span className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                      h.plan?.tier === "BASIC" ? "bg-gray-100 text-gray-700" :
-                      h.plan?.tier === "PRO" ? "bg-blue-50 text-blue-700" :
-                      "bg-gray-900 text-white"
-                    )}>
+                <tr key={h.id} className="border-b border-[#e2ddd6] last:border-0">
+                  <td className="px-3 py-2.5">
+                    <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", tierStyle(h.plan?.tier || ""))}>
                       {h.plan?.tier || "-"}
                     </span>
                   </td>
-                  <td className="px-3 py-2">
-                    <span className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                      h.status === "ACTIVE" ? "bg-green-50 text-green-700" :
-                      h.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" :
-                      h.status === "QUEUED" ? "bg-indigo-50 text-indigo-700" :
-                      h.status === "EXPIRED" ? "bg-red-50 text-red-600" :
-                      "bg-gray-200 text-gray-600"
-                    )}>
-                      {h.status === "ACTIVE" ? "활성" : h.status === "PAUSED" ? "일시정지" : h.status === "QUEUED" ? "대기" : h.status === "EXPIRED" ? "만료" : h.status === "CANCELLED" ? "취소" : h.status}
+                  <td className="px-3 py-2.5">
+                    <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", subStatusStyle(h.status))}>
+                      {subStatusLabel(h.status)}
                     </span>
-                    {h.isTrial && <span className="ml-1 text-[10px] text-purple-600">체험</span>}
+                    {h.isTrial && <span className="ml-1 text-[10px] text-[#72706a]">체험</span>}
                   </td>
-                  <td className="px-3 py-2 text-[12px] text-gray-700">{h.plan?.name || "-"}</td>
-                  <td className="px-3 py-2 text-[12px]">
+                  <td className="px-3 py-2.5 text-[12px] text-[#1a1918]">{h.plan?.name || "-"}</td>
+                  <td className="px-3 py-2.5 text-[12px]">
                     {(() => {
                       const d = calcDays(h);
                       return (
-                        <span className={d.remainingDays > 0 && h.status !== "ACTIVE" && h.status !== "QUEUED" ? "font-medium text-orange-600" : "text-gray-700"}>
+                        <span className={d.remainingDays > 0 && h.status !== "ACTIVE" && h.status !== "QUEUED" ? "font-medium text-[#b45309]" : "text-[#1a1918]"}>
                           {d.usedDays} / {d.totalDays}일
                         </span>
                       );
                     })()}
                   </td>
-                  <td className="px-3 py-2 text-[12px] text-gray-500">
+                  <td className="px-3 py-2.5 text-[12px] text-[#72706a]">
                     {(() => {
                       const proj = stack.find((s: any) => s.id === h.id);
                       if (proj && (h.status === "PAUSED" || h.status === "QUEUED")) {
-                        return <>{formatDate(proj.projectedStart)} ~ {formatDate(proj.projectedEnd)} <span className="text-[10px] text-orange-500">(예상)</span></>;
+                        return <>{formatDate(proj.projectedStart)} ~ {formatDate(proj.projectedEnd)} <span className="text-[10px] text-[#b45309]">(예상)</span></>;
                       }
                       return <>{formatDate(h.currentPeriodStart)} ~ {formatDate(h.currentPeriodEnd)}</>;
                     })()}

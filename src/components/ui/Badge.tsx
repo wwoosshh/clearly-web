@@ -16,8 +16,8 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: "bg-gray-100 text-gray-700",
-  primary: "bg-blue-100 text-blue-700",
+  default: "bg-[#f0ede8] text-[#72706a]",
+  primary: "bg-[#eef7f3] text-[#2d6a4f]",
   success: "bg-green-100 text-green-700",
   warning: "bg-yellow-100 text-yellow-700",
   danger: "bg-red-100 text-red-700",

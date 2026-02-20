@@ -54,24 +54,27 @@ function Modal({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* 오버레이 배경 — 클릭 시 닫기 */}
+          {/* 오버레이 배경 */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-black/50"
+            transition={{ duration: 0.25 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
             onClick={onClose}
           />
 
           {/* 모달 본문 */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.92, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            exit={{ opacity: 0, scale: 0.94, y: 16 }}
+            transition={{
+              duration: 0.3,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             className={cn(
-              "relative w-full rounded-xl bg-white shadow-xl flex flex-col max-h-[85vh]",
+              "relative w-full rounded-2xl border border-[#e2ddd6] bg-white shadow-[0_24px_60px_rgba(45,106,79,0.12)] flex flex-col max-h-[85vh]",
               sizeStyles[size],
               className
             )}
@@ -79,18 +82,18 @@ function Modal({
             aria-modal="true"
             aria-labelledby={title ? "modal-title" : undefined}
           >
-            {/* 헤더 — 항상 상단 고정 */}
+            {/* 헤더 */}
             {title && (
-              <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0 border-b border-transparent">
+              <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0 border-b border-[#f0ede8]">
                 <h2
                   id="modal-title"
-                  className="text-lg font-semibold text-gray-900"
+                  className="text-[17px] font-semibold text-[#141412]"
                 >
                   {title}
                 </h2>
                 <button
                   onClick={onClose}
-                  className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                  className="rounded-lg p-1 text-[#a8a49c] hover:bg-[#f0ede8] hover:text-[#72706a] transition-colors"
                   aria-label="닫기"
                 >
                   <svg
@@ -111,7 +114,7 @@ function Modal({
               </div>
             )}
 
-            {/* 콘텐츠 — 내용이 길면 스크롤 */}
+            {/* 콘텐츠 */}
             <div className={cn("overflow-y-auto overscroll-contain px-6 pb-6", title ? "pt-2" : "pt-6")}>
               {children}
             </div>

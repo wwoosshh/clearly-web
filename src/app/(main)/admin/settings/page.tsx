@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import api from "@/lib/api";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] } },
+};
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 
 interface SettingEntry {
   value: any;
@@ -81,29 +88,31 @@ export default function AdminSettingsPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
       </div>
     );
   }
 
   return (
-    <div>
-      <h1 className="text-xl font-bold text-gray-900">시스템 설정</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        서비스 운영에 필요한 설정값을 관리합니다.
-      </p>
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      <motion.div variants={fadeUp}>
+        <h1 className="text-xl font-bold text-[#141412]">시스템 설정</h1>
+        <p className="mt-1 text-sm text-[#72706a]">
+          서비스 운영에 필요한 설정값을 관리합니다.
+        </p>
+      </motion.div>
 
       {Object.entries(CATEGORIES).map(([catKey, cat]) => (
-        <div key={catKey} className="mt-6">
-          <h2 className="text-[15px] font-bold text-gray-900">{cat.label}</h2>
-          <div className="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <motion.div key={catKey} variants={fadeUp} className="mt-6">
+          <h2 className="text-[15px] font-semibold text-[#141412]">{cat.label}</h2>
+          <div className="mt-3 overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">설정키</th>
-                  <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">설명</th>
-                  <th className="px-4 py-3 text-[12px] font-semibold text-gray-500 w-32">값</th>
-                  <th className="px-4 py-3 text-[12px] font-semibold text-gray-500 w-20">작업</th>
+                <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                  <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">설정키</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">설명</th>
+                  <th className="w-32 px-4 py-3 text-[12px] font-semibold text-[#72706a]">값</th>
+                  <th className="w-20 px-4 py-3 text-[12px] font-semibold text-[#72706a]">작업</th>
                 </tr>
               </thead>
               <tbody>
@@ -112,9 +121,9 @@ export default function AdminSettingsPage() {
                   if (!entry) return null;
                   const hasChanged = String(entry.value) !== editValues[key];
                   return (
-                    <tr key={key} className="border-b border-gray-50 last:border-0">
-                      <td className="px-4 py-3 text-[13px] font-mono text-gray-700">{key}</td>
-                      <td className="px-4 py-3 text-[13px] text-gray-600">{entry.description || "-"}</td>
+                    <tr key={key} className="border-b border-[#e2ddd6] last:border-0">
+                      <td className="px-4 py-3 font-mono text-[13px] text-[#1a1918]">{key}</td>
+                      <td className="px-4 py-3 text-[13px] text-[#72706a]">{entry.description || "-"}</td>
                       <td className="px-4 py-3">
                         <input
                           type="text"
@@ -122,14 +131,14 @@ export default function AdminSettingsPage() {
                           onChange={(e) =>
                             setEditValues((prev) => ({ ...prev, [key]: e.target.value }))
                           }
-                          className="w-full rounded-md border border-gray-200 px-2.5 py-1.5 text-[13px] outline-none focus:border-gray-400"
+                          className="w-full rounded-lg border border-[#e2ddd6] px-2.5 py-1.5 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
                         />
                       </td>
                       <td className="px-4 py-3">
                         <button
                           onClick={() => handleSave(key)}
                           disabled={!hasChanged || saving === key}
-                          className="rounded-md bg-gray-900 px-3 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-30"
+                          className="rounded-lg bg-[#2d6a4f] px-3 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-30"
                         >
                           {saving === key ? "..." : "저장"}
                         </button>
@@ -140,8 +149,8 @@ export default function AdminSettingsPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

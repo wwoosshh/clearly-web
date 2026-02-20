@@ -9,6 +9,21 @@ import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
+import { motion } from "framer-motion";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 22 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
 
 interface ReviewItem {
   id: string;
@@ -134,8 +149,8 @@ export default function MyReviewsPage() {
             width={size}
             height={size}
             viewBox="0 0 24 24"
-            fill={star <= rating ? "#1f2937" : "none"}
-            stroke={star <= rating ? "#1f2937" : "#d1d5db"}
+            fill={star <= rating ? "#f59e0b" : "none"}
+            stroke={star <= rating ? "#f59e0b" : "#e2ddd6"}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -152,166 +167,175 @@ export default function MyReviewsPage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-20 text-center">
-        <p className="text-[15px] text-gray-500">로그인이 필요합니다</p>
+        <p className="text-[15px] text-[#72706a]">로그인이 필요합니다</p>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
-      {/* 헤더 */}
-      <Link
-        href="/mypage"
-        className="mb-6 flex items-center gap-1 text-[14px] text-gray-500 hover:text-gray-700"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-        마이페이지
-      </Link>
-
-      <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
-        {isCompany ? "받은 리뷰" : "내 리뷰"}
-      </h1>
-      <p className="mt-1.5 text-[15px] text-gray-500">
-        {isCompany ? "고객이 남긴 리뷰를 확인하세요" : "내가 작성한 리뷰를 관리하세요"}
-      </p>
-
-      {/* 리뷰 목록 */}
-      {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Spinner size="lg" className="text-gray-400" />
-        </div>
-      ) : reviews.length === 0 ? (
-        <div className="mt-12 flex flex-col items-center text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      <motion.div variants={stagger} initial="hidden" animate="show">
+        {/* 헤더 */}
+        <motion.div variants={fadeUp}>
+          <Link
+            href="/mypage"
+            className="mb-6 flex items-center gap-1 text-[14px] text-[#72706a] hover:text-[#1a1918] transition-colors press-scale"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
             </svg>
-          </div>
-          <p className="mt-4 text-[15px] font-medium text-gray-700">
-            {isCompany ? "받은 리뷰가 없습니다" : "작성한 리뷰가 없습니다"}
-          </p>
-          <p className="mt-1.5 text-[13px] text-gray-500">
-            {isCompany ? "거래를 완료하면 고객이 리뷰를 남길 수 있습니다" : "거래 완료 후 리뷰를 작성할 수 있습니다"}
-          </p>
-          {!isCompany && (
-            <Link
-              href="/estimate/request"
-              className="mt-4 rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
-            >
-              견적 요청하기
-            </Link>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="mt-6 divide-y divide-gray-100 rounded-xl border border-gray-200 bg-white">
-            {reviews.map((review) => (
-              <div key={review.id} className="px-5 py-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[15px] font-bold text-gray-900">
-                        {isCompany
-                          ? (review.user?.name || "고객")
-                          : (review.company?.businessName || "업체")}
-                      </span>
-                      {renderStars(review.rating)}
-                    </div>
-                    {review.content && (
-                      <p className="mt-1.5 text-[14px] leading-relaxed text-gray-700 line-clamp-2">
-                        {review.content}
-                      </p>
-                    )}
-                    <div className="mt-2 flex items-center gap-2">
-                      {review.matching?.cleaningType && (
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[12px] font-medium text-gray-600">
-                          {CLEANING_TYPE_LABELS[review.matching.cleaningType as CleaningType] || review.matching.cleaningType}
-                        </span>
-                      )}
-                      <span className="text-[12px] text-gray-400">{formatDate(review.createdAt)}</span>
-                    </div>
-                  </div>
-                  {/* 수정/삭제 버튼은 일반 유저만 */}
-                  {!isCompany && (
-                    <div className="ml-4 flex flex-shrink-0 items-center gap-1">
-                      <button
-                        onClick={() => openEdit(review)}
-                        className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-100"
-                      >
-                        수정
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(review)}
-                        className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-red-500 transition-colors hover:bg-red-50"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+            마이페이지
+          </Link>
+        </motion.div>
 
-          {/* 페이지네이션 */}
-          {meta.totalPages > 1 && (
-            <div className="mt-6 flex items-center justify-center gap-1">
-              <button
-                onClick={() => setPage(page - 1)}
-                disabled={page <= 1}
-                className="flex h-[34px] w-[34px] items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
-              </button>
-              {Array.from({ length: meta.totalPages }, (_, i) => i + 1)
-                .filter((p) => {
-                  if (meta.totalPages <= 7) return true;
-                  if (p === 1 || p === meta.totalPages) return true;
-                  if (Math.abs(p - page) <= 1) return true;
-                  return false;
-                })
-                .reduce<(number | "ellipsis")[]>((acc, p, idx, arr) => {
-                  if (idx > 0 && p - (arr[idx - 1] as number) > 1) {
-                    acc.push("ellipsis");
-                  }
-                  acc.push(p);
-                  return acc;
-                }, [])
-                .map((item, idx) =>
-                  item === "ellipsis" ? (
-                    <span key={`e-${idx}`} className="px-1 text-[13px] text-gray-400">...</span>
-                  ) : (
-                    <button
-                      key={item}
-                      onClick={() => setPage(item as number)}
-                      className={cn(
-                        "flex h-[34px] w-[34px] items-center justify-center rounded-lg text-[13px] font-medium transition-colors",
-                        page === item
-                          ? "bg-gray-900 text-white"
-                          : "text-gray-600 hover:bg-gray-100"
-                      )}
-                    >
-                      {item}
-                    </button>
-                  )
-                )}
-              <button
-                onClick={() => setPage(page + 1)}
-                disabled={page >= meta.totalPages}
-                className="flex h-[34px] w-[34px] items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
+        <motion.div variants={fadeUp}>
+          <h1 className="text-[24px] font-bold tracking-tight text-[#141412]">
+            {isCompany ? "받은 리뷰" : "내 리뷰"}
+          </h1>
+          <p className="mt-1.5 text-[15px] text-[#72706a]">
+            {isCompany ? "고객이 남긴 리뷰를 확인하세요" : "내가 작성한 리뷰를 관리하세요"}
+          </p>
+        </motion.div>
+
+        {/* 리뷰 목록 */}
+        {isLoading ? (
+          <motion.div variants={fadeUp} className="flex items-center justify-center py-20">
+            <Spinner size="lg" className="text-[#4a8c6a]" />
+          </motion.div>
+        ) : reviews.length === 0 ? (
+          <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f0ede8]">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8a49c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
             </div>
-          )}
-        </>
-      )}
+            <p className="mt-4 text-[15px] font-medium text-[#1a1918]">
+              {isCompany ? "받은 리뷰가 없습니다" : "작성한 리뷰가 없습니다"}
+            </p>
+            <p className="mt-1.5 text-[13px] text-[#72706a]">
+              {isCompany ? "거래를 완료하면 고객이 리뷰를 남길 수 있습니다" : "거래 완료 후 리뷰를 작성할 수 있습니다"}
+            </p>
+            {!isCompany && (
+              <Link
+                href="/estimate/request"
+                className="mt-4 rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors press-scale"
+              >
+                견적 요청하기
+              </Link>
+            )}
+          </motion.div>
+        ) : (
+          <>
+            <motion.div
+              variants={fadeUp}
+              className="mt-6 divide-y divide-[#e2ddd6] rounded-xl border border-[#e2ddd6] bg-[#f5f3ee]"
+            >
+              {reviews.map((review) => (
+                <div key={review.id} className="px-5 py-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[15px] font-bold text-[#141412]">
+                          {isCompany
+                            ? (review.user?.name || "고객")
+                            : (review.company?.businessName || "업체")}
+                        </span>
+                        {renderStars(review.rating)}
+                      </div>
+                      {review.content && (
+                        <p className="mt-1.5 text-[14px] leading-relaxed text-[#1a1918] line-clamp-2">
+                          {review.content}
+                        </p>
+                      )}
+                      <div className="mt-2 flex items-center gap-2">
+                        {review.matching?.cleaningType && (
+                          <span className="rounded-full bg-[#d4ede4] px-2 py-0.5 text-[12px] font-medium text-[#2d6a4f]">
+                            {CLEANING_TYPE_LABELS[review.matching.cleaningType as CleaningType] || review.matching.cleaningType}
+                          </span>
+                        )}
+                        <span className="text-[12px] text-[#a8a49c]">{formatDate(review.createdAt)}</span>
+                      </div>
+                    </div>
+                    {/* 수정/삭제 버튼은 일반 유저만 */}
+                    {!isCompany && (
+                      <div className="ml-4 flex flex-shrink-0 items-center gap-1">
+                        <button
+                          onClick={() => openEdit(review)}
+                          className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-[#72706a] transition-colors hover:bg-[#f0ede8] hover:text-[#1a1918] press-scale"
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(review)}
+                          className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-red-500 transition-colors hover:bg-red-50 press-scale"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* 페이지네이션 */}
+            {meta.totalPages > 1 && (
+              <motion.div variants={fadeUp} className="mt-6 flex items-center justify-center gap-1">
+                <button
+                  onClick={() => setPage(page - 1)}
+                  disabled={page <= 1}
+                  className="flex h-[34px] w-[34px] items-center justify-center rounded-lg text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-30 disabled:cursor-not-allowed press-scale"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                {Array.from({ length: meta.totalPages }, (_, i) => i + 1)
+                  .filter((p) => {
+                    if (meta.totalPages <= 7) return true;
+                    if (p === 1 || p === meta.totalPages) return true;
+                    if (Math.abs(p - page) <= 1) return true;
+                    return false;
+                  })
+                  .reduce<(number | "ellipsis")[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && p - (arr[idx - 1] as number) > 1) {
+                      acc.push("ellipsis");
+                    }
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((item, idx) =>
+                    item === "ellipsis" ? (
+                      <span key={`e-${idx}`} className="px-1 text-[13px] text-[#a8a49c]">...</span>
+                    ) : (
+                      <button
+                        key={item}
+                        onClick={() => setPage(item as number)}
+                        className={cn(
+                          "flex h-[34px] w-[34px] items-center justify-center rounded-lg text-[13px] font-medium transition-colors press-scale",
+                          page === item
+                            ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                            : "text-[#72706a] hover:bg-[#f0ede8]"
+                        )}
+                      >
+                        {item}
+                      </button>
+                    )
+                  )}
+                <button
+                  onClick={() => setPage(page + 1)}
+                  disabled={page >= meta.totalPages}
+                  className="flex h-[34px] w-[34px] items-center justify-center rounded-lg text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-30 disabled:cursor-not-allowed press-scale"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </motion.div>
+            )}
+          </>
+        )}
+      </motion.div>
 
       {/* 수정 모달 (유저 전용) */}
       {!isCompany && (
@@ -329,7 +353,7 @@ export default function MyReviewsPage() {
               )}
 
               <div>
-                <label className="text-[14px] font-medium text-gray-800">
+                <label className="text-[14px] font-medium text-[#141412]">
                   별점 <span className="text-red-500">*</span>
                 </label>
                 <div className="mt-2 flex items-center gap-1">
@@ -340,14 +364,14 @@ export default function MyReviewsPage() {
                       onClick={() => setEditRating(star)}
                       onMouseEnter={() => setEditHoverRating(star)}
                       onMouseLeave={() => setEditHoverRating(0)}
-                      className="p-0.5"
+                      className="p-0.5 press-scale"
                     >
                       <svg
                         width="28"
                         height="28"
                         viewBox="0 0 24 24"
-                        fill={star <= editActiveRating ? "#1f2937" : "none"}
-                        stroke={star <= editActiveRating ? "#1f2937" : "#d1d5db"}
+                        fill={star <= editActiveRating ? "#f59e0b" : "none"}
+                        stroke={star <= editActiveRating ? "#f59e0b" : "#e2ddd6"}
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -357,7 +381,7 @@ export default function MyReviewsPage() {
                     </button>
                   ))}
                   {editRating > 0 && (
-                    <span className="ml-2 text-[14px] font-medium text-gray-900">
+                    <span className="ml-2 text-[14px] font-medium text-[#141412]">
                       {editRating}점
                     </span>
                   )}
@@ -365,16 +389,16 @@ export default function MyReviewsPage() {
               </div>
 
               <div className="mt-4">
-                <label className="text-[14px] font-medium text-gray-800">리뷰 내용</label>
+                <label className="text-[14px] font-medium text-[#141412]">리뷰 내용</label>
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
                   placeholder="서비스 이용 경험을 자유롭게 작성해주세요 (선택)"
                   rows={4}
                   maxLength={2000}
-                  className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-3 text-[14px] leading-relaxed resize-none placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-[#e2ddd6] px-4 py-3 text-[14px] leading-relaxed resize-none placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
                 />
-                <div className="mt-1 text-right text-[12px] text-gray-400">
+                <div className="mt-1 text-right text-[12px] text-[#a8a49c]">
                   {editContent.length}/2000
                 </div>
               </div>
@@ -382,14 +406,14 @@ export default function MyReviewsPage() {
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => setEditTarget(null)}
-                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-[#e2ddd6] bg-[#f0ede8] text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#e8e4de] press-scale"
                 >
                   취소
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={editRating === 0 || isSaving}
-                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
                 >
                   {isSaving ? "저장중..." : "저장"}
                 </button>
@@ -409,18 +433,18 @@ export default function MyReviewsPage() {
         >
           {deleteTarget && (
             <div>
-              <p className="text-[14px] text-gray-600">정말 삭제하시겠습니까? 삭제된 리뷰는 복구할 수 없습니다.</p>
+              <p className="text-[14px] text-[#72706a]">정말 삭제하시겠습니까? 삭제된 리뷰는 복구할 수 없습니다.</p>
               <div className="mt-5 flex gap-2">
                 <button
                   onClick={() => setDeleteTarget(null)}
-                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-[#e2ddd6] bg-[#f0ede8] text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#e8e4de] press-scale"
                 >
                   취소
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={isDeleting}
-                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-red-600 text-[13px] font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-red-600 text-[13px] font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 press-scale"
                 >
                   {isDeleting ? "삭제중..." : "삭제"}
                 </button>

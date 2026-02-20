@@ -2,8 +2,26 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+    },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.05 } },
+};
 
 interface Company {
   id: string;
@@ -122,10 +140,10 @@ export default function AdminCompaniesPage() {
 
   const statusBadge = (s: string) => {
     const styles: Record<string, string> = {
-      PENDING: "bg-amber-50 text-amber-700",
-      APPROVED: "bg-green-50 text-green-700",
-      REJECTED: "bg-red-50 text-red-700",
-      SUSPENDED: "bg-gray-100 text-gray-600",
+      PENDING: "bg-[#fef9ee] text-[#b45309]",
+      APPROVED: "bg-[#eef7f3] text-[#2d6a4f]",
+      REJECTED: "bg-red-50 text-red-600",
+      SUSPENDED: "bg-[#f0ede8] text-[#72706a]",
     };
     const labels: Record<string, string> = {
       PENDING: "대기",
@@ -135,7 +153,7 @@ export default function AdminCompaniesPage() {
     };
     return (
       <span
-        className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${styles[s] || "bg-gray-100 text-gray-600"}`}
+        className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${styles[s] || "bg-[#f0ede8] text-[#72706a]"}`}
       >
         {labels[s] || s}
       </span>
@@ -143,14 +161,14 @@ export default function AdminCompaniesPage() {
   };
 
   return (
-    <div>
-      <h1 className="text-xl font-bold text-gray-900">업체 관리</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        업체 승인 및 관리를 수행합니다.
-      </p>
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      <motion.div variants={fadeUp}>
+        <h1 className="text-xl font-bold text-[#1a1918]">업체 관리</h1>
+        <p className="mt-1 text-sm text-[#72706a]">업체 승인 및 관리를 수행합니다.</p>
+      </motion.div>
 
       {/* Tabs */}
-      <div className="mt-6 flex gap-1 rounded-lg bg-gray-100 p-1">
+      <motion.div variants={fadeUp} className="mt-6 flex gap-1 rounded-lg bg-[#f0ede8] p-1">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -161,68 +179,71 @@ export default function AdminCompaniesPage() {
             className={cn(
               "flex-1 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors",
               status === tab.key
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-white text-[#1a1918] shadow-sm"
+                : "text-[#72706a] hover:text-[#1a1918]"
             )}
           >
             {tab.label}
           </button>
         ))}
-      </div>
+      </motion.div>
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
         </div>
       ) : (
         <>
-          <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <motion.div variants={fadeUp} className="mt-4 overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm min-w-[750px]">
+              <table className="w-full min-w-[750px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">업체명</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">대표자</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">이메일</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">사업자번호</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">상태</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">등록일</th>
-                    <th className="px-4 py-3 text-[12px] font-semibold text-gray-500">작업</th>
+                  <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">업체명</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">대표자</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">이메일</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">사업자번호</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">상태</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">등록일</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">작업</th>
                   </tr>
                 </thead>
                 <tbody>
                   {companies.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-gray-400">
+                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#72706a]">
                         업체가 없습니다.
                       </td>
                     </tr>
                   ) : (
                     companies.map((company) => (
-                      <tr key={company.id} className="border-b border-gray-50 last:border-0">
-                        <td className="px-4 py-3 text-[13px] font-medium text-gray-900">
+                      <tr
+                        key={company.id}
+                        className="border-b border-[#e2ddd6] bg-white transition-colors last:border-0 hover:bg-[#f5f3ee]"
+                      >
+                        <td className="px-4 py-3 text-[13px] font-medium text-[#1a1918]">
                           {company.businessName}
                         </td>
-                        <td className="px-4 py-3 text-[13px] text-gray-600">
+                        <td className="px-4 py-3 text-[13px] text-[#72706a]">
                           {company.user.name}
                         </td>
-                        <td className="px-4 py-3 text-[13px] text-gray-600">
+                        <td className="px-4 py-3 text-[13px] text-[#72706a]">
                           {company.user.email}
                         </td>
-                        <td className="px-4 py-3 text-[13px] text-gray-600">
+                        <td className="px-4 py-3 text-[13px] text-[#72706a]">
                           {company.businessNumber || "-"}
                         </td>
                         <td className="px-4 py-3">
                           {statusBadge(company.verificationStatus)}
                         </td>
-                        <td className="px-4 py-3 text-[13px] text-gray-500">
+                        <td className="px-4 py-3 text-[13px] text-[#72706a]">
                           {new Date(company.createdAt).toLocaleDateString("ko-KR")}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex gap-1.5">
                             <Link
                               href={`/admin/companies/${company.id}`}
-                              className="rounded-md border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+                              className="rounded-md border border-[#e2ddd6] bg-[#f0ede8] px-2.5 py-1 text-[11px] font-semibold text-[#72706a] transition-colors hover:bg-[#e2ddd6]"
                             >
                               상세
                             </Link>
@@ -231,7 +252,7 @@ export default function AdminCompaniesPage() {
                                 <button
                                   onClick={() => handleApprove(company.id)}
                                   disabled={actionLoading === company.id}
-                                  className="rounded-md bg-green-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                                  className="rounded-md bg-[#2d6a4f] px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-50"
                                 >
                                   승인
                                 </button>
@@ -248,7 +269,7 @@ export default function AdminCompaniesPage() {
                               <button
                                 onClick={() => handleSuspend(company.id)}
                                 disabled={actionLoading === company.id}
-                                className="rounded-md bg-gray-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
+                                className="rounded-md bg-[#72706a] px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#1a1918] disabled:opacity-50"
                               >
                                 정지
                               </button>
@@ -257,7 +278,7 @@ export default function AdminCompaniesPage() {
                               <button
                                 onClick={() => handleReactivate(company.id)}
                                 disabled={actionLoading === company.id}
-                                className="rounded-md bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                                className="rounded-md bg-[#2d6a4f] px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-50"
                               >
                                 정지해제
                               </button>
@@ -270,31 +291,31 @@ export default function AdminCompaniesPage() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </motion.div>
 
           {meta && meta.totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-center gap-2">
+            <motion.div variants={fadeUp} className="mt-4 flex items-center justify-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40"
+                className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-40"
               >
                 이전
               </button>
-              <span className="text-[13px] text-gray-500">
+              <span className="text-[13px] text-[#72706a]">
                 {page} / {meta.totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
                 disabled={page === meta.totalPages}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40"
+                className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-40"
               >
                 다음
               </button>
-            </div>
+            </motion.div>
           )}
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

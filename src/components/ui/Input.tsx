@@ -29,7 +29,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-[13px] font-medium text-gray-800"
+            className="text-[13px] font-medium text-[#1a1918]"
           >
             {label}
           </label>
@@ -39,12 +39,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           type={type}
           className={cn(
-            "h-[44px] w-full rounded-lg border px-3.5 text-[14px] transition-colors",
-            "placeholder:text-gray-400",
+            "h-[44px] w-full rounded-lg border bg-white px-3.5 text-[14px] text-[#1a1918] outline-none transition-all duration-150",
+            "placeholder:text-[#a8a49c]",
             error
               ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
-              : "border-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5",
-            "disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed",
+              : "border-[#e2ddd6] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10",
+            "disabled:bg-[#f0ede8] disabled:text-[#a8a49c] disabled:cursor-not-allowed",
             className
           )}
           aria-invalid={!!error}
@@ -54,7 +54,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <p className="text-[12px] text-red-500">{error}</p>
         )}
         {!error && helperText && (
-          <p className="text-[12px] text-gray-500">{helperText}</p>
+          <p className="text-[12px] text-[#72706a]">{helperText}</p>
         )}
       </div>
     );

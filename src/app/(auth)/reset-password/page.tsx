@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/Input";
 import api from "@/lib/api";
 
@@ -27,6 +28,20 @@ const resetPasswordSchema = z
 
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 22 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
+
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -45,8 +60,8 @@ function ResetPasswordForm() {
   // 토큰이 없는 경우
   if (!token) {
     return (
-      <>
-        <div className="mb-8">
+      <motion.div variants={stagger} initial="hidden" animate="show">
+        <motion.div variants={fadeUp} className="mb-8">
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
             <svg
               className="h-6 w-6 text-red-500"
@@ -62,36 +77,39 @@ function ResetPasswordForm() {
               />
             </svg>
           </div>
-          <h1 className="text-[24px] font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-[24px] font-extrabold tracking-tight text-[#141412]">
             잘못된 접근입니다
           </h1>
-          <p className="mt-1.5 text-[14px] text-gray-500">
+          <p className="mt-1.5 text-[14px] text-[#72706a]">
             유효한 비밀번호 재설정 링크가 아닙니다. 비밀번호 찾기를 다시
             진행해주세요.
           </p>
-        </div>
+        </motion.div>
 
-        <Link
-          href="/forgot-password"
-          className="flex h-[46px] w-full items-center justify-center rounded-lg bg-gray-900 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800"
-        >
-          비밀번호 찾기
-        </Link>
-      </>
+        <motion.div variants={fadeUp}>
+          <Link
+            href="/forgot-password"
+            className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840]"
+            style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
+          >
+            비밀번호 찾기
+          </Link>
+        </motion.div>
+      </motion.div>
     );
   }
 
   // 비밀번호 변경 성공
   if (isSuccess) {
     return (
-      <>
-        <div className="mb-8">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-50">
+      <motion.div variants={stagger} initial="hidden" animate="show">
+        <motion.div variants={fadeUp} className="mb-8">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#eef7f3]">
             <svg
-              className="h-6 w-6 text-green-500"
+              className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
+              stroke="#2d6a4f"
               strokeWidth={2}
             >
               <path
@@ -101,21 +119,24 @@ function ResetPasswordForm() {
               />
             </svg>
           </div>
-          <h1 className="text-[24px] font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-[24px] font-extrabold tracking-tight text-[#141412]">
             비밀번호가 변경되었습니다
           </h1>
-          <p className="mt-1.5 text-[14px] text-gray-500">
+          <p className="mt-1.5 text-[14px] text-[#72706a]">
             새 비밀번호로 로그인해주세요.
           </p>
-        </div>
+        </motion.div>
 
-        <Link
-          href="/login"
-          className="flex h-[46px] w-full items-center justify-center rounded-lg bg-gray-900 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800"
-        >
-          로그인하기
-        </Link>
-      </>
+        <motion.div variants={fadeUp}>
+          <Link
+            href="/login"
+            className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors hover:bg-[#235840]"
+            style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
+          >
+            로그인하기
+          </Link>
+        </motion.div>
+      </motion.div>
     );
   }
 
@@ -137,17 +158,21 @@ function ResetPasswordForm() {
   };
 
   return (
-    <>
-      <div className="mb-8">
-        <h1 className="text-[24px] font-extrabold tracking-tight text-gray-900">
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      <motion.div variants={fadeUp} className="mb-8">
+        <h1 className="text-[24px] font-extrabold tracking-tight text-[#141412]">
           새 비밀번호 설정
         </h1>
-        <p className="mt-1.5 text-[14px] text-gray-500">
+        <p className="mt-1.5 text-[14px] text-[#72706a]">
           새로운 비밀번호를 입력해주세요.
         </p>
-      </div>
+      </motion.div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <motion.form
+        variants={fadeUp}
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+      >
         <Input
           label="새 비밀번호"
           type="password"
@@ -173,11 +198,12 @@ function ResetPasswordForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-1 flex h-[46px] w-full items-center justify-center rounded-lg bg-gray-900 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="press-scale mt-1 flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#235840]"
+          style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
         >
           {isSubmitting ? (
             <svg
-              className="h-5 w-5 animate-spin text-white"
+              className="h-5 w-5 animate-spin"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -200,8 +226,8 @@ function ResetPasswordForm() {
             "비밀번호 변경"
           )}
         </button>
-      </form>
-    </>
+      </motion.form>
+    </motion.div>
   );
 }
 
@@ -211,7 +237,7 @@ export default function ResetPasswordPage() {
       fallback={
         <div className="flex items-center justify-center py-12">
           <svg
-            className="h-6 w-6 animate-spin text-gray-400"
+            className="h-6 w-6 animate-spin text-[#72706a]"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

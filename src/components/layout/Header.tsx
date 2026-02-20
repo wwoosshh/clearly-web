@@ -64,14 +64,14 @@ const Header = React.memo(function Header() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-200",
         isScrolled
-          ? "border-b border-gray-200/80 bg-white/95 backdrop-blur-md shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+          ? "border-b border-[#e2ddd6] bg-white/95 backdrop-blur-md shadow-[0_1px_12px_rgba(45,106,79,0.06)]"
           : "bg-white"
       )}
     >
       <div className="relative mx-auto flex h-[60px] max-w-6xl items-center px-4 sm:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1.5 select-none">
-          <span className="text-[22px] font-extrabold tracking-tight text-gray-900">
+          <span className="text-[22px] font-extrabold tracking-tight text-[#141412]">
             바른오더
           </span>
         </Link>
@@ -85,13 +85,13 @@ const Header = React.memo(function Header() {
               className={cn(
                 "relative whitespace-nowrap px-4 py-2 text-[14px] font-medium transition-colors",
                 pathname === link.href
-                  ? "text-gray-900"
-                  : "text-gray-500 hover:text-gray-900"
+                  ? "text-[#2d6a4f]"
+                  : "text-[#72706a] hover:text-[#1a1918]"
               )}
             >
               {link.label}
               {pathname === link.href && (
-                <span className="absolute bottom-0 left-4 right-4 h-[2px] bg-gray-900 rounded-full" />
+                <span className="absolute bottom-0 left-4 right-4 h-[2px] bg-[#2d6a4f] rounded-full" />
               )}
             </Link>
           ))}
@@ -103,85 +103,85 @@ const Header = React.memo(function Header() {
             <div className="h-7 w-20" />
           ) : isAuthenticated && user ? (
             <>
-            <NotificationBell />
-            <div ref={profileRef} className="relative">
-              <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 text-sm text-gray-700 transition-colors hover:bg-gray-100"
-              >
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-900 text-white overflow-hidden">
-                  {user.profileImage ? (
-                    <Image src={user.profileImage} alt="" width={28} height={28} className="h-full w-full object-cover" />
-                  ) : (
-                    <span className="text-xs font-semibold leading-none">
-                      {user.name.charAt(0)}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[13px] font-medium">{user.name}</span>
-                {isCompany && subscription && (
-                  <SubscriptionBadge tier={subscription.tier} />
-                )}
-              </button>
-
-              <AnimatePresence>
-              {isProfileOpen && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                  transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="absolute right-0 mt-1.5 w-52 rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg shadow-gray-200/50"
+              <NotificationBell />
+              <div ref={profileRef} className="relative">
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 text-sm text-[#1a1918] transition-colors hover:bg-[#f0ede8]"
                 >
-                  <div className="px-4 py-2.5 border-b border-gray-100">
-                    <p className="text-[13px] font-semibold text-gray-900">{user.name}</p>
-                    <p className="text-[12px] text-gray-500 mt-0.5">{user.email}</p>
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2d6a4f] text-[#f5f3ee] overflow-hidden">
+                    {user.profileImage ? (
+                      <Image src={user.profileImage} alt="" width={28} height={28} className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-xs font-semibold leading-none">
+                        {user.name.charAt(0)}
+                      </span>
+                    )}
                   </div>
-                  {!isAdmin && (
-                    <div className="py-1">
-                      <Link
-                        href="/mypage"
-                        className="flex items-center px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        마이페이지
-                      </Link>
-                      <Link
-                        href="/mypage/reviews"
-                        className="flex items-center px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        내 리뷰
-                      </Link>
-                    </div>
+                  <span className="text-[13px] font-medium">{user.name}</span>
+                  {isCompany && subscription && (
+                    <SubscriptionBadge tier={subscription.tier} />
                   )}
-                  <div className="border-t border-gray-100 pt-1">
-                    <button
-                      onClick={() => {
-                        logout();
-                        setIsProfileOpen(false);
-                      }}
-                      className="flex w-full items-center px-4 py-2 text-[13px] text-gray-500 hover:bg-gray-50"
+                </button>
+
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                      transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      className="absolute right-0 mt-1.5 w-52 rounded-xl border border-[#e2ddd6] bg-white py-1.5 shadow-[0_8px_30px_rgba(45,106,79,0.10)]"
                     >
-                      로그아웃
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-              </AnimatePresence>
-            </div>
+                      <div className="px-4 py-2.5 border-b border-[#f0ede8]">
+                        <p className="text-[13px] font-semibold text-[#1a1918]">{user.name}</p>
+                        <p className="text-[12px] text-[#72706a] mt-0.5">{user.email}</p>
+                      </div>
+                      {!isAdmin && (
+                        <div className="py-1">
+                          <Link
+                            href="/mypage"
+                            className="flex items-center px-4 py-2 text-[13px] text-[#1a1918] hover:bg-[#f0ede8] transition-colors"
+                            onClick={() => setIsProfileOpen(false)}
+                          >
+                            마이페이지
+                          </Link>
+                          <Link
+                            href="/mypage/reviews"
+                            className="flex items-center px-4 py-2 text-[13px] text-[#1a1918] hover:bg-[#f0ede8] transition-colors"
+                            onClick={() => setIsProfileOpen(false)}
+                          >
+                            내 리뷰
+                          </Link>
+                        </div>
+                      )}
+                      <div className="border-t border-[#f0ede8] pt-1">
+                        <button
+                          onClick={() => {
+                            logout();
+                            setIsProfileOpen(false);
+                          }}
+                          className="flex w-full items-center px-4 py-2 text-[13px] text-[#72706a] hover:bg-[#f0ede8] transition-colors"
+                        >
+                          로그아웃
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </>
           ) : (
             <>
               <Link
                 href="/login"
-                className="px-3 py-1.5 text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                className="px-3 py-1.5 text-[13px] font-medium text-[#72706a] hover:text-[#1a1918] transition-colors"
               >
                 로그인
               </Link>
               <Link
                 href="/register"
-                className="rounded-lg bg-gray-900 px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-gray-800"
+                className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840]"
               >
                 시작하기
               </Link>
@@ -195,23 +195,23 @@ const Header = React.memo(function Header() {
             <NotificationBell />
           )}
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-[#72706a] hover:bg-[#f0ede8] transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="메뉴"
           >
-          {isMobileMenuOpen ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="4" y1="7" x2="20" y2="7" />
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <line x1="4" y1="17" x2="20" y2="17" />
-            </svg>
-          )}
-        </button>
+            {isMobileMenuOpen ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="17" x2="20" y2="17" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
 
@@ -224,7 +224,7 @@ const Header = React.memo(function Header() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 top-[60px] z-40 bg-black/20 md:hidden"
+              className="fixed inset-0 top-[60px] z-40 bg-black/15 md:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
             />
             <motion.div
@@ -232,7 +232,7 @@ const Header = React.memo(function Header() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="absolute left-0 right-0 top-[60px] z-50 border-t border-gray-200 bg-white shadow-lg md:hidden"
+              className="absolute left-0 right-0 top-[60px] z-50 border-t border-[#e2ddd6] bg-white shadow-[0_8px_24px_rgba(45,106,79,0.08)] md:hidden"
             >
               <nav className="flex flex-col px-5 pt-3">
                 {navLinks.map((link) => (
@@ -241,7 +241,9 @@ const Header = React.memo(function Header() {
                     href={link.href}
                     className={cn(
                       "py-2.5 text-[15px] font-medium transition-colors",
-                      pathname === link.href ? "text-gray-900" : "text-gray-500"
+                      pathname === link.href
+                        ? "text-[#2d6a4f]"
+                        : "text-[#72706a]"
                     )}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -249,7 +251,7 @@ const Header = React.memo(function Header() {
                   </Link>
                 ))}
               </nav>
-              <div className="mx-5 mt-3 flex flex-col gap-2 border-t border-gray-200 pb-5 pt-4">
+              <div className="mx-5 mt-3 flex flex-col gap-2 border-t border-[#e2ddd6] pb-5 pt-4">
                 {!isInitialized ? (
                   <div className="h-11" />
                 ) : isAuthenticated && user ? (
@@ -257,7 +259,7 @@ const Header = React.memo(function Header() {
                     {!isAdmin && (
                       <Link
                         href="/mypage"
-                        className="py-2 text-[15px] font-medium text-gray-700"
+                        className="py-2 text-[15px] font-medium text-[#1a1918]"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         마이페이지
@@ -265,7 +267,7 @@ const Header = React.memo(function Header() {
                     )}
                     <button
                       onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                      className="py-2 text-left text-[15px] font-medium text-gray-500"
+                      className="py-2 text-left text-[15px] font-medium text-[#72706a]"
                     >
                       로그아웃
                     </button>
@@ -274,14 +276,14 @@ const Header = React.memo(function Header() {
                   <>
                     <Link
                       href="/login"
-                      className="flex h-11 items-center justify-center rounded-lg border border-gray-200 text-[14px] font-medium text-gray-700"
+                      className="flex h-11 items-center justify-center rounded-lg border border-[#e2ddd6] text-[14px] font-medium text-[#1a1918] hover:bg-[#f0ede8] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       로그인
                     </Link>
                     <Link
                       href="/register"
-                      className="flex h-11 items-center justify-center rounded-lg bg-gray-900 text-[14px] font-medium text-white"
+                      className="flex h-11 items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       시작하기

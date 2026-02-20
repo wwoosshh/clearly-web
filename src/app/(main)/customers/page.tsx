@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
+import { motion } from "framer-motion";
 import { useAuthStore } from "@/stores/auth.store";
 import { useCacheStore, fetchWithCache } from "@/stores/cache.store";
 import api from "@/lib/api";
@@ -21,6 +22,23 @@ import CustomerDetailPanel from "@/components/customers/CustomerDetailPanel";
 import BatchActionBar from "@/components/customers/BatchActionBar";
 import TagManagementModal from "@/components/customers/TagManagementModal";
 import BatchMessageModal from "@/components/customers/BatchMessageModal";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 22 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+    },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
 
 const STAGES: PipelineStage[] = [
   "LEAD",
@@ -253,7 +271,7 @@ export default function CustomersPage() {
   if (!isInitialized) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
       </div>
     );
   }
@@ -262,104 +280,103 @@ export default function CustomersPage() {
 
   return (
     <div className="mx-auto max-w-6xl overflow-x-hidden px-4 sm:px-6 py-6 sm:py-8">
-      <FadeIn>
-        <h1 className="text-[22px] font-bold text-gray-900">고객 관리</h1>
-        <p className="mt-1 text-[14px] text-gray-500">
-          고객을 파이프라인으로 관리하고 일괄 메시지를 발송하세요
-        </p>
-      </FadeIn>
+      <motion.div variants={stagger} initial="hidden" animate="show">
 
-      {/* 통계 */}
-      <FadeIn delay={0.1}>
-        <div className="mt-6">
+        <motion.div variants={fadeUp}>
+          <h1 className="text-[22px] font-bold text-[#141412]">고객 관리</h1>
+          <p className="mt-1 text-[14px] text-[#72706a]">
+            고객을 파이프라인으로 관리하고 일괄 메시지를 발송하세요
+          </p>
+        </motion.div>
+
+        {/* 통계 */}
+        <motion.div variants={fadeUp} className="mt-6">
           <StatsBar stats={stats} loading={loading} />
-        </div>
-      </FadeIn>
+        </motion.div>
 
-      {/* 필터바 */}
-      <FadeIn delay={0.2}>
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="이름, 전화번호 검색"
-            className="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-9 text-[14px] text-gray-900 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none"
-          />
-          {searching && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
-            </div>
-          )}
-        </div>
-
-        <select
-          value={filterTag}
-          onChange={(e) => setFilterTag(e.target.value)}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-[14px] text-gray-700 focus:border-gray-400 focus:outline-none"
-        >
-          <option value="">전체 태그</option>
-          {companyTags.map((tag) => (
-            <option key={tag.id} value={tag.name}>
-              {tag.name}
-            </option>
-          ))}
-        </select>
-
-        <button
-          onClick={() => setShowTagModal(true)}
-          className="press-scale rounded-lg border border-gray-200 px-3 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
-        >
-          태그 관리
-        </button>
-      </div>
-      </FadeIn>
-
-      {/* 칸반 보드 */}
-      <ScrollReveal>
-      <div className="mt-5">
-        {loading ? (
-          <div className="grid gap-4 md:grid-cols-5">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-10 animate-pulse rounded-t-lg bg-gray-200" />
-                <div className="h-32 animate-pulse rounded-b-lg bg-gray-100" />
+        {/* 필터바 */}
+        <motion.div variants={fadeUp} className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[200px]">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a8a49c]"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="이름, 전화번호 검색"
+              className="w-full rounded-lg border border-[#e2ddd6] bg-white py-2 pl-9 pr-9 text-[14px] text-[#141412] placeholder:text-[#a8a49c] focus:border-[#4a8c6a] focus:outline-none transition-colors"
+            />
+            {searching && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#4a8c6a]" />
               </div>
-            ))}
+            )}
           </div>
-        ) : (
-          <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex gap-3 overflow-x-auto pb-4 snap-x md:grid md:grid-cols-5">
-              {pipeline.map((col) => (
-                <KanbanColumn
-                  key={col.stage}
-                  stage={col.stage}
-                  customers={col.customers}
-                  selectedIds={selectedIds}
-                  onToggleSelect={toggleSelect}
-                  onCardClick={(uid) => setDetailUserId(uid)}
-                  tagColors={tagColorMap}
-                />
+
+          <select
+            value={filterTag}
+            onChange={(e) => setFilterTag(e.target.value)}
+            className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] focus:border-[#4a8c6a] focus:outline-none transition-colors"
+          >
+            <option value="">전체 태그</option>
+            {companyTags.map((tag) => (
+              <option key={tag.id} value={tag.name}>
+                {tag.name}
+              </option>
+            ))}
+          </select>
+
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            onClick={() => setShowTagModal(true)}
+            className="press-scale rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#f0ede8]"
+          >
+            태그 관리
+          </motion.button>
+        </motion.div>
+
+        {/* 칸반 보드 */}
+        <motion.div variants={fadeUp} className="mt-5">
+          {loading ? (
+            <div className="grid gap-4 md:grid-cols-5">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-10 animate-pulse rounded-t-lg bg-[#e2ddd6]" />
+                  <div className="h-32 animate-pulse rounded-b-lg bg-[#f0ede8]" />
+                </div>
               ))}
             </div>
-          </DragDropContext>
-        )}
-      </div>
-      </ScrollReveal>
+          ) : (
+            <DragDropContext onDragEnd={onDragEnd}>
+              <div className="flex gap-3 overflow-x-auto pb-4 snap-x md:grid md:grid-cols-5">
+                {pipeline.map((col) => (
+                  <KanbanColumn
+                    key={col.stage}
+                    stage={col.stage}
+                    customers={col.customers}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelect}
+                    onCardClick={(uid) => setDetailUserId(uid)}
+                    tagColors={tagColorMap}
+                  />
+                ))}
+              </div>
+            </DragDropContext>
+          )}
+        </motion.div>
+
+      </motion.div>
 
       {/* 고객 상세 패널 */}
       <CustomerDetailPanel

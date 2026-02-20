@@ -13,6 +13,24 @@ import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { motion } from "framer-motion";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 22 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+    },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
 
 const estimateRequestSchema = z.object({
   cleaningType: z.string().min(1, "청소 유형을 선택해주세요."),
@@ -52,11 +70,11 @@ export default function EstimateRequestPage() {
   if (user?.role === "COMPANY") {
     return (
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-20 text-center">
-        <p className="text-[15px] font-medium text-gray-700">업체 계정으로는 견적을 요청할 수 없습니다</p>
-        <p className="mt-1.5 text-[13px] text-gray-500">견적 요청은 일반 회원만 이용할 수 있습니다</p>
+        <p className="text-[15px] font-medium text-[#1a1918]">업체 계정으로는 견적을 요청할 수 없습니다</p>
+        <p className="mt-1.5 text-[13px] text-[#72706a]">견적 요청은 일반 회원만 이용할 수 있습니다</p>
         <button
           onClick={() => router.push("/estimates")}
-          className="mt-4 rounded-lg bg-gray-900 px-5 py-2.5 text-[13px] font-medium text-white hover:bg-gray-800"
+          className="press-scale mt-4 rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors"
         >
           견적 리스트 보기
         </button>
@@ -149,215 +167,253 @@ export default function EstimateRequestPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-10">
-      <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
-        견적 요청
-      </h1>
-      <p className="mt-1.5 text-[15px] text-gray-500">
-        청소 조건을 입력하면 여러 업체로부터 견적을 받을 수 있습니다
-      </p>
-
-      {serverError && (
-        <div className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-[13px] text-red-600">
-          {serverError}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
-        {/* 청소 유형 */}
-        <div>
-          <label className="text-[13px] font-medium text-gray-800 mb-2 block">
-            청소 유형 <span className="text-red-500">*</span>
-          </label>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {(Object.entries(CLEANING_TYPE_LABELS) as [CleaningType, string][]).map(
-              ([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setValue("cleaningType", value, { shouldValidate: true })}
-                  className={cn(
-                    "rounded-lg border px-3 py-2.5 text-[13px] font-medium transition-colors",
-                    selectedType === value
-                      ? "border-gray-900 bg-gray-900 text-white"
-                      : "border-gray-200 text-gray-600 hover:border-gray-400"
-                  )}
-                >
-                  {label}
-                </button>
-              )
-            )}
-          </div>
-          {errors.cleaningType && (
-            <p className="mt-1.5 text-[12px] text-red-500">{errors.cleaningType.message}</p>
-          )}
-        </div>
-
-        {/* 주소 */}
-        <div>
-          <label className="text-[13px] font-medium text-gray-800 mb-2 block">
-            주소 <span className="text-red-500">*</span>
-          </label>
-          <div className="flex gap-2">
-            <input
-              readOnly
-              value={address}
-              placeholder="주소를 검색해주세요"
-              className="h-[44px] flex-1 rounded-lg border border-gray-200 px-3.5 text-[14px] bg-gray-50 text-gray-700 cursor-pointer"
-              onClick={() => {
-                // 주소 검색은 AddressSearch 버튼으로
-              }}
-            />
-            <AddressSearch
-              onComplete={(data) => {
-                setValue("address", data.roadAddress || data.address, {
-                  shouldValidate: true,
-                });
-              }}
-            />
-          </div>
-          {errors.address && (
-            <p className="mt-1.5 text-[12px] text-red-500">{errors.address.message}</p>
-          )}
-        </div>
-
-        {/* 상세 주소 */}
-        <Input
-          label="상세 주소"
-          placeholder="동/호수 등 상세 주소"
-          {...register("detailAddress")}
-          error={errors.detailAddress?.message}
-        />
-
-        {/* 면적 */}
-        <Input
-          label="면적 (평수)"
-          type="number"
-          placeholder="예: 25"
-          {...register("areaSize")}
-          error={errors.areaSize?.message}
-        />
-
-        {/* 예상 가격 범위 */}
-        {priceLoading && (
-          <p className="text-center text-[13px] text-gray-400 py-2">
-            예상 가격 조회 중...
+      <motion.div variants={stagger} initial="hidden" animate="show">
+        <motion.div variants={fadeUp}>
+          <h1 className="text-[24px] font-bold tracking-tight text-[#141412]">
+            견적 요청
+          </h1>
+          <p className="mt-1.5 text-[15px] text-[#72706a]">
+            청소 조건을 입력하면 여러 업체로부터 견적을 받을 수 있습니다
           </p>
-        )}
-        {priceEstimate && !priceLoading && (
-          <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3.5">
-            <p className="text-[13px] font-semibold text-gray-800">
-              예상 가격 범위
-            </p>
-            <div className="mt-2 flex items-end justify-between">
-              <div className="text-center flex-1">
-                <p className="text-[13px] text-gray-500">
-                  {priceEstimate.minPrice.toLocaleString()}원
-                </p>
-                <p className="text-[11px] text-gray-400">최저</p>
-              </div>
-              <div className="text-center flex-1">
-                <p className="text-lg font-bold text-gray-900">
-                  {priceEstimate.avgPrice.toLocaleString()}원
-                </p>
-                <p className="text-[11px] text-gray-400">평균</p>
-              </div>
-              <div className="text-center flex-1">
-                <p className="text-[13px] text-gray-500">
-                  {priceEstimate.maxPrice.toLocaleString()}원
-                </p>
-                <p className="text-[11px] text-gray-400">최고</p>
-              </div>
+        </motion.div>
+
+        {serverError && (
+          <motion.div variants={fadeUp}>
+            <div className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-[13px] text-red-600">
+              {serverError}
             </div>
-            <p className="mt-2 text-center text-[11px] text-gray-400">
-              최근 {priceEstimate.sampleCount}건의 거래 기준
-            </p>
-          </div>
+          </motion.div>
         )}
 
-        {/* 희망 날짜 */}
-        <Input
-          label="희망 날짜"
-          type="date"
-          {...register("desiredDate")}
-          error={errors.desiredDate?.message}
-        />
-
-        {/* 희망 시간대 */}
-        <div>
-          <label className="text-[13px] font-medium text-gray-800 mb-2 block">
-            희망 시간대
-          </label>
-          <select
-            {...register("desiredTime")}
-            className="h-[44px] w-full rounded-lg border border-gray-200 px-3.5 text-[14px] text-gray-700 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5 focus:outline-none"
-          >
-            <option value="">선택 안함</option>
-            {TIME_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* 희망 예산 */}
-        <Input
-          label="희망 예산 (원)"
-          type="number"
-          placeholder="예: 300000"
-          helperText="선택 사항입니다"
-          {...register("budget")}
-          error={errors.budget?.message}
-        />
-
-        {/* 상세 설명 */}
-        <div>
-          <label className="text-[13px] font-medium text-gray-800 mb-2 block">
-            상세 설명 <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            {...register("message")}
-            placeholder="청소가 필요한 상황을 자세히 설명해주세요. (예: 방 3개, 화장실 2개, 입주 전 전체 청소 희망)"
-            rows={5}
-            className={cn(
-              "w-full rounded-lg border px-3.5 py-3 text-[14px] transition-colors resize-none",
-              "placeholder:text-gray-400",
-              errors.message
-                ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
-                : "border-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/5",
-              "focus:outline-none"
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+          {/* 청소 유형 */}
+          <motion.div variants={fadeUp}>
+            <label className="text-[13px] font-medium text-[#1a1918] mb-2 block">
+              청소 유형 <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {(Object.entries(CLEANING_TYPE_LABELS) as [CleaningType, string][]).map(
+                ([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setValue("cleaningType", value, { shouldValidate: true })}
+                    className={cn(
+                      "press-scale rounded-lg border px-3 py-2.5 text-[13px] font-medium transition-colors",
+                      selectedType === value
+                        ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                        : "border-[#e2ddd6] text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]"
+                    )}
+                  >
+                    {label}
+                  </button>
+                )
+              )}
+            </div>
+            {errors.cleaningType && (
+              <p className="mt-1.5 text-[12px] text-red-500">{errors.cleaningType.message}</p>
             )}
-          />
-          {errors.message && (
-            <p className="mt-1.5 text-[12px] text-red-500">{errors.message.message}</p>
-          )}
-        </div>
+          </motion.div>
 
-        {/* 참고 사진 */}
-        <ImageUpload
-          label="참고 사진 (선택)"
-          maxFiles={10}
-          bucket="estimates"
-          value={images}
-          onChange={setImages}
-        />
+          {/* 주소 */}
+          <motion.div variants={fadeUp}>
+            <label className="text-[13px] font-medium text-[#1a1918] mb-2 block">
+              주소 <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-2">
+              <input
+                readOnly
+                value={address}
+                placeholder="주소를 검색해주세요"
+                className="h-[44px] flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] bg-[#f0ede8] text-[#72706a] cursor-pointer"
+                onClick={() => {
+                  // 주소 검색은 AddressSearch 버튼으로
+                }}
+              />
+              <AddressSearch
+                onComplete={(data) => {
+                  setValue("address", data.roadAddress || data.address, {
+                    shouldValidate: true,
+                  });
+                }}
+              />
+            </div>
+            {errors.address && (
+              <p className="mt-1.5 text-[12px] text-red-500">{errors.address.message}</p>
+            )}
+          </motion.div>
 
-        {/* 제출 버튼 */}
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex h-[46px] w-full items-center justify-center rounded-lg bg-gray-900 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? (
-            <svg className="h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
-          ) : (
-            "견적 요청하기"
+          {/* 상세 주소 */}
+          <motion.div variants={fadeUp}>
+            <Input
+              label="상세 주소"
+              placeholder="동/호수 등 상세 주소"
+              {...register("detailAddress")}
+              error={errors.detailAddress?.message}
+            />
+          </motion.div>
+
+          {/* 면적 */}
+          <motion.div variants={fadeUp}>
+            <Input
+              label="면적 (평수)"
+              type="number"
+              placeholder="예: 25"
+              {...register("areaSize")}
+              error={errors.areaSize?.message}
+            />
+          </motion.div>
+
+          {/* 예상 가격 범위 */}
+          {priceLoading && (
+            <motion.div variants={fadeUp}>
+              <p className="text-center text-[13px] text-[#a8a49c] py-2">
+                예상 가격 조회 중...
+              </p>
+            </motion.div>
           )}
-        </button>
-      </form>
+          {priceEstimate && !priceLoading && (
+            <motion.div variants={fadeUp}>
+              <div className="rounded-lg border border-[#d4ede4] bg-[#eef7f3] px-4 py-3.5">
+                <p className="text-[13px] font-semibold text-[#1a1918]">
+                  예상 가격 범위
+                </p>
+                <div className="mt-2 flex items-end justify-between">
+                  <div className="text-center flex-1">
+                    <p className="text-[13px] text-[#72706a]">
+                      {priceEstimate.minPrice.toLocaleString()}원
+                    </p>
+                    <p className="text-[11px] text-[#a8a49c]">최저</p>
+                  </div>
+                  <div className="text-center flex-1">
+                    <p className="text-lg font-bold text-[#141412]">
+                      {priceEstimate.avgPrice.toLocaleString()}원
+                    </p>
+                    <p className="text-[11px] text-[#a8a49c]">평균</p>
+                  </div>
+                  <div className="text-center flex-1">
+                    <p className="text-[13px] text-[#72706a]">
+                      {priceEstimate.maxPrice.toLocaleString()}원
+                    </p>
+                    <p className="text-[11px] text-[#a8a49c]">최고</p>
+                  </div>
+                </div>
+                <p className="mt-2 text-center text-[11px] text-[#a8a49c]">
+                  최근 {priceEstimate.sampleCount}건의 거래 기준
+                </p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* 희망 날짜 */}
+          <motion.div variants={fadeUp}>
+            <Input
+              label="희망 날짜"
+              type="date"
+              {...register("desiredDate")}
+              error={errors.desiredDate?.message}
+            />
+          </motion.div>
+
+          {/* 희망 시간대 */}
+          <motion.div variants={fadeUp}>
+            <label className="text-[13px] font-medium text-[#1a1918] mb-2 block">
+              희망 시간대
+            </label>
+            <select
+              {...register("desiredTime")}
+              className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] text-[#1a1918] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+            >
+              <option value="">선택 안함</option>
+              {TIME_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </motion.div>
+
+          {/* 희망 예산 */}
+          <motion.div variants={fadeUp}>
+            <Input
+              label="희망 예산 (원)"
+              type="number"
+              placeholder="예: 300000"
+              helperText="선택 사항입니다"
+              {...register("budget")}
+              error={errors.budget?.message}
+            />
+          </motion.div>
+
+          {/* 상세 설명 */}
+          <motion.div variants={fadeUp}>
+            <label className="text-[13px] font-medium text-[#1a1918] mb-2 block">
+              상세 설명 <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              {...register("message")}
+              placeholder="청소가 필요한 상황을 자세히 설명해주세요. (예: 방 3개, 화장실 2개, 입주 전 전체 청소 희망)"
+              rows={5}
+              className={cn(
+                "w-full rounded-lg border px-3.5 py-3 text-[14px] transition-colors resize-none",
+                "placeholder:text-[#a8a49c]",
+                errors.message
+                  ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
+                  : "border-[#e2ddd6] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20",
+                "focus:outline-none"
+              )}
+            />
+            {errors.message && (
+              <p className="mt-1.5 text-[12px] text-red-500">{errors.message.message}</p>
+            )}
+          </motion.div>
+
+          {/* 참고 사진 */}
+          <motion.div variants={fadeUp}>
+            <ImageUpload
+              label="참고 사진 (선택)"
+              maxFiles={10}
+              bucket="estimates"
+              value={images}
+              onChange={setImages}
+            />
+          </motion.div>
+
+          {/* 제출 버튼 */}
+          <motion.div variants={fadeUp}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <svg
+                  className="h-5 w-5 animate-spin text-[#f5f3ee]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+              ) : (
+                "견적 요청하기"
+              )}
+            </button>
+          </motion.div>
+        </form>
+      </motion.div>
     </div>
   );
 }

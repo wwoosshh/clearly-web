@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import api from "@/lib/api";
+import { cn } from "@/lib/utils";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] } },
+};
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 
 interface FaqItem {
   id: string;
@@ -33,7 +41,7 @@ export default function AdminFaqPage() {
 
   useEffect(() => {
     fetchFaqs();
-  }, [filterCategory]);
+  }, [filterCategory]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchFaqs() {
     setIsLoading(true);
@@ -129,32 +137,31 @@ export default function AdminFaqPage() {
   const categories = [...new Set(faqs.map((f) => f.category))];
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      <motion.div variants={fadeUp} className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">FAQ 관리</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            자주 묻는 질문을 관리합니다.
-          </p>
+          <h1 className="text-xl font-bold text-[#141412]">FAQ 관리</h1>
+          <p className="mt-1 text-sm text-[#72706a]">자주 묻는 질문을 관리합니다.</p>
         </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+          className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a]"
         >
           새 FAQ
         </button>
-      </div>
+      </motion.div>
 
       {/* 카테고리 필터 */}
       {categories.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
+        <motion.div variants={fadeUp} className="mt-4 flex flex-wrap gap-2">
           <button
             onClick={() => setFilterCategory("")}
-            className={`rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
+            className={cn(
+              "rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
               !filterCategory
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+                ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                : "bg-[#f0ede8] text-[#72706a] hover:bg-[#e2ddd6]"
+            )}
           >
             전체
           </button>
@@ -162,182 +169,174 @@ export default function AdminFaqPage() {
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
-              className={`rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
+              className={cn(
+                "rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
                 filterCategory === cat
-                  ? "bg-gray-900 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
+                  ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                  : "bg-[#f0ede8] text-[#72706a] hover:bg-[#e2ddd6]"
+              )}
             >
               {cat}
             </button>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {/* 테이블 */}
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
         </div>
       ) : faqs.length === 0 ? (
-        <div className="mt-8 text-center text-sm text-gray-400">
+        <motion.div variants={fadeUp} className="mt-8 text-center text-sm text-[#72706a]">
           등록된 FAQ가 없습니다.
-        </div>
+        </motion.div>
       ) : (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-left text-sm min-w-[600px]">
-            <thead>
-              <tr className="border-b border-gray-200 text-[12px] font-medium text-gray-500">
-                <th className="pb-3 pr-4">카테고리</th>
-                <th className="pb-3 pr-4">질문</th>
-                <th className="pb-3 pr-4 text-center">순서</th>
-                <th className="pb-3 pr-4 text-center">노출</th>
-                <th className="pb-3 text-right">관리</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {faqs.map((faq) => (
-                <tr key={faq.id} className="hover:bg-gray-50">
-                  <td className="py-3 pr-4 text-[13px] text-gray-500">
-                    {faq.category}
-                  </td>
-                  <td className="max-w-xs truncate py-3 pr-4 text-[13px] font-medium text-gray-800">
-                    {faq.question}
-                  </td>
-                  <td className="py-3 pr-4 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <button
-                        onClick={() => handleMove(faq, "up")}
-                        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                        title="위로"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                          <path d="M3 9L7 5L11 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </button>
-                      <span className="text-[12px] text-gray-400">
-                        {faq.sortOrder}
-                      </span>
-                      <button
-                        onClick={() => handleMove(faq, "down")}
-                        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                        title="아래로"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                          <path d="M3 5L7 9L11 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                  <td className="py-3 pr-4 text-center">
-                    <button
-                      onClick={() => handleToggleVisible(faq)}
-                      className={`inline-block h-5 w-9 rounded-full transition-colors ${
-                        faq.isVisible ? "bg-green-500" : "bg-gray-300"
-                      }`}
-                    >
-                      <span
-                        className={`block h-4 w-4 translate-y-[0.5px] rounded-full bg-white shadow transition-transform ${
-                          faq.isVisible ? "translate-x-[18px]" : "translate-x-[2px]"
-                        }`}
-                      />
-                    </button>
-                  </td>
-                  <td className="py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openEdit(faq)}
-                        className="text-[12px] font-medium text-blue-600 hover:text-blue-800"
-                      >
-                        수정
-                      </button>
-                      <button
-                        onClick={() => handleDelete(faq.id)}
-                        className="text-[12px] font-medium text-red-600 hover:text-red-800"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </td>
+        <motion.div variants={fadeUp} className="mt-6 overflow-hidden rounded-xl border border-[#e2ddd6] bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm min-w-[600px]">
+              <thead>
+                <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
+                  <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">카테고리</th>
+                  <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">질문</th>
+                  <th className="px-4 py-3 text-center text-[12px] font-semibold text-[#72706a]">순서</th>
+                  <th className="px-4 py-3 text-center text-[12px] font-semibold text-[#72706a]">노출</th>
+                  <th className="px-4 py-3 text-right text-[12px] font-semibold text-[#72706a]">관리</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {faqs.map((faq) => (
+                  <tr key={faq.id} className="border-b border-[#e2ddd6] last:border-0 hover:bg-[#f5f3ee]">
+                    <td className="px-4 py-3 text-[13px] text-[#72706a]">
+                      {faq.category}
+                    </td>
+                    <td className="max-w-xs truncate px-4 py-3 text-[13px] font-medium text-[#1a1918]">
+                      {faq.question}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleMove(faq, "up")}
+                          className="rounded p-1 text-[#72706a] hover:bg-[#f0ede8] hover:text-[#1a1918]"
+                          title="위로"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M3 9L7 5L11 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                        <span className="text-[12px] text-[#72706a]">
+                          {faq.sortOrder}
+                        </span>
+                        <button
+                          onClick={() => handleMove(faq, "down")}
+                          className="rounded p-1 text-[#72706a] hover:bg-[#f0ede8] hover:text-[#1a1918]"
+                          title="아래로"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M3 5L7 9L11 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleToggleVisible(faq)}
+                        className={cn(
+                          "inline-block h-5 w-9 rounded-full transition-colors",
+                          faq.isVisible ? "bg-[#2d6a4f]" : "bg-[#e2ddd6]"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "block h-4 w-4 translate-y-[0.5px] rounded-full bg-white shadow transition-transform",
+                            faq.isVisible ? "translate-x-[18px]" : "translate-x-[2px]"
+                          )}
+                        />
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-3">
+                        <button
+                          onClick={() => openEdit(faq)}
+                          className="text-[12px] font-medium text-[#2d6a4f] hover:text-[#4a8c6a]"
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() => handleDelete(faq.id)}
+                          className="text-[12px] font-medium text-red-600 hover:text-red-700"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
       )}
 
       {/* 모달 */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="mx-4 w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="text-lg font-bold text-gray-900">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mx-4 w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+          >
+            <h2 className="text-lg font-bold text-[#141412]">
               {editingFaq ? "FAQ 수정" : "새 FAQ"}
             </h2>
 
             <div className="mt-5 space-y-4">
               <div>
-                <label className="block text-[13px] font-medium text-gray-700">
-                  카테고리
-                </label>
+                <label className="block text-[13px] font-medium text-[#72706a]">카테고리</label>
                 <input
                   type="text"
                   value={form.category}
-                  onChange={(e) =>
-                    setForm({ ...form, category: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
                   placeholder="예: 서비스 이용, 결제/환불"
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
                 />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-gray-700">
-                  질문
-                </label>
+                <label className="block text-[13px] font-medium text-[#72706a]">질문</label>
                 <input
                   type="text"
                   value={form.question}
-                  onChange={(e) =>
-                    setForm({ ...form, question: e.target.value })
-                  }
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+                  onChange={(e) => setForm({ ...form, question: e.target.value })}
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
                 />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-gray-700">
-                  답변
-                </label>
+                <label className="block text-[13px] font-medium text-[#72706a]">답변</label>
                 <textarea
                   value={form.answer}
-                  onChange={(e) =>
-                    setForm({ ...form, answer: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, answer: e.target.value })}
                   rows={5}
-                  className="mt-1 w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+                  className="mt-1 w-full resize-none rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
                 />
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block text-[13px] font-medium text-gray-700">
-                    정렬 순서
-                  </label>
+                  <label className="block text-[13px] font-medium text-[#72706a]">정렬 순서</label>
                   <input
                     type="number"
                     value={form.sortOrder}
-                    onChange={(e) =>
-                      setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })
-                    }
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+                    onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
+                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
                   />
                 </div>
                 <div className="flex items-end pb-1">
-                  <label className="flex items-center gap-2 text-[13px] text-gray-700">
+                  <label className="flex items-center gap-2 text-[13px] text-[#72706a]">
                     <input
                       type="checkbox"
                       checked={form.isVisible}
-                      onChange={(e) =>
-                        setForm({ ...form, isVisible: e.target.checked })
-                      }
-                      className="h-4 w-4 rounded border-gray-300"
+                      onChange={(e) => setForm({ ...form, isVisible: e.target.checked })}
+                      className="h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f]"
                     />
                     노출
                   </label>
@@ -348,21 +347,21 @@ export default function AdminFaqPage() {
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowModal(false)}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-lg border border-[#e2ddd6] bg-[#f0ede8] px-4 py-2 text-sm font-medium text-[#1a1918] hover:bg-[#e2ddd6]"
               >
                 취소
               </button>
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+                className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-sm font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
               >
                 {isSaving ? "저장 중..." : "저장"}
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

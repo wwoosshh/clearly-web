@@ -20,9 +20,10 @@ function Card({
   return (
     <div
       className={cn(
-        "rounded-xl border border-gray-200 bg-white shadow-sm",
+        "rounded-xl border border-[#e2ddd6] bg-white shadow-sm",
         !noPadding && "p-6",
-        hoverable && "transition-shadow hover:shadow-md cursor-pointer",
+        hoverable &&
+          "cursor-pointer transition-all duration-[280ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-4px_rgba(45,106,79,0.10),0_3px_10px_-4px_rgba(45,106,79,0.06)]",
         className
       )}
       {...props}
@@ -52,7 +53,7 @@ interface CardTitleProps {
 
 function CardTitle({ children, className }: CardTitleProps) {
   return (
-    <h3 className={cn("text-lg font-semibold text-gray-900", className)}>
+    <h3 className={cn("text-lg font-semibold text-[#1a1918]", className)}>
       {children}
     </h3>
   );
@@ -65,7 +66,7 @@ interface CardDescriptionProps {
 
 function CardDescription({ children, className }: CardDescriptionProps) {
   return (
-    <p className={cn("text-sm text-gray-500 mt-1", className)}>
+    <p className={cn("text-sm text-[#72706a] mt-1", className)}>
       {children}
     </p>
   );
