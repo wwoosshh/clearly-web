@@ -351,7 +351,7 @@ export default function CustomerDetailPanel({
                       </div>
                       {m.chatRoomId && (
                         <Link
-                          href={`/chat/${m.chatRoomId}`}
+                          href={`/chat?room=${m.chatRoomId}`}
                           className="mt-1.5 inline-block text-[12px] font-medium text-gray-600 underline underline-offset-2 hover:text-gray-900"
                         >
                           채팅방 바로가기
@@ -373,7 +373,7 @@ export default function CustomerDetailPanel({
                   {detail.chatRooms.map((c) => (
                     <Link
                       key={c.id}
-                      href={`/chat/${c.id}`}
+                      href={`/chat?room=${c.id}`}
                       className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2.5 transition-colors hover:bg-gray-50"
                     >
                       <span className="text-[13px] text-gray-700 truncate max-w-[200px]">

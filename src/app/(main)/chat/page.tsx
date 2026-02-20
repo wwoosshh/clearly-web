@@ -63,6 +63,7 @@ function ChatPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const companyIdParam = searchParams.get("companyId");
+  const roomIdParam = searchParams.get("room");
   const { user } = useAuthStore();
 
   const [rooms, setRooms] = useState<ChatRoomDetail[]>(() => {
@@ -158,7 +159,7 @@ function ChatPageContent() {
     }
   }, []);
 
-  // ─── 초기 로드 + companyId 자동 채팅방 생성 ──────────
+  // ─── 초기 로드 + companyId 자동 채팅방 생성 / roomId 자동 선택 ──────────
   useEffect(() => {
     if (!user) return;
 
@@ -180,10 +181,25 @@ function ChatPageContent() {
         }
         syncRooms();
       })();
+    } else if (roomIdParam) {
+      (async () => {
+        await syncRooms();
+        try {
+          const { data } = await api.get(`/chat/rooms/${roomIdParam}`);
+          const room = (data as any)?.data ?? data;
+          setSelectedRoom(room);
+          setShowMobileChat(true);
+          const cached = chatCache.getMessages(room.id);
+          if (cached?.length) setMessages(cached);
+          syncMessages(room.id);
+        } catch {
+          // silent
+        }
+      })();
     } else {
       syncRooms();
     }
-  }, [companyIdParam, user, syncRooms, syncMessages]);
+  }, [companyIdParam, roomIdParam, user, syncRooms, syncMessages]);
 
   // ─── 소켓 연결 ──────────────────────────────────
   useEffect(() => {
