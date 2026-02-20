@@ -27,7 +27,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 overflow-x-hidden">
+      <main className="flex-1 overflow-x-clip">
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />

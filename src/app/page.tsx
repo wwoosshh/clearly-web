@@ -23,7 +23,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <Header />
 
-      <main className="flex-1 overflow-x-hidden">
+      <main className="flex-1 overflow-x-clip">
         {/* Hero */}
         <section className="pt-12 pb-16 sm:pt-24 sm:pb-32 overflow-hidden">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
