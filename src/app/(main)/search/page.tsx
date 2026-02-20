@@ -397,7 +397,7 @@ function SearchPageContent() {
                       show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] } },
                     }}
                   >
-                    <CompanyCard company={company} />
+                    <CompanyCard company={company} isCompany={isCompany} />
                   </motion.div>
                 ))}
               </motion.div>

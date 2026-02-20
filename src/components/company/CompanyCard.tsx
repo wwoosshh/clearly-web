@@ -7,9 +7,10 @@ import type { CompanySearchResult } from "@/types";
 
 interface CompanyCardProps {
   company: CompanySearchResult;
+  isCompany?: boolean;
 }
 
-const CompanyCard = React.memo(function CompanyCard({ company }: CompanyCardProps) {
+const CompanyCard = React.memo(function CompanyCard({ company, isCompany = false }: CompanyCardProps) {
   const formatPrice = (min: number | null, max: number | null) => {
     if (min == null && max == null) return null;
     const fmt = (n: number) =>
@@ -171,16 +172,25 @@ const CompanyCard = React.memo(function CompanyCard({ company }: CompanyCardProp
       <div className="mt-4 flex gap-2">
         <Link
           href={`/companies/${company.id}`}
-          className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-gray-200 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex h-[38px] flex-1 items-center justify-center rounded-lg border border-[#e2ddd6] text-[13px] font-medium text-[#1a1918] transition-colors hover:bg-[#f0ede8]"
         >
           상세 보기
         </Link>
-        <Link
-          href={`/chat?companyId=${company.id}`}
-          className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-gray-900 text-[13px] font-medium text-white transition-colors hover:bg-gray-800"
-        >
-          채팅 상담
-        </Link>
+        {isCompany ? (
+          <div
+            title="업체 계정으로는 채팅 상담을 시작할 수 없습니다"
+            className="flex h-[38px] flex-1 cursor-not-allowed items-center justify-center rounded-lg bg-[#e2ddd6] text-[13px] font-medium text-[#a8a49c]"
+          >
+            채팅 상담
+          </div>
+        ) : (
+          <Link
+            href={`/chat?companyId=${company.id}`}
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840]"
+          >
+            채팅 상담
+          </Link>
+        )}
       </div>
     </div>
   );
