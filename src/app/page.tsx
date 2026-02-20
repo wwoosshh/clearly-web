@@ -23,23 +23,20 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="relative pt-12 pb-16 sm:pt-24 sm:pb-32 overflow-hidden">
-          {/* 배경 아이콘 데코레이션 */}
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-            <Image
-              src="/icon-barunorder.svg"
-              alt=""
-              width={512}
-              height={512}
-              className="w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] opacity-[0.04] select-none"
-              aria-hidden="true"
-              priority
-            />
-          </div>
+        <section className="pt-12 pb-16 sm:pt-24 sm:pb-32 overflow-hidden">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-16">
               {/* Left - Text */}
-              <div className="flex-shrink-0 lg:max-w-[520px]">
+              <div className="relative flex-shrink-0 lg:max-w-[520px]">
+                {/* 아이콘 스티커 */}
+                <Image
+                  src="/icon-barunorder.svg"
+                  alt="바른오더"
+                  width={512}
+                  height={512}
+                  className="pointer-events-none absolute -top-4 -right-8 w-[56px] h-[56px] sm:-top-6 sm:-right-12 sm:w-[80px] sm:h-[80px] rotate-12 drop-shadow-lg select-none"
+                  priority
+                />
                 <h1 className="text-[36px] font-bold leading-[1.18] tracking-[-0.025em] text-gray-900 sm:text-[52px]">
                   이사청소,
                   <br />
