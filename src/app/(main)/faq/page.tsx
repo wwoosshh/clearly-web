@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
+import FadeIn from "@/components/animation/FadeIn";
+import ScrollReveal from "@/components/animation/ScrollReveal";
 
 interface FaqItem {
   id: string;
@@ -49,6 +52,7 @@ export default function FaqPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+      <FadeIn>
       <h1 className="text-2xl font-bold text-gray-900">
         자주 묻는 질문
       </h1>
@@ -68,11 +72,13 @@ export default function FaqPage() {
         />
         <button
           onClick={handleSearch}
-          className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+          className="press-scale rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
         >
           검색
         </button>
       </div>
+
+      </FadeIn>
 
       {/* 내용 */}
       {isLoading ? (
@@ -89,8 +95,8 @@ export default function FaqPage() {
         </div>
       ) : (
         <div className="mt-8 space-y-8">
-          {categories.map((category) => (
-            <div key={category}>
+          {categories.map((category, idx) => (
+            <ScrollReveal key={category} delay={idx * 0.05}>
               <h2 className="text-[15px] font-bold text-gray-900">
                 {category}
               </h2>
@@ -129,18 +135,28 @@ export default function FaqPage() {
                           </svg>
                         </span>
                       </button>
+                      <AnimatePresence>
                       {isOpen && (
-                        <div className="border-t border-gray-100 bg-gray-50 px-5 py-4">
-                          <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-gray-600">
-                            {faq.answer}
-                          </p>
-                        </div>
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border-t border-gray-100 bg-gray-50 px-5 py-4">
+                            <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-gray-600">
+                              {faq.answer}
+                            </p>
+                          </div>
+                        </motion.div>
                       )}
+                      </AnimatePresence>
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       )}

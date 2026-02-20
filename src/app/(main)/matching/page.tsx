@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import FadeIn from "@/components/animation/FadeIn";
 import type { Estimate, EstimateRequest } from "@/types";
 import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
@@ -120,6 +121,7 @@ export default function MatchingPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
+      <FadeIn>
       <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
         매칭 내역
       </h1>
@@ -154,6 +156,7 @@ export default function MatchingPage() {
           </button>
         )}
       </div>
+      </FadeIn>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
@@ -184,7 +187,7 @@ export default function MatchingPage() {
               <button
                 key={est.id}
                 onClick={() => setSelectedEstimate(est)}
-                className="rounded-xl border border-gray-200 bg-white p-5 text-left transition-shadow hover:shadow-md"
+                className="hover-lift rounded-xl border border-gray-200 bg-white p-5 text-left"
               >
                 <div className="flex items-start justify-between">
                   <div>

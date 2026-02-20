@@ -10,6 +10,7 @@ import api from "@/lib/api";
 import type { EstimateRequest, CleaningType } from "@/types";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { CLEANING_TYPE_LABELS } from "@/types";
+import FadeIn from "@/components/animation/FadeIn";
 import EstimateLimitBanner from "@/components/subscription/EstimateLimitBanner";
 import { useSubscriptionStore } from "@/stores/subscription.store";
 
@@ -118,6 +119,7 @@ export default function EstimatesPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
+      <FadeIn>
       <div>
         <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
           견적 요청 목록
@@ -130,6 +132,7 @@ export default function EstimatesPage() {
       <div className="mt-4">
         <EstimateLimitBanner />
       </div>
+      </FadeIn>
 
       {requests.length === 0 ? (
         <div className="mt-12 flex flex-col items-center text-center">
@@ -156,7 +159,7 @@ export default function EstimatesPage() {
                 setShowSubmitForm(false);
                 resetForm();
               }}
-              className="rounded-xl border border-gray-200 bg-white p-5 text-left transition-shadow hover:shadow-md"
+              className="hover-lift rounded-xl border border-gray-200 bg-white p-5 text-left"
             >
               <div className="flex items-start justify-between">
                 <h3 className="text-[15px] font-bold text-gray-900">

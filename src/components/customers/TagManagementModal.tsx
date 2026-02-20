@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { CompanyTag } from "@/types";
 
 interface TagManagementModalProps {
@@ -32,8 +33,6 @@ export default function TagManagementModal({
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  if (!isOpen) return null;
-
   const handleCreate = async () => {
     if (!newName.trim()) return;
     setCreating(true);
@@ -56,9 +55,24 @@ export default function TagManagementModal({
   };
 
   return (
+    <AnimatePresence>
+      {isOpen && (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-xl">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 bg-black/30"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="relative w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-xl"
+      >
         <div className="flex items-center justify-between">
           <h3 className="text-[16px] font-semibold text-gray-900">
             태그 관리
@@ -145,7 +159,9 @@ export default function TagManagementModal({
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
+      )}
+    </AnimatePresence>
   );
 }

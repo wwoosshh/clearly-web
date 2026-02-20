@@ -9,6 +9,8 @@ import SubscriptionBadge from "@/components/subscription/SubscriptionBadge";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
 import { uploadImage } from "@/lib/upload";
+import FadeIn from "@/components/animation/FadeIn";
+import ScrollReveal from "@/components/animation/ScrollReveal";
 
 interface UserStats {
   estimateRequests: number;
@@ -164,6 +166,7 @@ export default function MyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
       {/* 프로필 영역 */}
+      <FadeIn>
       <div className="flex items-center gap-4">
         <input
           ref={fileInputRef}
@@ -222,8 +225,10 @@ export default function MyPage() {
           </div>
         </div>
       </div>
+      </FadeIn>
 
       {/* 활동 요약 */}
+      <ScrollReveal>
       <div className="mt-8">
         <h2 className="text-[15px] font-semibold text-gray-900">활동 요약</h2>
         {isLoading ? (
@@ -299,14 +304,14 @@ export default function MyPage() {
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <Link
               href="/estimates/submitted"
-              className="rounded-xl border border-gray-200 bg-white p-4 text-center transition-colors hover:bg-gray-50"
+              className="hover-lift rounded-xl border border-gray-200 bg-white p-4 text-center"
             >
               <p className="text-[22px] font-bold text-gray-900">{companyStats.submittedEstimates}</p>
               <p className="mt-1 text-[13px] text-gray-500">제출 견적</p>
             </Link>
             <Link
               href="/mypage/reviews"
-              className="rounded-xl border border-gray-200 bg-white p-4 text-center transition-colors hover:bg-gray-50"
+              className="hover-lift rounded-xl border border-gray-200 bg-white p-4 text-center"
             >
               <p className="text-[22px] font-bold text-gray-900">{companyStats.receivedReviews}</p>
               <p className="mt-1 text-[13px] text-gray-500">받은 리뷰</p>
@@ -322,28 +327,28 @@ export default function MyPage() {
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Link
               href="/matching"
-              className="rounded-xl border border-gray-200 bg-white p-4 text-center transition-colors hover:bg-gray-50"
+              className="hover-lift rounded-xl border border-gray-200 bg-white p-4 text-center"
             >
               <p className="text-[22px] font-bold text-gray-900">{userStats.estimateRequests}</p>
               <p className="mt-1 text-[13px] text-gray-500">견적요청</p>
             </Link>
             <Link
               href="/matching"
-              className="rounded-xl border border-gray-200 bg-white p-4 text-center transition-colors hover:bg-gray-50"
+              className="hover-lift rounded-xl border border-gray-200 bg-white p-4 text-center"
             >
               <p className="text-[22px] font-bold text-gray-900">{userStats.estimates}</p>
               <p className="mt-1 text-[13px] text-gray-500">받은 견적</p>
             </Link>
             <Link
               href="/matching"
-              className="rounded-xl border border-gray-200 bg-white p-4 text-center transition-colors hover:bg-gray-50"
+              className="hover-lift rounded-xl border border-gray-200 bg-white p-4 text-center"
             >
               <p className="text-[22px] font-bold text-gray-900">{userStats.completedMatchings}</p>
               <p className="mt-1 text-[13px] text-gray-500">완료 매칭</p>
             </Link>
             <Link
               href="/mypage/reviews"
-              className="rounded-xl border border-gray-200 bg-white p-4 text-center transition-colors hover:bg-gray-50"
+              className="hover-lift rounded-xl border border-gray-200 bg-white p-4 text-center"
             >
               <p className="text-[22px] font-bold text-gray-900">{userStats.reviews}</p>
               <p className="mt-1 text-[13px] text-gray-500">작성 리뷰</p>
@@ -351,8 +356,10 @@ export default function MyPage() {
           </div>
         )}
       </div>
+      </ScrollReveal>
 
       {/* 바로가기 메뉴 */}
+      <ScrollReveal delay={0.1}>
       <div className="mt-10">
         <h2 className="text-[15px] font-semibold text-gray-900">바로가기</h2>
         <div className="mt-3 divide-y divide-gray-100 rounded-xl border border-gray-200 bg-white">
@@ -523,26 +530,29 @@ export default function MyPage() {
           </Link>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* 계정 관리 */}
+      <ScrollReveal delay={0.2}>
       <div className="mt-10">
         <h2 className="text-[15px] font-semibold text-gray-900">계정 관리</h2>
         <div className="mt-3 flex gap-3">
           <button
             onClick={handleLogout}
-            className="flex-1 rounded-xl border border-gray-200 bg-white px-5 py-3 text-[14px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="press-scale flex-1 rounded-xl border border-gray-200 bg-white px-5 py-3 text-[14px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             로그아웃
           </button>
           <button
             onClick={handleDeleteAccount}
             disabled={isDeletingAccount}
-            className="flex-1 rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-[14px] font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
+            className="press-scale flex-1 rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-[14px] font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
           >
             {isDeletingAccount ? "처리 중..." : "회원탈퇴"}
           </button>
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 }

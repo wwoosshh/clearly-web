@@ -12,6 +12,8 @@ import {
   CompanyTag,
   PipelineColumn,
 } from "@/types";
+import FadeIn from "@/components/animation/FadeIn";
+import ScrollReveal from "@/components/animation/ScrollReveal";
 import StatsBar from "@/components/customers/StatsBar";
 import KanbanColumn from "@/components/customers/KanbanColumn";
 import CustomerDetailPanel from "@/components/customers/CustomerDetailPanel";
@@ -238,17 +240,22 @@ export default function CustomersPage() {
 
   return (
     <div className="mx-auto max-w-6xl overflow-x-hidden px-4 sm:px-6 py-6 sm:py-8">
-      <h1 className="text-[22px] font-bold text-gray-900">고객 관리</h1>
-      <p className="mt-1 text-[14px] text-gray-500">
-        고객을 파이프라인으로 관리하고 일괄 메시지를 발송하세요
-      </p>
+      <FadeIn>
+        <h1 className="text-[22px] font-bold text-gray-900">고객 관리</h1>
+        <p className="mt-1 text-[14px] text-gray-500">
+          고객을 파이프라인으로 관리하고 일괄 메시지를 발송하세요
+        </p>
+      </FadeIn>
 
       {/* 통계 */}
-      <div className="mt-6">
-        <StatsBar stats={stats} loading={loading} />
-      </div>
+      <FadeIn delay={0.1}>
+        <div className="mt-6">
+          <StatsBar stats={stats} loading={loading} />
+        </div>
+      </FadeIn>
 
       {/* 필터바 */}
+      <FadeIn delay={0.2}>
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <svg
@@ -293,13 +300,15 @@ export default function CustomersPage() {
 
         <button
           onClick={() => setShowTagModal(true)}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="press-scale rounded-lg border border-gray-200 px-3 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
           태그 관리
         </button>
       </div>
+      </FadeIn>
 
       {/* 칸반 보드 */}
+      <ScrollReveal>
       <div className="mt-5">
         {loading ? (
           <div className="grid gap-4 md:grid-cols-5">
@@ -328,6 +337,7 @@ export default function CustomersPage() {
           </DragDropContext>
         )}
       </div>
+      </ScrollReveal>
 
       {/* 고객 상세 패널 */}
       <CustomerDetailPanel

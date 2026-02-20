@@ -8,6 +8,7 @@ import { CompanyCard } from "@/components/company/CompanyCard";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import FadeIn from "@/components/animation/FadeIn";
 import type { CompanySearchResponse, CompanySearchResult } from "@/types";
 
 const SPECIALTY_OPTIONS = [
@@ -179,6 +180,7 @@ function SearchPageContent() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       {/* 헤더 */}
+      <FadeIn>
       <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
         업체 찾기
       </h1>
@@ -196,7 +198,10 @@ function SearchPageContent() {
         )}
       </div>
 
+      </FadeIn>
+
       {/* 키워드 검색 바 */}
+      <FadeIn delay={0.1}>
       <div className="mt-6 flex gap-2">
         <input
           type="text"
@@ -209,13 +214,16 @@ function SearchPageContent() {
         <button
           onClick={handleSearch}
           disabled={isLoading}
-          className="h-[46px] rounded-lg bg-gray-900 px-6 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="press-scale h-[46px] rounded-lg bg-gray-900 px-6 text-[14px] font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           검색
         </button>
       </div>
 
+      </FadeIn>
+
       {/* 전문분야 필터 */}
+      <FadeIn delay={0.15}>
       <div className="mt-4">
         <p className="text-[13px] font-medium text-gray-600 mb-2">전문분야</p>
         <div className="flex flex-wrap gap-2">
@@ -264,7 +272,10 @@ function SearchPageContent() {
         </div>
       </div>
 
+      </FadeIn>
+
       {/* 지역 필터 */}
+      <FadeIn delay={0.2}>
       <div className="mt-3">
         <p className="text-[13px] font-medium text-gray-600 mb-2">지역</p>
         <div className="flex flex-wrap gap-2">
@@ -312,6 +323,8 @@ function SearchPageContent() {
           ))}
         </div>
       </div>
+
+      </FadeIn>
 
       {/* 구분선 + 정렬 */}
       <div className="mt-5 border-t border-gray-200 pt-4 flex items-center justify-between">

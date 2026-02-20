@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -123,8 +124,15 @@ const Header = React.memo(function Header() {
                 )}
               </button>
 
+              <AnimatePresence>
               {isProfileOpen && (
-                <div className="absolute right-0 mt-1.5 w-52 rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg shadow-gray-200/50">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                  transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="absolute right-0 mt-1.5 w-52 rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg shadow-gray-200/50"
+                >
                   <div className="px-4 py-2.5 border-b border-gray-100">
                     <p className="text-[13px] font-semibold text-gray-900">{user.name}</p>
                     <p className="text-[12px] text-gray-500 mt-0.5">{user.email}</p>
@@ -158,8 +166,9 @@ const Header = React.memo(function Header() {
                       로그아웃
                     </button>
                   </div>
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
             </div>
             </>
           ) : (
@@ -207,71 +216,83 @@ const Header = React.memo(function Header() {
       </div>
 
       {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <>
-          <div
-            className="fixed inset-0 top-[60px] z-40 bg-black/20 md:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className="absolute left-0 right-0 top-[60px] z-50 border-t border-gray-200 bg-white shadow-lg md:hidden">
-            <nav className="flex flex-col px-5 pt-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "py-2.5 text-[15px] font-medium transition-colors",
-                    pathname === link.href ? "text-gray-900" : "text-gray-500"
-                  )}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-            <div className="mx-5 mt-3 flex flex-col gap-2 border-t border-gray-200 pb-5 pt-4">
-              {!isInitialized ? (
-                <div className="h-11" />
-              ) : isAuthenticated && user ? (
-                <>
-                  {!isAdmin && (
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 top-[60px] z-40 bg-black/20 md:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="absolute left-0 right-0 top-[60px] z-50 border-t border-gray-200 bg-white shadow-lg md:hidden"
+            >
+              <nav className="flex flex-col px-5 pt-3">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "py-2.5 text-[15px] font-medium transition-colors",
+                      pathname === link.href ? "text-gray-900" : "text-gray-500"
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+              <div className="mx-5 mt-3 flex flex-col gap-2 border-t border-gray-200 pb-5 pt-4">
+                {!isInitialized ? (
+                  <div className="h-11" />
+                ) : isAuthenticated && user ? (
+                  <>
+                    {!isAdmin && (
+                      <Link
+                        href="/mypage"
+                        className="py-2 text-[15px] font-medium text-gray-700"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        마이페이지
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                      className="py-2 text-left text-[15px] font-medium text-gray-500"
+                    >
+                      로그아웃
+                    </button>
+                  </>
+                ) : (
+                  <>
                     <Link
-                      href="/mypage"
-                      className="py-2 text-[15px] font-medium text-gray-700"
+                      href="/login"
+                      className="flex h-11 items-center justify-center rounded-lg border border-gray-200 text-[14px] font-medium text-gray-700"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      마이페이지
+                      로그인
                     </Link>
-                  )}
-                  <button
-                    onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                    className="py-2 text-left text-[15px] font-medium text-gray-500"
-                  >
-                    로그아웃
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="flex h-11 items-center justify-center rounded-lg border border-gray-200 text-[14px] font-medium text-gray-700"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    로그인
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="flex h-11 items-center justify-center rounded-lg bg-gray-900 text-[14px] font-medium text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    시작하기
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </>
-      )}
+                    <Link
+                      href="/register"
+                      className="flex h-11 items-center justify-center rounded-lg bg-gray-900 text-[14px] font-medium text-white"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      시작하기
+                    </Link>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 });

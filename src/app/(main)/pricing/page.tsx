@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import type { SubscriptionPlan } from "@/types";
 import { cn } from "@/lib/utils";
+import FadeIn from "@/components/animation/FadeIn";
+import ScrollReveal from "@/components/animation/ScrollReveal";
 
 const TIER_INFO = {
   BASIC: { label: "Basic", desc: "기본형", limit: "3건/일", weight: "1.0x" },
@@ -43,12 +45,15 @@ export default function PricingPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="text-center text-2xl font-bold text-gray-900">요금제</h1>
-      <p className="mt-2 text-center text-[14px] text-gray-500">
-        바른오더와 함께 성장하세요. 신규 업체는 Basic 3개월 무료 체험이 제공됩니다.
-      </p>
+      <FadeIn>
+        <h1 className="text-center text-2xl font-bold text-gray-900">요금제</h1>
+        <p className="mt-2 text-center text-[14px] text-gray-500">
+          바른오더와 함께 성장하세요. 신규 업체는 Basic 3개월 무료 체험이 제공됩니다.
+        </p>
+      </FadeIn>
 
       {/* 요금 카드 */}
+      <FadeIn delay={0.15}>
       <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {(["BASIC", "PRO", "PREMIUM"] as const).map((tier) => {
           const info = TIER_INFO[tier];
@@ -58,7 +63,7 @@ export default function PricingPage() {
             <div
               key={tier}
               className={cn(
-                "rounded-xl border p-5",
+                "hover-lift rounded-xl border p-5",
                 tier === "PREMIUM"
                   ? "border-gray-900 bg-gray-900 text-white"
                   : "border-gray-200 bg-white"
@@ -97,8 +102,10 @@ export default function PricingPage() {
           );
         })}
       </div>
+      </FadeIn>
 
       {/* 기능 비교 테이블 */}
+      <ScrollReveal>
       <div className="mt-12">
         <h2 className="text-[15px] font-bold text-gray-900">기능 비교</h2>
         <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
@@ -130,8 +137,10 @@ export default function PricingPage() {
           </table>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* 결제 안내 */}
+      <ScrollReveal delay={0.1}>
       <div className="mt-10 rounded-xl border border-gray-200 bg-gray-50 p-5">
         <h2 className="text-[15px] font-bold text-gray-900">결제 안내</h2>
         <p className="mt-2 text-[13px] text-gray-600 leading-relaxed">
@@ -153,6 +162,7 @@ export default function PricingPage() {
         </p>
       </div>
 
+      </ScrollReveal>
       <div className="mt-4 text-center text-[12px] text-gray-400">
         신규 업체는 Basic 3개월 무료 체험이 제공됩니다.
       </div>

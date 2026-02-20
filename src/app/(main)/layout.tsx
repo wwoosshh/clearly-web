@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import PageTransition from "@/components/animation/PageTransition";
 import { useAuthStore } from "@/stores/auth.store";
 import type { ReactNode } from "react";
 
@@ -26,7 +27,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 overflow-x-hidden">
+        <PageTransition>{children}</PageTransition>
+      </main>
       <Footer />
     </div>
   );

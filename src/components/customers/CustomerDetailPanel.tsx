@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import api from "@/lib/api";
 import {
@@ -140,15 +141,25 @@ export default function CustomerDetailPanel({
     }
   };
 
-  if (!userId) return null;
-
   return (
+    <AnimatePresence>
+      {userId && (
     <>
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
         className="fixed inset-0 z-30 bg-black/10 lg:hidden"
         onClick={onClose}
       />
-      <div className="fixed right-0 top-[60px] bottom-0 z-40 w-full max-w-[400px] overflow-y-auto border-l border-gray-200 bg-white shadow-xl">
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed right-0 top-[60px] bottom-0 z-40 w-full max-w-[400px] overflow-y-auto border-l border-gray-200 bg-white shadow-xl"
+      >
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white px-5 py-4">
           <h3 className="text-[16px] font-semibold text-gray-900">
             고객 상세
@@ -395,7 +406,9 @@ export default function CustomerDetailPanel({
             고객 정보를 불러올 수 없습니다
           </div>
         )}
-      </div>
+      </motion.div>
     </>
+      )}
+    </AnimatePresence>
   );
 }

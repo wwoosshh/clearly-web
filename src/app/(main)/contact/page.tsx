@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import api from "@/lib/api";
 import { useAuthStore } from "@/stores/auth.store";
+import FadeIn from "@/components/animation/FadeIn";
 
 const INQUIRY_CATEGORIES = [
   { value: "서비스 이용", label: "서비스 이용" },
@@ -62,6 +63,7 @@ export default function ContactPage() {
   if (isSubmitted) {
     return (
       <div className="mx-auto max-w-xl px-4 sm:px-6 py-24 text-center">
+        <FadeIn>
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
           <svg
             className="h-8 w-8 text-green-600"
@@ -99,12 +101,14 @@ export default function ContactPage() {
             </Link>
           )}
         </div>
+        </FadeIn>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-xl px-4 sm:px-6 py-12">
+      <FadeIn>
       <h1 className="text-2xl font-bold text-gray-900">문의하기</h1>
       <p className="mt-2 text-sm text-gray-500">
         궁금한 점이나 불편한 사항이 있으시면 문의해주세요.
@@ -121,6 +125,9 @@ export default function ContactPage() {
         </div>
       )}
 
+      </FadeIn>
+
+      <FadeIn delay={0.15}>
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
         {/* 이름 */}
         <div>
@@ -209,11 +216,12 @@ export default function ContactPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-lg bg-gray-900 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="press-scale w-full rounded-lg bg-gray-900 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting ? "접수 중..." : "문의 접수"}
         </button>
       </form>
+      </FadeIn>
     </div>
   );
 }
