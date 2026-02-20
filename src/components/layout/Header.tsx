@@ -67,7 +67,7 @@ const Header = React.memo(function Header() {
           : "bg-white"
       )}
     >
-      <div className="mx-auto flex h-[60px] max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="relative mx-auto flex h-[60px] max-w-6xl items-center px-4 sm:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1.5 select-none">
           <span className="text-[22px] font-extrabold tracking-tight text-gray-900">
@@ -75,14 +75,14 @@ const Header = React.memo(function Header() {
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden items-center gap-0.5 md:flex">
+        {/* Desktop Nav - 페이지 기준 중앙 */}
+        <nav className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-0.5 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "relative px-4 py-2 text-[14px] font-medium transition-colors",
+                "relative whitespace-nowrap px-4 py-2 text-[14px] font-medium transition-colors",
                 pathname === link.href
                   ? "text-gray-900"
                   : "text-gray-500 hover:text-gray-900"
@@ -97,7 +97,7 @@ const Header = React.memo(function Header() {
         </nav>
 
         {/* Desktop Right */}
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="ml-auto hidden items-center gap-2 md:flex">
           {!isInitialized ? (
             <div className="h-7 w-20" />
           ) : isAuthenticated && user ? (

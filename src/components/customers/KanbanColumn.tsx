@@ -29,7 +29,7 @@ export default function KanbanColumn({
   const borderColor = PIPELINE_STAGE_COLORS[stage];
 
   return (
-    <div className="flex min-w-[280px] flex-col">
+    <div className="flex min-w-[260px] flex-col snap-start md:min-w-0">
       <div
         className="mb-3 rounded-t-lg border-t-4 bg-white px-3.5 py-2.5"
         style={{ borderTopColor: borderColor }}

@@ -232,7 +232,7 @@ export default function CustomersPage() {
   if (!isCompany) return null;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
+    <div className="mx-auto max-w-6xl overflow-x-hidden px-4 sm:px-6 py-6 sm:py-8">
       <h1 className="text-[22px] font-bold text-gray-900">고객 관리</h1>
       <p className="mt-1 text-[14px] text-gray-500">
         고객을 파이프라인으로 관리하고 일괄 메시지를 발송하세요
@@ -302,7 +302,7 @@ export default function CustomersPage() {
           </div>
         ) : (
           <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex gap-4 overflow-x-auto pb-4 snap-x md:grid md:grid-cols-5 md:overflow-x-visible">
+            <div className="flex gap-3 overflow-x-auto pb-4 snap-x md:grid md:grid-cols-5">
               {pipeline.map((col) => (
                 <KanbanColumn
                   key={col.stage}
