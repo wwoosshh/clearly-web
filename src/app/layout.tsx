@@ -18,6 +18,10 @@ export const metadata: Metadata = {
     "청소매칭",
     "이사청소견적",
   ],
+  icons: {
+    icon: "/favicon-barunorder.svg",
+    apple: "/icon-barunorder.svg",
+  },
   openGraph: {
     title: "바른오더 - 검증된 이사청소 매칭 플랫폼",
     description:

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -22,7 +23,19 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="pt-12 pb-16 sm:pt-24 sm:pb-32 overflow-hidden">
+        <section className="relative pt-12 pb-16 sm:pt-24 sm:pb-32 overflow-hidden">
+          {/* 배경 아이콘 데코레이션 */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+            <Image
+              src="/icon-barunorder.svg"
+              alt=""
+              width={512}
+              height={512}
+              className="w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] opacity-[0.04] select-none"
+              aria-hidden="true"
+              priority
+            />
+          </div>
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-16">
               {/* Left - Text */}

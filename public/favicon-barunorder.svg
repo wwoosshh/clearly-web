@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2DD4BF"/>
+      <stop offset="100%" stop-color="#0D9488"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- ㅂ -->
+  <path
+    d="M 144 104 V 404 H 368 V 104"
+    stroke="white" stroke-width="56" fill="none"
+    stroke-linecap="round" stroke-linejoin="round"
+  />
+  <line
+    x1="144" y1="244" x2="368" y2="244"
+    stroke="white" stroke-width="56" stroke-linecap="round"
+  />
+
+  <!-- 반짝임 (소형에서는 단순하게) -->
+  <path d="M 420 82 L 425 100 L 443 105 L 425 110 L 420 128 L 415 110 L 397 105 L 415 100 Z" fill="white" opacity="0.85"/>
+</svg>

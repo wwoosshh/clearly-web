@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2DD4BF"/>
+      <stop offset="100%" stop-color="#0D9488"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- ㅂ 본체 -->
+  <path
+    d="M 144 104 V 404 H 368 V 104"
+    stroke="white" stroke-width="56" fill="none"
+    stroke-linecap="round" stroke-linejoin="round"
+  />
+  <line
+    x1="144" y1="244" x2="368" y2="244"
+    stroke="white" stroke-width="56" stroke-linecap="round"
+  />
+
+  <!-- 밀대걸레: 자루 -->
+  <line x1="230" y1="200" x2="328" y2="108"
+        stroke="white" stroke-width="8" stroke-linecap="round"/>
+  <!-- 밀대걸레: 헤드 -->
+  <rect x="203" y="196" width="54" height="13" rx="6.5" fill="white"/>
+
+  <!-- 물방울 -->
+  <circle cx="192" cy="200" r="5" fill="white" opacity="0.75"/>
+  <circle cx="180" cy="192" r="3.5" fill="white" opacity="0.55"/>
+  <circle cx="195" cy="188" r="2.5" fill="white" opacity="0.38"/>
+
+  <!-- 벽닦기: 브러쉬 헤드 -->
+  <rect x="94" y="288" width="22" height="44" rx="4" fill="white"/>
+  <!-- 벽닦기: 아래쪽 닦은 자국 -->
+  <line x1="108" y1="336" x2="108" y2="362" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+  <line x1="100" y1="338" x2="100" y2="360" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+  <!-- 벽닦기: 거품 -->
+  <circle cx="82" cy="286" r="4" fill="white" opacity="0.65"/>
+  <circle cx="72" cy="292" r="3" fill="white" opacity="0.45"/>
+
+  <!-- 반짝임 -->
+  <path d="M 420 82 L 425 100 L 443 105 L 425 110 L 420 128 L 415 110 L 397 105 L 415 100 Z" fill="white" opacity="0.85"/>
+</svg>
