@@ -438,3 +438,73 @@ export interface EstimateLimitInfo {
   remaining: number;
   resetAt: string;
 }
+
+// =====================
+// CRM / 고객관리
+// =====================
+
+/** 파이프라인 단계 */
+export type PipelineStage = 'LEAD' | 'CONSULTING' | 'BOOKED' | 'COMPLETED' | 'VIP';
+
+/** 파이프라인 단계 라벨 */
+export const PIPELINE_STAGE_LABELS: Record<PipelineStage, string> = {
+  LEAD: '리드',
+  CONSULTING: '상담중',
+  BOOKED: '예약',
+  COMPLETED: '완료',
+  VIP: 'VIP',
+};
+
+/** 파이프라인 단계 색상 */
+export const PIPELINE_STAGE_COLORS: Record<PipelineStage, string> = {
+  LEAD: '#9ca3af',
+  CONSULTING: '#3b82f6',
+  BOOKED: '#f59e0b',
+  COMPLETED: '#22c55e',
+  VIP: '#a855f7',
+};
+
+/** 고객 카드 */
+export interface CustomerCard {
+  userId: string;
+  name: string;
+  phone: string | null;
+  profileImage: string | null;
+  address: string | null;
+  cleaningType: string | null;
+  totalMatchings: number;
+  completedMatchings: number;
+  inProgressMatchings: number;
+  totalRevenue: number;
+  averageRating: number | null;
+  lastInteractionAt: string;
+  isRepeat: boolean;
+  isChatOnly: boolean;
+  pipelineStage: PipelineStage;
+  tags: string[];
+  memoContent: string | null;
+}
+
+/** 고객 통계 */
+export interface CustomerStats {
+  totalCustomers: number;
+  newThisMonth: number;
+  repeatRate: number;
+  totalRevenue: number;
+  monthlyRevenue: { month: string; revenue: number }[];
+  topCustomers: { userId: string; name: string; totalRevenue: number; completedMatchings: number }[];
+  stageCounts: Record<string, number>;
+}
+
+/** 업체 태그 */
+export interface CompanyTag {
+  id: string;
+  name: string;
+  color: string;
+}
+
+/** 파이프라인 컬럼 */
+export interface PipelineColumn {
+  stage: PipelineStage;
+  customers: CustomerCard[];
+}

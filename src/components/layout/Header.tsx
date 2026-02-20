@@ -51,6 +51,7 @@ const Header = React.memo(function Header() {
         { href: "/chat", label: "채팅" },
         ...(isCompany
           ? [
+              { href: "/customers", label: "고객관리" },
               { href: "/estimates", label: "견적 리스트" },
               { href: "/estimates/submitted", label: "내 견적" },
             ]

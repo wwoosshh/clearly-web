@@ -378,6 +378,23 @@ export default function MyPage() {
             /* 업체 전용 바로가기 */
             <>
               <Link
+                href="/customers"
+                className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-gray-50"
+              >
+                <div className="flex items-center gap-3">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  <span className="text-[14px] font-medium text-gray-800">고객 관리</span>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </Link>
+              <Link
                 href="/mypage/company-edit"
                 className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-gray-50"
               >
