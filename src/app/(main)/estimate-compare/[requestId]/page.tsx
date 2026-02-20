@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart,
@@ -161,12 +161,10 @@ function PriceTooltip({ active, payload, label }: CustomTooltipProps) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function EstimateComparePage({
-  params,
-}: {
-  params: { requestId: string };
-}) {
+export default function EstimateComparePage() {
   const router = useRouter();
+  const params = useParams();
+  const requestId = params.requestId as string;
   const { user } = useAuthStore();
 
   const [data, setData] = useState<ComparisonResponse | null>(null);
@@ -182,7 +180,7 @@ export default function EstimateComparePage({
     setError(null);
     try {
       const { data: res } = await api.get(
-        `/estimates/requests/${params.requestId}/compare`
+        `/estimates/requests/${requestId}/compare`
       );
       const result: ComparisonResponse = (res as any)?.data ?? res;
       setData(result);
@@ -193,7 +191,7 @@ export default function EstimateComparePage({
     } finally {
       setIsLoading(false);
     }
-  }, [params.requestId]);
+  }, [requestId]);
 
   useEffect(() => {
     if (!user) return;
