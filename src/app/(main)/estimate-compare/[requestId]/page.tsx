@@ -113,8 +113,14 @@ function normalizeRadar(est: ComparisonEstimate, allEstimates: ComparisonEstimat
     maxP === minP ? 80 : Math.round(((maxP - est.price) / (maxP - minP)) * 100);
 
   const ratingScore = Math.round((est.averageRating / 5) * 100);
-  const reviewScore = Math.min(100, Math.round((est.totalReviews / 50) * 100));
-  const matchingScore = Math.min(100, Math.round((est.totalMatchings / 200) * 100));
+
+  // 고정 최댓값 대신 비교 데이터 내 상대적 최댓값 기준으로 정규화
+  const maxReviews = Math.max(...allEstimates.map((e) => e.totalReviews), 1);
+  const reviewScore = Math.round((est.totalReviews / maxReviews) * 100);
+
+  const maxMatchings = Math.max(...allEstimates.map((e) => e.totalMatchings), 1);
+  const matchingScore = Math.round((est.totalMatchings / maxMatchings) * 100);
+
   const rt = est.responseTime ?? 120;
   const speedScore = Math.round(Math.max(0, ((120 - rt) / 120) * 100));
 
