@@ -80,7 +80,7 @@ export default function CustomerDetailPanel({
     setLoading(true);
     try {
       const res = await api.get(`/companies/my/customers/${uid}`);
-      const data = res.data;
+      const data = res.data.data;
       setDetail(data);
       setMemo(data.memo || "");
     } catch {

@@ -78,7 +78,7 @@ export default function CustomersPage() {
         const res = await api.get("/companies/my/customers/pipeline", {
           params,
         });
-        setPipeline(res.data);
+        setPipeline(res.data.data);
       } catch {
         // ignore
       }
@@ -89,7 +89,7 @@ export default function CustomersPage() {
   const loadStats = async () => {
     try {
       const res = await api.get("/companies/my/customers/stats");
-      setStats(res.data);
+      setStats(res.data.data);
     } catch {
       // ignore
     }
@@ -98,7 +98,7 @@ export default function CustomersPage() {
   const loadTags = async () => {
     try {
       const res = await api.get("/companies/my/tags");
-      setCompanyTags(res.data);
+      setCompanyTags(res.data.data);
     } catch {
       // ignore
     }
@@ -213,7 +213,7 @@ export default function CustomersPage() {
       content,
     });
     setSelectedIds(new Set());
-    return res.data;
+    return res.data.data;
   };
 
   const tagColorMap: Record<string, string> = {};
