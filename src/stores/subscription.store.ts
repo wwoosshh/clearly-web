@@ -31,6 +31,7 @@ interface SubscriptionState {
   plans: { BASIC: SubscriptionPlan[]; PRO: SubscriptionPlan[]; PREMIUM: SubscriptionPlan[] } | null;
   showPaymentPopup: boolean;
   isLoading: boolean;
+  subscriptionLoaded: boolean;
 
   fetchSubscription: () => Promise<void>;
   fetchSubscriptionStack: () => Promise<void>;
@@ -47,13 +48,14 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
   plans: null,
   showPaymentPopup: false,
   isLoading: false,
+  subscriptionLoaded: false,
 
   fetchSubscription: async () => {
     try {
       const { data } = await api.get("/subscriptions/my");
-      set({ subscription: data?.data ?? null });
+      set({ subscription: data?.data ?? null, subscriptionLoaded: true });
     } catch {
-      set({ subscription: null });
+      set({ subscription: null, subscriptionLoaded: true });
     }
   },
 
@@ -96,5 +98,6 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
       estimateLimit: null,
       plans: null,
       showPaymentPopup: false,
+      subscriptionLoaded: false,
     }),
 }));

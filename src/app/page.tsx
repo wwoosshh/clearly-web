@@ -34,7 +34,7 @@ export default function Home() {
                   alt="바른오더"
                   width={512}
                   height={512}
-                  className="pointer-events-none absolute -top-4 right-0 w-[56px] h-[56px] sm:-top-6 sm:right-2 sm:w-[80px] sm:h-[80px] rotate-12 drop-shadow-lg select-none"
+                  className="pointer-events-none absolute -top-4 right-8 w-[56px] h-[56px] sm:-top-6 sm:right-2 sm:w-[80px] sm:h-[80px] rotate-12 drop-shadow-lg select-none"
                   priority
                 />
                 <h1 className="text-[36px] font-bold leading-[1.18] tracking-[-0.025em] text-gray-900 sm:text-[52px]">

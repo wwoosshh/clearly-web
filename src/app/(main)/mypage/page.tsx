@@ -30,7 +30,7 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export default function MyPage() {
-  const { user, setUser, logout } = useAuthStore();
+  const { user, setUser, logout, isLoading: isAuthLoading } = useAuthStore();
   const router = useRouter();
   const isCompany = user?.role === "COMPANY";
   const { subscription, subscriptionStack, fetchSubscription, fetchSubscriptionStack } = useSubscriptionStore();
@@ -211,8 +211,14 @@ export default function MyPage() {
           </div>
           <p className="mt-0.5 text-[14px] text-gray-500">{user.email}</p>
           <div className="mt-1 flex items-center gap-3 text-[13px] text-gray-400">
-            {user.phone && <span>{user.phone}</span>}
-            <span>가입일 {formatDate(user.createdAt)}</span>
+            {isAuthLoading ? (
+              <span className="inline-block h-4 w-40 animate-pulse rounded bg-gray-200" />
+            ) : (
+              <>
+                {user.phone && <span>{user.phone}</span>}
+                <span>가입일 {formatDate(user.createdAt)}</span>
+              </>
+            )}
           </div>
         </div>
       </div>
