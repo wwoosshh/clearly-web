@@ -305,11 +305,21 @@ export default function MatchingPage() {
                         </>
                       )}
                     </div>
-                    {req.estimates && req.estimates.length > 0 && (
-                      <p className="mt-2 text-[13px] text-[#72706a]">
-                        받은 견적 {req.estimates.length}건
-                      </p>
-                    )}
+                    <div className="mt-3 flex items-center justify-between">
+                      {req.estimates && req.estimates.length > 0 && (
+                        <p className="text-[13px] text-[#72706a]">
+                          받은 견적 {req.estimates.length}건
+                        </p>
+                      )}
+                      {req.estimates && req.estimates.length >= 2 && (
+                        <button
+                          onClick={() => router.push(`/estimate-compare/${req.id}`)}
+                          className="rounded-lg border border-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#2d6a4f] hover:bg-[#eef7f3] transition-colors press-scale"
+                        >
+                          견적 비교
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               ))}
