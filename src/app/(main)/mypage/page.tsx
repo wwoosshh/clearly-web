@@ -51,6 +51,8 @@ export default function MyPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [agreeMarketing, setAgreeMarketing] = useState(false);
+  const [isMarketingToggling, setIsMarketingToggling] = useState(false);
 
   const [userStats, setUserStats] = useState<UserStats>({
     estimateRequests: 0,
@@ -75,6 +77,26 @@ export default function MyPage() {
       loadUserStats();
     }
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!user) return;
+    api.get("/users/me").then(({ data }) => {
+      setAgreeMarketing(data.data?.agreeMarketing ?? false);
+    }).catch(() => {});
+  }, [user]);
+
+  const handleMarketingToggle = async () => {
+    const next = !agreeMarketing;
+    setIsMarketingToggling(true);
+    try {
+      await api.patch("/users/me", { agreeMarketing: next });
+      setAgreeMarketing(next);
+    } catch {
+      // 실패 시 원래 상태 유지
+    } finally {
+      setIsMarketingToggling(false);
+    }
+  };
 
   const extractTotal = (result: PromiseSettledResult<any>): number => {
     if (result.status !== "fulfilled") return 0;
@@ -523,6 +545,41 @@ export default function MyPage() {
               </div>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8c4bc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
             </Link>
+          </div>
+        </div>
+      </ScrollReveal>
+
+      {/* 알림 설정 */}
+      <ScrollReveal delay={0.15}>
+        <div className="mt-10">
+          <h2 className="text-[15px] font-semibold text-[#1a1918]">알림 설정</h2>
+          <div className="mt-3 divide-y divide-[#f0ede8] rounded-xl border border-[#e2ddd6] bg-white overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4">
+              <div className="flex items-center gap-3">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                <div>
+                  <span className="text-[14px] font-medium text-[#1a1918]">마케팅 정보 수신</span>
+                  <p className="text-[12px] text-[#a8a49c]">이벤트, 할인, 신규 서비스 안내</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleMarketingToggle}
+                disabled={isMarketingToggling}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${
+                  agreeMarketing ? "bg-[#2d6a4f]" : "bg-[#e2ddd6]"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+                    agreeMarketing ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       </ScrollReveal>
