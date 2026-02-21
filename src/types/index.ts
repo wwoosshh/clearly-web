@@ -7,15 +7,14 @@ export type UserRole = "USER" | "COMPANY" | "ADMIN";
 
 /** 매칭 상태 */
 export type MatchingStatus =
-  | "pending"
-  | "quoted"
-  | "accepted"
-  | "in_progress"
-  | "completed"
-  | "cancelled";
+  | "REQUESTED"
+  | "ACCEPTED"
+  | "REJECTED"
+  | "CANCELLED"
+  | "COMPLETED";
 
-/** 리뷰 상태 */
-export type ReviewStatus = "visible" | "hidden" | "reported";
+/** 검증 상태 */
+export type VerificationStatus = "PENDING" | "APPROVED" | "REJECTED";
 
 /** 사용자 */
 export interface User {
@@ -33,19 +32,18 @@ export interface User {
 export interface Company {
   id: string;
   userId: string;
-  name: string;
-  businessName?: string;
+  businessName: string;
   businessNumber: string;
-  description: string;
-  address: string;
-  phone: string;
-  profileImage?: string;
+  representative?: string;
+  description?: string;
+  address?: string;
+  detailAddress?: string;
   profileImages?: string[];
   averageRating: number;
   totalReviews: number;
   totalMatchings?: number;
-  isVerified: boolean;
-  serviceAreas: string[];
+  verificationStatus: VerificationStatus;
+  serviceAreas?: string[];
   specialties?: string[];
   minPrice?: number;
   maxPrice?: number;
@@ -79,22 +77,30 @@ export interface Company {
 /** 매칭 요청 */
 export interface Matching {
   id: string;
-  customerId: string;
+  userId: string;
   companyId?: string;
+  cleaningType?: CleaningType;
   address: string;
   detailAddress?: string;
-  moveDate: string;
-  houseType: string;
-  houseSize: number;
+  areaSize?: number;
+  desiredDate?: string;
+  desiredTime?: string;
+  message?: string;
   status: MatchingStatus;
-  requestMessage?: string;
-  quotedPrice?: number;
-  finalPrice?: number;
+  estimatedPrice?: number;
+  rejectionReason?: string;
+  cancelledBy?: string;
+  completionImages?: string[];
+  completionReportedAt?: string;
+  completedAt?: string;
+  estimateId?: string;
   createdAt: string;
-  updatedAt: string;
-  customer?: User;
+  updatedAt?: string;
+  user?: User;
   company?: Company;
-  quotes?: Quote[];
+  chatRoom?: ChatRoom;
+  review?: Review;
+  estimate?: Estimate;
 }
 
 /** 견적 */
@@ -112,14 +118,15 @@ export interface Quote {
 /** 채팅방 */
 export interface ChatRoom {
   id: string;
-  matchingId: string;
-  customerId: string;
+  matchingId?: string;
+  userId: string;
   companyId: string;
+  isActive?: boolean;
   lastMessage?: string;
-  lastMessageAt?: string;
-  unreadCount: number;
+  lastSentAt?: string;
+  unreadCount?: number;
   createdAt: string;
-  customer?: User;
+  user?: User;
   company?: Company;
   matching?: Matching;
 }
@@ -127,10 +134,11 @@ export interface ChatRoom {
 /** 채팅 메시지 */
 export interface ChatMessage {
   id: string;
-  chatRoomId: string;
+  roomId: string;
   senderId: string;
   content: string;
-  messageType: "text" | "image" | "system";
+  messageType: "TEXT" | "IMAGE" | "FILE" | "SYSTEM";
+  fileUrl?: string;
   isRead: boolean;
   createdAt: string;
   sender?: User;
@@ -140,16 +148,24 @@ export interface ChatMessage {
 export interface Review {
   id: string;
   matchingId: string;
-  customerId: string;
+  userId: string;
   companyId: string;
   rating: number;
-  content: string;
+  qualityRating?: number;
+  priceRating?: number;
+  punctualityRating?: number;
+  kindnessRating?: number;
+  content?: string;
   images?: string[];
-  status: ReviewStatus;
+  companyReply?: string;
+  companyRepliedAt?: string;
+  helpfulCount?: number;
+  isVisible: boolean;
   createdAt: string;
   updatedAt: string;
-  customer?: User;
+  user?: User;
   company?: Company;
+  matching?: Matching;
 }
 
 /** API 응답 공통 타입 */
@@ -370,6 +386,9 @@ export type NotificationType =
   | "MATCHING_REQUEST"
   | "MATCHING_ACCEPTED"
   | "MATCHING_REJECTED"
+  | "MATCHING_COMPLETED"
+  | "MATCHING_CANCELLED"
+  | "COMPLETION_REPORTED"
   | "NEW_MESSAGE"
   | "NEW_REVIEW"
   | "SUBSCRIPTION"

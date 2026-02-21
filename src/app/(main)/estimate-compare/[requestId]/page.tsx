@@ -40,7 +40,7 @@ interface ComparisonEstimate {
   totalReviews: number;
   totalMatchings: number;
   responseTime?: number;
-  isVerified: boolean;
+  verificationStatus: string;
   specialties: string[];
   minPrice?: number;
   maxPrice?: number;
@@ -276,7 +276,7 @@ export default function EstimateComparePage() {
     { label: "리뷰 수", getValue: (e) => `${e.totalReviews}건`, isBetter: "higher", getRaw: (e) => e.totalReviews },
     { label: "매칭 건수", getValue: (e) => `${e.totalMatchings}건`, isBetter: "higher", getRaw: (e) => e.totalMatchings },
     { label: "평균 응답속도", getValue: (e) => formatResponseTime(e.responseTime), isBetter: "lower", getRaw: (e) => e.responseTime ?? null },
-    { label: "인증 여부", getValue: (e) => (e.isVerified ? "인증 완료" : "미인증"), isBetter: "none", getRaw: () => null },
+    { label: "인증 여부", getValue: (e) => (e.verificationStatus === "APPROVED" ? "인증 완료" : "미인증"), isBetter: "none", getRaw: () => null },
   ];
 
   const chosenEst = selected.find((e) => e.estimateId === chosenEstimateId) ?? null;
@@ -573,7 +573,7 @@ export default function EstimateComparePage() {
                           <div className="flex items-center gap-2 mb-2">
                             <span className="h-2.5 w-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
                             <p className="text-[14px] font-semibold text-[#141412] truncate flex-1">{est.businessName}</p>
-                            {est.isVerified && (
+                            {est.verificationStatus === "APPROVED" && (
                               <span className="flex-shrink-0 rounded-full bg-[#eef7f3] px-2 py-0.5 text-[10px] font-medium text-[#2d6a4f] border border-[#d4ede4]">
                                 인증
                               </span>
