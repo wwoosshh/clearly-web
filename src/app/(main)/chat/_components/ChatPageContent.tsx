@@ -10,7 +10,7 @@ import api from "@/lib/api";
 import { showToast } from "@/components/ui/Toast";
 import { chatCache } from "@/lib/chatCache";
 import { uploadImage } from "@/lib/upload";
-import { unwrapResponse } from "@/lib/apiHelpers";
+import { unwrapResponse, unwrapPaginatedResponse } from "@/lib/apiHelpers";
 import type { ChatRoomDetail, ChatMessageDetail } from "@/types";
 
 import { useChatState, createTempMessage, isTempId } from "../_hooks/useChatState";
@@ -99,9 +99,8 @@ export function ChatPageContent() {
   const syncMessages = useCallback(async (roomId: string) => {
     try {
       const response = await api.get(`/chat/rooms/${roomId}/messages`);
-      const result = unwrapResponse<ChatMessageDetail[]>(response);
-      const serverMessages: ChatMessageDetail[] =
-        Array.isArray(result) ? result : [];
+      const { data: serverMessages } =
+        unwrapPaginatedResponse<ChatMessageDetail>(response);
       // 응답 도착 시 이미 다른 방으로 이동한 경우 무시
       if (selectedRoomRef.current?.id !== roomId) return;
       setMessages((prev) => {

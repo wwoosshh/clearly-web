@@ -27,38 +27,63 @@ export function unwrapResponse<T>(response: AxiosResponse): T {
 
 /**
  * 페이지네이션 응답 추출.
- * { data: T[], meta: PaginationMeta } 형태를 안전하게 처리.
+ * TransformInterceptor가 { success, data, timestamp }로 래핑하고,
+ * 서비스가 { data: T[], meta } 를 반환하는 이중 래핑을 안전하게 처리.
  */
 export function unwrapPaginatedResponse<T>(
   response: AxiosResponse
 ): { data: T[]; meta: PaginationMeta } {
   const body = response.data;
-  if (body != null && typeof body === "object" && "data" in body) {
-    const wrapped = body as WrappedResponse<T[]>;
+  // 1단계: TransformInterceptor 래핑 제거 → 서비스 반환값
+  const inner =
+    body != null && typeof body === "object" && "data" in body
+      ? (body as Record<string, unknown>).data
+      : body;
+  // 2단계: 서비스가 { data: T[], meta } 형태를 반환한 경우
+  if (
+    inner != null &&
+    typeof inner === "object" &&
+    !Array.isArray(inner) &&
+    "data" in (inner as Record<string, unknown>)
+  ) {
+    const paginated = inner as { data: unknown; meta?: PaginationMeta };
     return {
-      data: Array.isArray(wrapped.data) ? wrapped.data : [],
-      meta: wrapped.meta ?? { total: 0, page: 1, limit: 10, totalPages: 1 },
+      data: Array.isArray(paginated.data) ? paginated.data : [],
+      meta: paginated.meta ?? { total: 0, page: 1, limit: 10, totalPages: 1 },
     };
   }
+  // 서비스가 배열을 직접 반환한 경우
   return {
-    data: Array.isArray(body) ? body : [],
+    data: Array.isArray(inner) ? (inner as T[]) : [],
     meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
   };
 }
 
 /**
  * 알림 응답 전용 추출 (unreadCount 포함).
+ * TransformInterceptor 이중 래핑을 안전하게 처리.
  */
 export function unwrapNotificationResponse<T>(
   response: AxiosResponse
 ): { data: T[]; meta: PaginationMeta; unreadCount: number } {
   const body = response.data;
+  // 1단계: TransformInterceptor 래핑 제거
   const inner =
-    body != null && typeof body === "object" && "data" in body ? body : { data: body };
-  const wrapped = inner as WrappedResponse<T[]>;
+    body != null && typeof body === "object" && "data" in body
+      ? (body as Record<string, unknown>).data
+      : body;
+  // 2단계: 서비스가 { data: T[], meta, unreadCount } 형태를 반환한 경우
+  if (inner != null && typeof inner === "object" && !Array.isArray(inner)) {
+    const obj = inner as Record<string, unknown>;
+    return {
+      data: Array.isArray(obj.data) ? (obj.data as T[]) : [],
+      meta: (obj.meta as PaginationMeta) ?? { total: 0, page: 1, limit: 10, totalPages: 1 },
+      unreadCount: typeof obj.unreadCount === "number" ? obj.unreadCount : 0,
+    };
+  }
   return {
-    data: Array.isArray(wrapped.data) ? wrapped.data : [],
-    meta: wrapped.meta ?? { total: 0, page: 1, limit: 10, totalPages: 1 },
-    unreadCount: (body as WrappedResponse<T[]>)?.unreadCount ?? 0,
+    data: Array.isArray(inner) ? (inner as T[]) : [],
+    meta: { total: 0, page: 1, limit: 10, totalPages: 1 },
+    unreadCount: 0,
   };
 }
