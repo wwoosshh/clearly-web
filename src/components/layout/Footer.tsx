@@ -88,6 +88,7 @@ function Footer() {
               {[
                 { href: "/terms", label: "이용약관" },
                 { href: "/privacy", label: "개인정보처리방침" },
+                { href: "/marketing", label: "마케팅 수신 동의" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

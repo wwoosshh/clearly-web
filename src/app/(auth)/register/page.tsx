@@ -38,6 +38,7 @@ const registerSchema = z
     agreeTerms: z.literal(true, {
       error: "필수 약관에 동의해주세요",
     }),
+    agreeMarketing: z.boolean().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "비밀번호가 일치하지 않습니다",
@@ -83,6 +84,7 @@ export default function RegisterPage() {
         password: data.password,
         name: data.name,
         phone: data.phone,
+        agreeMarketing: data.agreeMarketing ?? false,
       });
 
       const { user, tokens } = res.data;
@@ -263,6 +265,28 @@ export default function RegisterPage() {
               {errors.agreeTerms.message}
             </p>
           )}
+        </div>
+
+        {/* Marketing Consent */}
+        <div>
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              className="mt-0.5 h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f] cursor-pointer"
+              {...register("agreeMarketing")}
+            />
+            <span className="text-[13px] leading-snug" style={{ color: "#72706a" }}>
+              <span className="text-[#b0aca6]">(선택)</span>{" "}
+              <Link
+                href="/marketing"
+                className="underline transition-colors hover:text-[#2d6a4f]"
+                target="_blank"
+              >
+                마케팅 정보 수신
+              </Link>
+              에 동의합니다
+            </span>
+          </label>
         </div>
 
         {serverError && (

@@ -126,6 +126,7 @@ const registerCompanySchema = z
     agreeTerms: z.literal(true, {
       error: "필수 약관에 동의해주세요",
     }),
+    agreeMarketing: z.boolean().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "비밀번호가 일치하지 않습니다",
@@ -180,6 +181,7 @@ export default function RegisterCompanyPage() {
         description: data.description || undefined,
         minPrice: data.minPrice ? Number(data.minPrice) : undefined,
         maxPrice: data.maxPrice ? Number(data.maxPrice) : undefined,
+        agreeMarketing: data.agreeMarketing ?? false,
       });
       setIsSuccess(true);
     } catch (error: any) {
@@ -581,6 +583,28 @@ export default function RegisterCompanyPage() {
               {errors.agreeTerms.message}
             </p>
           )}
+        </motion.div>
+
+        {/* Marketing Consent */}
+        <motion.div variants={fadeUp}>
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              className="mt-0.5 h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f] cursor-pointer"
+              {...register("agreeMarketing")}
+            />
+            <span className="text-[13px] leading-snug text-[#72706a]">
+              <span className="text-[#b0aca6]">(선택)</span>{" "}
+              <Link
+                href="/marketing"
+                className="underline hover:text-[#1a1918]"
+                target="_blank"
+              >
+                마케팅 정보 수신
+              </Link>
+              에 동의합니다
+            </span>
+          </label>
         </motion.div>
 
         {serverError && (
