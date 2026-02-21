@@ -10,6 +10,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import { unwrapResponse, unwrapPaginatedResponse } from "@/lib/apiHelpers";
 import type { Estimate, EstimateRequest } from "@/types";
 import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
@@ -52,15 +53,13 @@ export default function MatchingPage() {
 
     try {
       if (tab === "estimates") {
-        const { data } = await api.get("/estimates/my");
-        const result = (data as any)?.data ?? data;
-        const list = result?.data ?? (Array.isArray(result) ? result : []);
+        const response = await api.get("/estimates/my");
+        const { data: list } = unwrapPaginatedResponse<Estimate>(response);
         cache.set(cacheKey, list);
         setEstimates(list);
       } else {
-        const { data } = await api.get("/estimates/requests");
-        const result = (data as any)?.data ?? data;
-        const list = result?.data ?? (Array.isArray(result) ? result : []);
+        const response = await api.get("/estimates/requests");
+        const { data: list } = unwrapPaginatedResponse<EstimateRequest>(response);
         cache.set(cacheKey, list);
         setRequests(list);
       }
@@ -77,8 +76,8 @@ export default function MatchingPage() {
   const handleAccept = async (estimateId: string) => {
     setIsAccepting(true);
     try {
-      const { data } = await api.patch(`/estimates/${estimateId}/accept`);
-      const result = (data as any)?.data ?? data;
+      const response = await api.patch(`/estimates/${estimateId}/accept`);
+      const result = unwrapResponse<{ chatRoom?: { id: string } }>(response);
       const chatRoomId = result?.chatRoom?.id;
       useCacheStore.getState().invalidatePrefix("matching:");
       setSelectedEstimate(null);

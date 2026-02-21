@@ -1,4 +1,5 @@
 import api from "./api";
+import { unwrapResponse } from "./apiHelpers";
 
 export interface UploadResult {
   url: string;
@@ -31,7 +32,7 @@ export async function uploadImage(
   formData.append("file", file);
   formData.append("bucket", bucket);
 
-  const { data } = await api.post("/upload/file", formData, {
+  const response = await api.post("/upload/file", formData, {
     headers: { "Content-Type": "multipart/form-data" },
     onUploadProgress: (e) => {
       if (onProgress && e.total) {
@@ -40,7 +41,7 @@ export async function uploadImage(
     },
   });
 
-  return (data as any).data ?? data;
+  return unwrapResponse<UploadResult>(response);
 }
 
 export async function uploadImages(
@@ -57,7 +58,7 @@ export async function uploadImages(
   files.forEach((file) => formData.append("files", file));
   formData.append("bucket", bucket);
 
-  const { data } = await api.post("/upload/files", formData, {
+  const response = await api.post("/upload/files", formData, {
     headers: { "Content-Type": "multipart/form-data" },
     onUploadProgress: (e) => {
       if (onProgress && e.total) {
@@ -66,6 +67,6 @@ export async function uploadImages(
     },
   });
 
-  const inner = (data as any).data ?? data;
+  const inner = unwrapResponse<UploadResult[]>(response);
   return Array.isArray(inner) ? inner : [inner];
 }

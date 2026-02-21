@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import PageTransition from "@/components/animation/PageTransition";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useAuthStore } from "@/stores/auth.store";
 import type { ReactNode } from "react";
 
@@ -28,7 +29,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 overflow-x-clip">
-        <PageTransition>{children}</PageTransition>
+        <ErrorBoundary>
+          <PageTransition>{children}</PageTransition>
+        </ErrorBoundary>
       </main>
       <Footer />
     </div>

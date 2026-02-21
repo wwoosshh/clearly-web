@@ -96,6 +96,7 @@ export function ToastContainer() {
             </div>
             <button
               onClick={() => removeToast(toast.id)}
+              aria-label="알림 닫기"
               className="shrink-0 text-gray-400 hover:text-gray-600"
             >
               <svg

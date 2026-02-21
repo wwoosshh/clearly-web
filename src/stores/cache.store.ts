@@ -15,17 +15,32 @@ interface CacheState {
 }
 
 const DEFAULT_MAX_AGE = 5 * 60 * 1000; // 5분
+const MAX_ENTRIES = 100;
 
 export const useCacheStore = create<CacheState>((set, get) => ({
   entries: {},
 
   set: <T>(key: string, data: T) => {
-    set((state) => ({
-      entries: {
+    set((state) => {
+      const newEntries = {
         ...state.entries,
         [key]: { data, timestamp: Date.now() },
-      },
-    }));
+      };
+
+      // LRU: MAX_ENTRIES 초과 시 가장 오래된 항목 제거
+      const keys = Object.keys(newEntries);
+      if (keys.length > MAX_ENTRIES) {
+        const sorted = keys.sort(
+          (a, b) => newEntries[a].timestamp - newEntries[b].timestamp,
+        );
+        const removeCount = keys.length - MAX_ENTRIES;
+        for (let i = 0; i < removeCount; i++) {
+          delete newEntries[sorted[i]];
+        }
+      }
+
+      return { entries: newEntries };
+    });
   },
 
   get: <T>(key: string, maxAge = DEFAULT_MAX_AGE): T | null => {

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
+import { unwrapResponse } from "@/lib/apiHelpers";
 import { uploadImage } from "@/lib/upload";
 import { useAddressSuggestions } from "@/hooks/useAddressSuggestions";
 import { motion } from "framer-motion";
@@ -122,8 +123,8 @@ export default function CompanyProfileEditPage() {
 
   const loadCompany = async () => {
     try {
-      const { data } = await api.get("/companies/my");
-      const c = (data as any)?.data ?? data;
+      const response = await api.get("/companies/my");
+      const c = unwrapResponse<any>(response);
       setCompanyId(c.id);
       const loaded: FormData = {
         businessName: c.businessName || "",

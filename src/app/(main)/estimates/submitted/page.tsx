@@ -10,6 +10,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import { unwrapPaginatedResponse } from "@/lib/apiHelpers";
 import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
 
@@ -93,12 +94,10 @@ export default function SubmittedEstimatesPage() {
     }
 
     try {
-      const { data } = await api.get("/estimates/company-estimates", {
+      const response = await api.get("/estimates/company-estimates", {
         params: { page, limit: 20 },
       });
-      const result = (data as any)?.data ?? data;
-      const list = result?.data ?? (Array.isArray(result) ? result : []);
-      const resultMeta = result?.meta ?? null;
+      const { data: list, meta: resultMeta } = unwrapPaginatedResponse<SubmittedEstimate>(response);
       cache.set(cacheKey, { list, meta: resultMeta });
       setEstimates(list);
       setMeta(resultMeta);

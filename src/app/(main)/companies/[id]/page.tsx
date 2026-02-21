@@ -14,6 +14,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
 import type { CompanySearchResult } from "@/types";
+import { unwrapResponse, unwrapPaginatedResponse } from "@/lib/apiHelpers";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 22 },
@@ -75,8 +76,8 @@ export default function CompanyDetailPage() {
   useEffect(() => {
     async function fetchCompany() {
       try {
-        const { data } = await api.get(`/companies/${companyId}`);
-        const result = (data as any)?.data ?? data;
+        const response = await api.get(`/companies/${companyId}`);
+        const result = unwrapResponse<CompanySearchResult>(response);
         setCompany(result);
       } catch {
         setError("업체 정보를 불러올 수 없습니다.");
@@ -90,10 +91,8 @@ export default function CompanyDetailPage() {
   const fetchReviews = useCallback(async (page: number) => {
     setIsLoadingReviews(true);
     try {
-      const { data } = await api.get(`/reviews/company/${companyId}?page=${page}&limit=5`);
-      const result = (data as any)?.data ?? data;
-      const items = Array.isArray(result) ? result : (result.data || []);
-      const meta = result?.meta || null;
+      const response = await api.get(`/reviews/company/${companyId}?page=${page}&limit=5`);
+      const { data: items, meta } = unwrapPaginatedResponse<ReviewItem>(response);
       setReviews(items);
       setReviewMeta(meta);
     } catch {

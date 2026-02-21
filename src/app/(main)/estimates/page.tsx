@@ -9,6 +9,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import { unwrapPaginatedResponse } from "@/lib/apiHelpers";
 import type { EstimateRequest, CleaningType } from "@/types";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { CLEANING_TYPE_LABELS } from "@/types";
@@ -62,9 +63,8 @@ export default function EstimatesPage() {
     }
 
     try {
-      const reqRes = await api.get("/estimates/requests");
-      const reqResult = (reqRes.data as any)?.data ?? reqRes.data;
-      const list = reqResult?.data ?? (Array.isArray(reqResult) ? reqResult : []);
+      const response = await api.get("/estimates/requests");
+      const { data: list } = unwrapPaginatedResponse<EstimateRequest>(response);
       cache.set("estimates:requests", list);
       setRequests(list);
       fetchEstimateLimit();

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import api from "@/lib/api";
+import { unwrapResponse } from "@/lib/apiHelpers";
 
 export interface AddressSuggestion {
   address: string;
@@ -41,7 +42,7 @@ export function useAddressSuggestions(query: string, debounceMs = 300) {
       abortControllerRef.current = controller;
 
       try {
-        const { data: res } = await api.get(
+        const response = await api.get(
           "/address/suggestions",
           {
             params: { query: query.trim() },
@@ -50,8 +51,7 @@ export function useAddressSuggestions(query: string, debounceMs = 300) {
         );
 
         if (!controller.signal.aborted) {
-          // TransformInterceptor가 { success, data, timestamp }로 감싸므로 내부 data 추출
-          const list = (res as any)?.data ?? res;
+          const list = unwrapResponse<AddressSuggestion[]>(response);
           setSuggestions(Array.isArray(list) ? list : []);
           setIsLoading(false);
         }

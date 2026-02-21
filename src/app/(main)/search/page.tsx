@@ -12,6 +12,7 @@ import api from "@/lib/api";
 import FadeIn from "@/components/animation/FadeIn";
 import { motion } from "framer-motion";
 import type { CompanySearchResponse, CompanySearchResult } from "@/types";
+import { unwrapPaginatedResponse } from "@/lib/apiHelpers";
 
 const SPECIALTY_OPTIONS = [
   "이사청소",
@@ -123,14 +124,12 @@ function SearchPageContent() {
         if (params.region) query.region = params.region;
         if (params.sortBy) query.sortBy = params.sortBy;
 
-        const { data } = await api.get<CompanySearchResponse>(
+        const response = await api.get<CompanySearchResponse>(
           "/companies/search",
           { params: query }
         );
 
-        const result = (data as any)?.data ?? data;
-        const list = Array.isArray(result) ? result : result?.data ?? [];
-        const resultMeta = result?.meta ?? (data as any)?.meta ?? null;
+        const { data: list, meta: resultMeta } = unwrapPaginatedResponse<CompanySearchResult>(response);
         cache.set(cacheKey, { companies: list, meta: resultMeta });
         setCompanies(list);
         setMeta(resultMeta);

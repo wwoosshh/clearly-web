@@ -20,6 +20,7 @@ import {
   Legend,
 } from "recharts";
 import api from "@/lib/api";
+import { unwrapResponse } from "@/lib/apiHelpers";
 import { useAuthStore } from "@/stores/auth.store";
 import { cn } from "@/lib/utils";
 import { CLEANING_TYPE_LABELS } from "@/types";
@@ -187,10 +188,10 @@ export default function EstimateComparePage() {
     setIsLoading(true);
     setError(null);
     try {
-      const { data: res } = await api.get(
+      const response = await api.get(
         `/estimates/requests/${requestId}/compare`
       );
-      const result: ComparisonResponse = (res as any)?.data ?? res;
+      const result: ComparisonResponse = unwrapResponse<ComparisonResponse>(response);
       setData(result);
       setSelectedIds(result.estimates.slice(0, 3).map((e) => e.estimateId));
     } catch {
@@ -228,10 +229,10 @@ export default function EstimateComparePage() {
     if (!chosenEstimateId) return;
     setActionLoading(true);
     try {
-      const { data: res } = await api.patch(
+      const acceptResponse = await api.patch(
         `/estimates/${chosenEstimateId}/accept`
       );
-      const result = (res as any)?.data ?? res;
+      const result = unwrapResponse<{ chatRoom?: { id: string } }>(acceptResponse);
       const chatRoomId = result?.chatRoom?.id;
       router.push(chatRoomId ? `/chat?roomId=${chatRoomId}` : "/chat");
     } catch {

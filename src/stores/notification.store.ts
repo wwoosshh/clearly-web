@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { Notification } from "@/types";
 import api from "@/lib/api";
+import { unwrapNotificationResponse, unwrapResponse } from "@/lib/apiHelpers";
 
 interface NotificationState {
   notifications: Notification[];
@@ -32,15 +33,12 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const { data } = await api.get("/notifications", {
+      const response = await api.get("/notifications", {
         params: { page, limit: 20 },
       });
 
-      const result = (data as any)?.data ?? data;
-      const newNotifications: Notification[] = Array.isArray(result)
-        ? result
-        : result?.data ?? [];
-      const meta = (data as any)?.meta ?? result?.meta;
+      const { data: newNotifications, meta, unreadCount } =
+        unwrapNotificationResponse<Notification>(response);
       const totalPages = meta?.totalPages ?? 1;
       const hasMore = page < totalPages;
 
@@ -48,8 +46,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         notifications: reset
           ? newNotifications
           : [...state.notifications, ...newNotifications],
-        unreadCount:
-          (data as any)?.unreadCount ?? result?.unreadCount ?? state.unreadCount,
+        unreadCount: unreadCount ?? state.unreadCount,
         hasMore,
         page: page + 1,
         isLoading: false,
@@ -61,11 +58,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
   fetchUnreadCount: async () => {
     try {
-      const { data } = await api.get("/notifications/unread-count");
-      const count =
-        (data as any)?.unreadCount ??
-        (data as any)?.data?.unreadCount ??
-        0;
+      const response = await api.get("/notifications/unread-count");
+      const result = unwrapResponse<{ unreadCount: number }>(response);
+      const count = result?.unreadCount ?? 0;
       set({ unreadCount: typeof count === "number" ? count : 0 });
     } catch {
       // silent

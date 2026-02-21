@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import { unwrapPaginatedResponse } from "@/lib/apiHelpers";
 import { CLEANING_TYPE_LABELS } from "@/types";
 import type { CleaningType } from "@/types";
 import { motion } from "framer-motion";
@@ -77,10 +78,10 @@ export default function MyReviewsPage() {
   const loadReviews = async (p: number) => {
     setIsLoading(true);
     try {
-      const { data } = await api.get("/reviews/my", { params: { page: p, limit: 10 } });
-      const result = (data as any)?.data ?? data;
-      setReviews(result?.data ?? []);
-      setMeta(result?.meta ?? { total: 0, page: p, limit: 10, totalPages: 0 });
+      const response = await api.get("/reviews/my", { params: { page: p, limit: 10 } });
+      const { data: items, meta: resultMeta } = unwrapPaginatedResponse<ReviewItem>(response);
+      setReviews(items);
+      setMeta(resultMeta ?? { total: 0, page: p, limit: 10, totalPages: 0 });
     } catch {
       setReviews([]);
     } finally {
