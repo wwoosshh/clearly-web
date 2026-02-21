@@ -33,19 +33,27 @@ export default function AdminReportDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!reportId) return;
+    let cancelled = false;
+
     async function fetchReport() {
       try {
         const { data } = await api.get(`/admin/reports/${reportId}`);
-        setReport(data.data);
+        if (!cancelled) setReport(data.data);
       } catch {
-        alert("신고 정보를 불러올 수 없습니다.");
-        router.push("/admin/reports");
+        if (!cancelled) {
+          alert("신고 정보를 불러올 수 없습니다.");
+          router.push("/admin/reports");
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     }
     fetchReport();
-  }, [reportId, router]);
+
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reportId]);
 
   const handleResolve = async (e: React.FormEvent) => {
     e.preventDefault();

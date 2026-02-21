@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -28,12 +28,19 @@ export default function AdminCompanyDetailPage() {
     disputeRate: number;
   } | null>(null);
 
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
   const fetchCompany = async () => {
     try {
       const [companyRes, metricsRes] = await Promise.allSettled([
         api.get(`/admin/companies/${companyId}`),
         api.get(`/companies/${companyId}/metrics`),
       ]);
+      if (!mountedRef.current) return;
       if (companyRes.status === "fulfilled") {
         const compData = companyRes.value.data.data;
         setCompany(compData);
@@ -45,16 +52,20 @@ export default function AdminCompanyDetailPage() {
         if (m && m.conversionRate !== undefined) setMetrics(m);
       }
     } catch {
-      alert("업체 정보를 불러올 수 없습니다.");
-      router.push("/admin/companies");
+      if (mountedRef.current) {
+        alert("업체 정보를 불러올 수 없습니다.");
+        router.push("/admin/companies");
+      }
     } finally {
-      setIsLoading(false);
+      if (mountedRef.current) setIsLoading(false);
     }
   };
 
   useEffect(() => {
+    if (!companyId) return;
     fetchCompany();
-  }, [companyId]); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId]);
 
   const handleApprove = async () => {
     if (!confirm("이 업체를 승인하시겠습니까?")) return;

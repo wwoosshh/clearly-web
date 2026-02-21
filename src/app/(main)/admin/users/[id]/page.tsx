@@ -40,19 +40,27 @@ export default function AdminUserDetailPage() {
   const [togglingActive, setTogglingActive] = useState(false);
 
   useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+
     async function fetchUser() {
       try {
         const { data } = await api.get(`/admin/users/${userId}`);
-        setUser(data.data);
+        if (!cancelled) setUser(data.data);
       } catch {
-        alert("사용자 정보를 불러올 수 없습니다.");
-        router.push("/admin/users");
+        if (!cancelled) {
+          alert("사용자 정보를 불러올 수 없습니다.");
+          router.push("/admin/users");
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     }
     fetchUser();
-  }, [userId, router]);
+
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const getDeactivationDaysLeft = () => {
     if (!user?.deactivatedAt) return null;

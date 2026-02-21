@@ -38,40 +38,55 @@ export default function AdminChatRoomDetailPage() {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   useEffect(() => {
+    if (!roomId) return;
+    let cancelled = false;
+
     async function fetchRoom() {
       try {
         const { data } = await api.get(`/admin/chat-rooms/${roomId}`);
-        setRoom(data.data);
+        if (!cancelled) setRoom(data.data);
       } catch {
-        alert("채팅방 정보를 불러올 수 없습니다.");
-        router.push("/admin/chat-rooms");
+        if (!cancelled) {
+          alert("채팅방 정보를 불러올 수 없습니다.");
+          router.push("/admin/chat-rooms");
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     }
     fetchRoom();
-  }, [roomId, router]);
+
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId]);
 
   useEffect(() => {
+    if (!roomId) return;
+    let cancelled = false;
+
     async function fetchMessages() {
       setIsLoadingMessages(true);
       try {
         const { data } = await api.get(`/admin/chat-rooms/${roomId}/messages`, {
           params: { page, limit: 50 },
         });
-        if (page === 1) {
-          setMessages(data.data.data);
-        } else {
-          setMessages((prev) => [...data.data.data, ...prev]);
+        if (!cancelled) {
+          if (page === 1) {
+            setMessages(data.data.data);
+          } else {
+            setMessages((prev) => [...data.data.data, ...prev]);
+          }
+          setMessageMeta(data.data.meta);
         }
-        setMessageMeta(data.data.meta);
       } catch {
         // 에러 무시
       } finally {
-        setIsLoadingMessages(false);
+        if (!cancelled) setIsLoadingMessages(false);
       }
     }
-    if (roomId) fetchMessages();
+    fetchMessages();
+
+    return () => { cancelled = true; };
   }, [roomId, page]);
 
   const formatDateTime = (d?: string) => {
