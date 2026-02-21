@@ -35,6 +35,27 @@ function processQueue(error: unknown, token: string | null = null) {
   failedQueue = [];
 }
 
+/** Zustand store에서 refreshToken 가져오기 (순환 의존 방지를 위한 lazy import) */
+function getRefreshToken(): string | null {
+  try {
+    // dynamic import 대신 직접 store 접근
+    const { useAuthStore } = require("@/stores/auth.store");
+    return useAuthStore.getState().refreshToken;
+  } catch {
+    return null;
+  }
+}
+
+/** Zustand store에 새 토큰 저장 */
+function setTokensInStore(accessToken: string, refreshToken: string) {
+  try {
+    const { useAuthStore } = require("@/stores/auth.store");
+    useAuthStore.setState({ accessToken, refreshToken });
+  } catch {
+    // store 접근 실패 시 무시
+  }
+}
+
 /** 요청 인터셉터: Access Token 자동 첨부 */
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -78,7 +99,8 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        // refreshToken은 메모리(Zustand store)에서만 가져옴
+        const refreshToken = getRefreshToken();
         if (!refreshToken) {
           throw new Error("No refresh token");
         }
@@ -89,8 +111,10 @@ api.interceptors.response.use(
 
         const { accessToken, refreshToken: newRefreshToken } = data.data;
 
+        // accessToken만 localStorage에 저장
         localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", newRefreshToken);
+        // refreshToken은 메모리(store)에만 저장
+        setTokensInStore(accessToken, newRefreshToken);
 
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -104,7 +128,6 @@ api.interceptors.response.use(
 
         // 토큰 갱신 실패 시 로그아웃 처리
         localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
 
         if (typeof window !== "undefined") {
           window.location.href = "/login";

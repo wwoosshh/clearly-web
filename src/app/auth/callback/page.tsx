@@ -20,9 +20,8 @@ function OAuthCallbackContent() {
       return;
     }
 
-    // 토큰 저장
+    // accessToken만 localStorage에 저장 (refreshToken은 메모리 전용)
     localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
 
     // 사용자 정보 조회 후 인증 상태 설정
     api
@@ -31,7 +30,7 @@ function OAuthCallbackContent() {
         useAuthStore.setState({
           user: data.data,
           accessToken,
-          refreshToken,
+          refreshToken, // 메모리(store)에만 보관
           isAuthenticated: true,
           isLoading: false,
           isInitialized: true,
@@ -40,7 +39,6 @@ function OAuthCallbackContent() {
       })
       .catch(() => {
         localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
         setError("사용자 정보를 불러오는데 실패했습니다.");
       });
   }, [searchParams, router]);

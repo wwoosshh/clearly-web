@@ -566,12 +566,13 @@ function ChatPageContent() {
 
   // ─── 완료보고 제출 (업체용) ──────────────────────────
   const handleSubmitCompletionReport = async () => {
-    if (!selectedRoom?.matchingId || isSubmittingReport || completionImages.length === 0) return;
+    const reportMatchingId = selectedRoom?.matching?.id || selectedRoom?.matchingId;
+    if (!reportMatchingId || isSubmittingReport || completionImages.length === 0) return;
     setIsSubmittingReport(true);
 
     try {
       const submittedImages = [...completionImages];
-      await api.post(`/matchings/requests/${selectedRoom.matchingId}/report-completion`, {
+      await api.post(`/matchings/requests/${reportMatchingId}/report-completion`, {
         images: submittedImages,
       });
       setShowCompletionReportModal(false);
@@ -599,12 +600,13 @@ function ChatPageContent() {
 
   // ─── 완료확인 (사용자용) ──────────────────────────────
   const handleConfirmCompletion = async () => {
-    if (!selectedRoom?.matchingId || isConfirmingCompletion) return;
+    const confirmMatchingId = selectedRoom?.matching?.id || selectedRoom?.matchingId;
+    if (!confirmMatchingId || isConfirmingCompletion) return;
     setIsConfirmingCompletion(true);
     setShowCompletionConfirmModal(false);
 
     try {
-      await api.patch(`/matchings/requests/${selectedRoom.matchingId}/confirm-completion`);
+      await api.patch(`/matchings/requests/${confirmMatchingId}/confirm-completion`);
       // 즉시 UI 반영: 매칭 완료 상태
       const completedPatch = {
         matching: {
@@ -617,7 +619,7 @@ function ChatPageContent() {
       setSelectedRoom((prev) => prev ? { ...prev, ...completedPatch } : prev);
       setRooms((prev) => prev.map((r) => r.id === selectedRoom.id ? { ...r, ...completedPatch } : r));
       syncMessages(selectedRoom.id);
-      router.push(`/review/write?matchingId=${selectedRoom.matchingId}&companyId=${selectedRoom.companyId}`);
+      router.push(`/review/write?matchingId=${confirmMatchingId}&companyId=${selectedRoom.companyId}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message || "완료 확인에 실패했습니다.";
       alert(msg);

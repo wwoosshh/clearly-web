@@ -87,10 +87,16 @@ export default function RegisterPage() {
 
       const { user, tokens } = res.data;
 
+      // accessToken만 localStorage에 저장 (refreshToken은 메모리 전용)
       localStorage.setItem("accessToken", tokens.accessToken);
-      localStorage.setItem("refreshToken", tokens.refreshToken);
 
-      useAuthStore.getState().setUser(user);
+      useAuthStore.setState({
+        user,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken, // 메모리에만 보관
+        isAuthenticated: true,
+        isInitialized: true,
+      });
 
       router.push("/");
     } catch (error: any) {

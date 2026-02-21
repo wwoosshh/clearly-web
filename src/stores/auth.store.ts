@@ -18,7 +18,7 @@ interface AuthState {
   user: User | null;
   /** Access Token */
   accessToken: string | null;
-  /** Refresh Token */
+  /** Refresh Token (메모리 전용 — localStorage에 저장하지 않음) */
   refreshToken: string | null;
   /** 인증 상태 로딩 여부 */
   isLoading: boolean;
@@ -30,7 +30,7 @@ interface AuthState {
   /** 로그인 */
   login: (credentials: LoginRequest) => Promise<void>;
   /** 로그아웃 */
-  logout: () => void;
+  logout: () => Promise<void>;
   /** 토큰으로 사용자 정보 복원 */
   restoreSession: () => Promise<void>;
   /** 사용자 정보 업데이트 */
@@ -43,10 +43,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     typeof window !== "undefined"
       ? localStorage.getItem("accessToken")
       : null,
-  refreshToken:
-    typeof window !== "undefined"
-      ? localStorage.getItem("refreshToken")
-      : null,
+  refreshToken: null, // 메모리 전용 — 브라우저 새로고침 시 초기화됨
   isLoading: false,
   isAuthenticated: false,
   isInitialized: false,
@@ -60,13 +57,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       const { user, tokens } = data.data;
 
+      // accessToken만 localStorage에 저장 (15분 수명)
       localStorage.setItem("accessToken", tokens.accessToken);
-      localStorage.setItem("refreshToken", tokens.refreshToken);
 
       set({
         user,
         accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
+        refreshToken: tokens.refreshToken, // 메모리에만 보관
         isAuthenticated: true,
         isLoading: false,
         isInitialized: true,
@@ -77,9 +74,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  logout: () => {
+  logout: async () => {
+    // 백엔드에서 refresh token 폐기 (실패해도 로컬은 정리)
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // 네트워크 오류 등 무시 — 로컬 토큰 정리가 우선
+    }
+
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
 
     set({
       user: null,
@@ -136,7 +139,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch {
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
       set({
         user: null,
         accessToken: null,

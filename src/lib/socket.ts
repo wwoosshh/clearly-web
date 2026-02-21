@@ -51,8 +51,9 @@ export function connectSocket(): void {
  * 소켓 연결을 종료합니다.
  */
 export function disconnectSocket(): void {
-  if (socket?.connected) {
+  if (socket) {
     socket.disconnect();
+    socket = null;
   }
 }
 
