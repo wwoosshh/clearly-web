@@ -106,7 +106,7 @@ export default function MyPage() {
     const results = await Promise.allSettled([
       api.get("/estimates/requests", { params: { page: 1, limit: 1 } }),
       api.get("/estimates/my", { params: { page: 1, limit: 1 } }),
-      api.get("/matchings/requests", { params: { page: 1, limit: 1 } }),
+      api.get("/matchings/requests", { params: { page: 1, limit: 1, status: "COMPLETED" } }),
       api.get("/reviews/my", { params: { page: 1, limit: 1 } }),
     ]);
     return {
@@ -140,7 +140,7 @@ export default function MyPage() {
     const results = await Promise.allSettled([
       api.get("/estimates/company-estimates", { params: { page: 1, limit: 1 } }),
       api.get("/reviews/my", { params: { page: 1, limit: 1 } }),
-      api.get("/matchings/requests", { params: { page: 1, limit: 1 } }),
+      api.get("/matchings/requests", { params: { page: 1, limit: 1, status: "COMPLETED" } }),
     ]);
     return {
       submittedEstimates: extractTotal(results[0]),
