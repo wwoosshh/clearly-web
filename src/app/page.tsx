@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useAuthStore } from "@/stores/auth.store";
 import FadeIn from "@/components/animation/FadeIn";
+import HeroCards from "@/components/home/HeroCards";
 
 /* ── 디자인 토큰 ─────────────────────────────────────── */
 const C = {
@@ -988,68 +989,8 @@ export default function Home() {
                 </FadeIn>
               </div>
 
-              {/* 우측 카드 목업 */}
-              <FadeIn delay={0.3} y={10} className="hidden lg:flex flex-col gap-3.5 pb-2">
-                <div
-                  className="w-[284px] rounded-2xl p-5"
-                  style={{ background: "#fff", border: `1px solid ${C.border}`, boxShadow: "0 4px 24px rgba(26,25,24,0.07)" }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 flex-shrink-0 rounded-xl flex items-center justify-center" style={{ background: C.greenLight }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-bold truncate" style={{ color: C.text }}>클린하우스</p>
-                      <p className="text-[12px]" style={{ color: C.muted }}>서울 강남구</p>
-                    </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="#d97706" stroke="none">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <span className="text-[12px] font-semibold" style={{ color: C.text }}>4.9</span>
-                    </div>
-                  </div>
-                  <div className="mt-3.5 flex gap-1.5">
-                    {["입주청소","이사청소"].map((t) => (
-                      <span key={t} className="rounded-md px-2 py-0.5 text-[11px] font-medium" style={{ background: C.greenLight, color: C.green }}>{t}</span>
-                    ))}
-                  </div>
-                  <div className="mt-3.5 rounded-lg px-3 py-2 flex items-center justify-between" style={{ background: C.cream }}>
-                    <span className="text-[12px]" style={{ color: C.muted }}>예상 가격대</span>
-                    <span className="text-[14px] font-bold" style={{ color: C.text }}>18~25만원</span>
-                  </div>
-                </div>
-                <div
-                  className="w-[220px] self-end rounded-xl px-4 py-3 flex items-center gap-3"
-                  style={{ background: "#fff", border: "1px solid #bbf7d0", boxShadow: "0 4px 12px rgba(21,128,61,0.08)" }}
-                >
-                  <div className="h-7 w-7 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: "#dcfce7" }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-[12px] font-semibold" style={{ color: C.text }}>매칭 수락됨</p>
-                    <p className="text-[11px]" style={{ color: C.muted }}>방금 전</p>
-                  </div>
-                </div>
-                <div
-                  className="w-[200px] rounded-xl px-4 py-3 flex items-center gap-3"
-                  style={{ background: "#fff", border: `1px solid ${C.border}`, boxShadow: "0 4px 12px rgba(26,25,24,0.05)" }}
-                >
-                  <div className="h-7 w-7 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: "#fef3c7" }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-[11px]" style={{ color: C.muted }}>평균 응답</p>
-                    <p className="text-[13px] font-bold" style={{ color: C.text }}>15분 이내</p>
-                  </div>
-                </div>
-              </FadeIn>
+              {/* 우측 카드 목업 — 3D Tilt + Parallax */}
+              <HeroCards />
             </div>
           </div>
         </section>
