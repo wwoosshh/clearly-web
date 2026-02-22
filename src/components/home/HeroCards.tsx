@@ -16,28 +16,24 @@ const C = {
 
 const SP = { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.7 };
 
-/* ── Helpers ── */
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
 /* ════════════════════════════════════════
    TiltCard — 개별 3D Tilt + Specular Light
-   각 카드가 독립적으로 마우스에 반응
+
+   구조: motion.div(진입 애니메이션) → div(3D tilt)
+   framer-motion의 animate과 수동 transform이
+   서로 다른 DOM 요소에 있어야 충돌하지 않음
 ════════════════════════════════════════ */
 interface TiltCardProps {
   children: ReactNode;
   className?: string;
   delay?: number;
-  /** 틸트 강도 (기본 14) */
   intensity?: number;
-  /** 카드 배경색 */
-  bg?: string;
-  /** 테두리 색상 */
   borderColor?: string;
-  /** 스페큘러 하이라이트 색상 */
-  specularColor?: string;
-  /** framer-motion initial 방향 */
+  specularTint?: string;
   from?: { x?: number; y?: number };
 }
 
@@ -46,9 +42,8 @@ function TiltCard({
   className = "",
   delay = 0,
   intensity = 14,
-  bg = "#fff",
-  borderColor = C.border,
-  specularColor = "rgba(255,255,255,0.55)",
+  borderColor = "rgba(255,255,255,0.35)",
+  specularTint = "rgba(255,255,255,0.7)",
   from = { y: 30 },
 }: TiltCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -62,7 +57,7 @@ function TiltCard({
 
   const tick = useCallback(() => {
     const target = isInside.current ? mouseRef.current : { x: 0.5, y: 0.5 };
-    const ease = isInside.current ? 0.1 : 0.05;
+    const ease = isInside.current ? 0.1 : 0.045;
 
     currentRef.current = {
       x: lerp(currentRef.current.x, target.x, ease),
@@ -71,12 +66,10 @@ function TiltCard({
 
     const cx = currentRef.current.x;
     const cy = currentRef.current.y;
-    const nx = cx - 0.5;
-    const ny = cy - 0.5;
 
     setTilt({
-      rx: ny * -intensity,
-      ry: nx * intensity,
+      rx: (cy - 0.5) * -intensity,
+      ry: (cx - 0.5) * intensity,
       mx: cx,
       my: cy,
       active: isInside.current,
@@ -104,114 +97,100 @@ function TiltCard({
   const onEnter = useCallback(() => { isInside.current = true; }, []);
   const onLeave = useCallback(() => { isInside.current = false; }, []);
 
-  /* ── Specular highlight: 마우스 위치를 따라가는 밝은 빛 ── */
   const hlX = tilt.mx * 100;
   const hlY = tilt.my * 100;
-
-  /* ── 동적 그림자: 틸트 반대 방향으로 그림자 이동 ── */
-  const shadowX = -tilt.ry * 0.8;
-  const shadowY = tilt.rx * 0.8;
-  const shadowSpread = tilt.active ? 22 : 12;
-
-  /* ── Edge light: 빛이 닿는 면 테두리가 밝아짐 ── */
+  const shadowX = -tilt.ry * 1.2;
+  const shadowY = tilt.rx * 1.2;
   const edgeAngle = Math.atan2(tilt.my - 0.5, tilt.mx - 0.5) * (180 / Math.PI) + 180;
 
   return (
+    /* perspective 컨테이너 */
     <div style={{ perspective: "600px" }}>
+      {/* 외부: framer-motion 진입 애니메이션 (opacity, scale, translate) */}
       <motion.div
-        ref={cardRef}
-        onMouseMove={onMove}
-        onMouseEnter={onEnter}
-        onMouseLeave={onLeave}
         initial={{ opacity: 0, scale: 0.88, ...from }}
         animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
         transition={{ delay, ...SP }}
-        className={`relative overflow-hidden rounded-2xl ${className}`}
-        style={{
-          background: bg,
-          transform: prefersReduced
-            ? "none"
-            : `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) scale(${tilt.active ? 1.03 : 1})`,
-          transition: tilt.active
-            ? "box-shadow 0.2s ease"
-            : "transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.5s ease",
-          boxShadow: tilt.active
-            ? `${shadowX}px ${shadowY}px ${shadowSpread}px -4px rgba(45,106,79,0.13),
-               0 2px 8px -2px rgba(26,25,24,0.08),
-               inset 0 1px 0 rgba(255,255,255,0.5)`
-            : `0 4px 16px -4px rgba(26,25,24,0.08),
-               0 1px 4px -1px rgba(26,25,24,0.04),
-               inset 0 1px 0 rgba(255,255,255,0.4)`,
-          border: `1px solid ${borderColor}`,
-          willChange: "transform",
-          transformStyle: "preserve-3d",
-        }}
       >
-        {/* ── Specular highlight layer ── */}
+        {/* 내부: 수동 3D tilt (rotateX/Y) — framer-motion과 충돌 없음 */}
         <div
-          className="pointer-events-none absolute inset-0 z-10 rounded-2xl"
+          ref={cardRef}
+          onMouseMove={onMove}
+          onMouseEnter={onEnter}
+          onMouseLeave={onLeave}
+          className={`relative overflow-hidden rounded-2xl ${className}`}
           style={{
-            opacity: tilt.active ? 1 : 0,
-            transition: "opacity 0.4s ease",
-            background: `
-              radial-gradient(
-                120px circle at ${hlX}% ${hlY}%,
-                ${specularColor} 0%,
-                rgba(255,255,255,0.12) 35%,
-                transparent 70%
-              )
-            `,
-            mixBlendMode: "overlay",
+            /* 글래스모피즘: 반투명 배경 + 블러 → 배경과 대비 */
+            background: "rgba(255,255,255,0.55)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            border: `1px solid ${borderColor}`,
+            transform: prefersReduced
+              ? "none"
+              : `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) scale(${tilt.active ? 1.04 : 1})`,
+            transition: tilt.active
+              ? "box-shadow 0.15s ease"
+              : "transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.5s ease",
+            boxShadow: tilt.active
+              ? `${shadowX}px ${shadowY}px 28px -6px rgba(45,106,79,0.18),
+                 0 4px 12px -2px rgba(26,25,24,0.1),
+                 inset 0 1px 0 rgba(255,255,255,0.6)`
+              : `0 4px 20px -6px rgba(26,25,24,0.1),
+                 0 1px 6px -1px rgba(45,106,79,0.06),
+                 inset 0 1px 0 rgba(255,255,255,0.5)`,
+            willChange: "transform",
+            transformStyle: "preserve-3d",
           }}
-        />
+        >
+          {/* ── Specular: 강한 점광원 하이라이트 ── */}
+          <div
+            className="pointer-events-none absolute inset-0 z-10 rounded-2xl"
+            style={{
+              opacity: tilt.active ? 1 : 0,
+              transition: "opacity 0.35s ease",
+              background: `
+                radial-gradient(
+                  100px circle at ${hlX}% ${hlY}%,
+                  ${specularTint} 0%,
+                  rgba(255,255,255,0.2) 30%,
+                  transparent 65%
+                )
+              `,
+            }}
+          />
 
-        {/* ── Secondary diffuse light ── */}
-        <div
-          className="pointer-events-none absolute inset-0 z-10 rounded-2xl"
-          style={{
-            opacity: tilt.active ? 0.6 : 0,
-            transition: "opacity 0.4s ease",
-            background: `
-              radial-gradient(
-                200px circle at ${hlX}% ${hlY}%,
-                rgba(255,255,255,0.08) 0%,
-                transparent 60%
-              )
-            `,
-          }}
-        />
+          {/* ── Edge light: 빛이 닿는 면 테두리 밝아짐 ── */}
+          <div
+            className="pointer-events-none absolute inset-0 z-10 rounded-2xl"
+            style={{
+              opacity: tilt.active ? 0.8 : 0,
+              transition: "opacity 0.35s ease",
+              background: `
+                conic-gradient(
+                  from ${edgeAngle}deg at 50% 50%,
+                  rgba(255,255,255,0.35) 0deg,
+                  transparent 70deg,
+                  transparent 290deg,
+                  rgba(255,255,255,0.35) 360deg
+                )
+              `,
+              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              maskComposite: "exclude",
+              WebkitMaskComposite: "xor",
+              padding: "1.5px",
+            }}
+          />
 
-        {/* ── Edge light: directional border glow ── */}
-        <div
-          className="pointer-events-none absolute inset-0 z-10 rounded-2xl"
-          style={{
-            opacity: tilt.active ? 0.7 : 0,
-            transition: "opacity 0.4s ease",
-            background: `
-              conic-gradient(
-                from ${edgeAngle}deg at 50% 50%,
-                rgba(255,255,255,0.18) 0deg,
-                transparent 60deg,
-                transparent 300deg,
-                rgba(255,255,255,0.18) 360deg
-              )
-            `,
-            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-            maskComposite: "exclude",
-            WebkitMaskComposite: "xor",
-            padding: "1px",
-          }}
-        />
-
-        {/* ── Card content ── */}
-        <div className="relative z-[5]">{children}</div>
+          {/* ── Card content ── */}
+          <div className="relative z-[5]">{children}</div>
+        </div>
       </motion.div>
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════
-   SVG 아이콘 헬퍼
+   SVG 아이콘
 ═══════════════════════════════════════════ */
 const Icon = {
   star: (
@@ -245,14 +224,6 @@ const Icon = {
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
   ),
-  users: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  ),
 };
 
 /* ═══════════════════════════════════════════
@@ -261,23 +232,39 @@ const Icon = {
 export default function HeroCards() {
   return (
     <div className="hidden lg:block relative w-[420px] flex-shrink-0">
-      {/* 배경 ambient glow */}
+
+      {/* ── 배경 그라디언트: 카드가 떠보이도록 대비 제공 ── */}
       <div
-        className="pointer-events-none absolute -inset-10 z-0"
+        className="pointer-events-none absolute z-0 rounded-[32px]"
         style={{
-          background: "radial-gradient(300px circle at 60% 40%, rgba(45,106,79,0.05) 0%, transparent 70%)",
-          filter: "blur(20px)",
+          inset: "-24px -20px -20px -20px",
+          background: `
+            radial-gradient(ellipse 340px 280px at 55% 35%, rgba(45,106,79,0.09) 0%, transparent 70%),
+            radial-gradient(ellipse 240px 200px at 30% 75%, rgba(45,106,79,0.05) 0%, transparent 70%),
+            linear-gradient(165deg, rgba(226,221,214,0.5) 0%, rgba(245,243,238,0.1) 100%)
+          `,
         }}
       />
 
-      <div className="relative z-[1] grid grid-cols-2 gap-3" style={{ gridAutoRows: "auto" }}>
+      {/* ── Dot 패턴: 은은한 텍스처 ── */}
+      <div
+        className="pointer-events-none absolute z-0 rounded-[32px] opacity-[0.35]"
+        style={{
+          inset: "-24px -20px -20px -20px",
+          backgroundImage: `radial-gradient(circle, rgba(45,106,79,0.12) 1px, transparent 1px)`,
+          backgroundSize: "20px 20px",
+        }}
+      />
 
-        {/* ── 카드 1: 메인 업체 카드 (큰 카드, 2열 차지) ── */}
+      <div className="relative z-[1] grid grid-cols-2 gap-3">
+
+        {/* ── 카드 1: 메인 업체 카드 (2열) ── */}
         <div className="col-span-2">
           <TiltCard
             delay={0.3}
             intensity={10}
-            specularColor="rgba(255,255,255,0.6)"
+            specularTint="rgba(214,237,226,0.85)"
+            borderColor="rgba(255,255,255,0.5)"
           >
             <div className="p-5">
               <div className="flex items-center gap-3.5">
@@ -309,7 +296,6 @@ export default function HeroCards() {
                   <span className="text-[11px]" style={{ color: C.muted }}>(128)</span>
                 </div>
               </div>
-
               <div className="mt-4 flex gap-1.5 flex-wrap">
                 {["입주청소", "이사청소", "거주청소"].map((t) => (
                   <span
@@ -321,10 +307,9 @@ export default function HeroCards() {
                   </span>
                 ))}
               </div>
-
               <div
                 className="mt-4 rounded-xl px-4 py-3 flex items-center justify-between"
-                style={{ background: C.cream }}
+                style={{ background: "rgba(245,243,238,0.7)" }}
               >
                 <span className="text-[12px]" style={{ color: C.muted }}>예상 가격대</span>
                 <span className="text-[16px] font-extrabold tracking-tight" style={{ color: C.text }}>
@@ -339,8 +324,8 @@ export default function HeroCards() {
         <TiltCard
           delay={0.44}
           intensity={16}
-          borderColor="#bbf7d0"
-          specularColor="rgba(220,252,231,0.7)"
+          borderColor="rgba(187,247,208,0.6)"
+          specularTint="rgba(220,252,231,0.9)"
           from={{ x: -20 }}
         >
           <div className="p-4">
@@ -375,8 +360,8 @@ export default function HeroCards() {
         <TiltCard
           delay={0.52}
           intensity={16}
-          borderColor="#fde68a"
-          specularColor="rgba(254,243,199,0.65)"
+          borderColor="rgba(253,230,138,0.5)"
+          specularTint="rgba(254,243,199,0.85)"
           from={{ x: 20 }}
         >
           <div className="p-4">
@@ -409,11 +394,11 @@ export default function HeroCards() {
           </div>
         </TiltCard>
 
-        {/* ── 카드 4: 고객 리뷰 미니 카드 ── */}
+        {/* ── 카드 4: 고객 리뷰 ── */}
         <TiltCard
           delay={0.6}
           intensity={18}
-          specularColor="rgba(255,255,255,0.5)"
+          specularTint="rgba(255,255,255,0.75)"
           from={{ y: 20 }}
         >
           <div className="p-4">
@@ -441,7 +426,7 @@ export default function HeroCards() {
         <TiltCard
           delay={0.68}
           intensity={18}
-          specularColor="rgba(214,237,226,0.6)"
+          specularTint="rgba(214,237,226,0.8)"
           from={{ y: 20 }}
         >
           <div className="p-4">
@@ -458,9 +443,9 @@ export default function HeroCards() {
             </div>
             <div className="flex flex-col gap-1.5">
               {[
-                { label: "사업자 인증", done: true },
-                { label: "보험 가입", done: true },
-                { label: "이력 검증", done: true },
+                { label: "사업자 인증" },
+                { label: "보험 가입" },
+                { label: "이력 검증" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-1.5">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -473,12 +458,12 @@ export default function HeroCards() {
           </div>
         </TiltCard>
 
-        {/* ── 카드 6: 실시간 채팅 미리보기 (2열 차지) ── */}
+        {/* ── 카드 6: 실시간 채팅 미리보기 (2열) ── */}
         <div className="col-span-2">
           <TiltCard
             delay={0.76}
             intensity={8}
-            specularColor="rgba(255,255,255,0.5)"
+            specularTint="rgba(214,237,226,0.7)"
             from={{ y: 24 }}
           >
             <div className="px-4 py-3.5 flex items-center gap-3.5">
