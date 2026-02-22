@@ -1,12 +1,11 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
-/* ── Design tokens (mirrored from page.tsx) ── */
+/* ── Design tokens ── */
 const C = {
   cream:      "#f5f3ee",
-  dark:       "#141412",
   green:      "#2d6a4f",
   greenMid:   "#4a8c6a",
   greenLight: "#d6ede2",
@@ -15,60 +14,76 @@ const C = {
   border:     "#e2ddd6",
 } as const;
 
-/* ── Spring config for entry animations ── */
-const SP = { type: "spring" as const, stiffness: 380, damping: 32, mass: 0.8 };
-
-/* ── Types ── */
-interface Vec2 {
-  x: number;
-  y: number;
-}
+const SP = { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.7 };
 
 /* ── Helpers ── */
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-function clamp(val: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, val));
+/* ════════════════════════════════════════
+   TiltCard — 개별 3D Tilt + Specular Light
+   각 카드가 독립적으로 마우스에 반응
+════════════════════════════════════════ */
+interface TiltCardProps {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+  /** 틸트 강도 (기본 14) */
+  intensity?: number;
+  /** 카드 배경색 */
+  bg?: string;
+  /** 테두리 색상 */
+  borderColor?: string;
+  /** 스페큘러 하이라이트 색상 */
+  specularColor?: string;
+  /** framer-motion initial 방향 */
+  from?: { x?: number; y?: number };
 }
 
-/* ════════════════════════════════════════
-   HeroCards — 3D Tilt + Per-card Parallax
-════════════════════════════════════════ */
-export default function HeroCards() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number>(0);
-  const mouseRef = useRef<Vec2>({ x: 0.5, y: 0.5 });
-  const currentRef = useRef<Vec2>({ x: 0.5, y: 0.5 });
-  const isInsideRef = useRef(false);
+function TiltCard({
+  children,
+  className = "",
+  delay = 0,
+  intensity = 14,
+  bg = "#fff",
+  borderColor = C.border,
+  specularColor = "rgba(255,255,255,0.55)",
+  from = { y: 30 },
+}: TiltCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef(0);
+  const mouseRef = useRef({ x: 0.5, y: 0.5 });
+  const currentRef = useRef({ x: 0.5, y: 0.5 });
+  const isInside = useRef(false);
   const prefersReduced = useReducedMotion();
 
-  /* Smoothed values for rendering */
-  const [smooth, setSmooth] = useState<Vec2>({ x: 0.5, y: 0.5 });
-  const [isHovering, setIsHovering] = useState(false);
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0, mx: 0.5, my: 0.5, active: false });
 
-  /* RAF loop for buttery-smooth interpolation */
   const tick = useCallback(() => {
-    const target = isInsideRef.current
-      ? mouseRef.current
-      : { x: 0.5, y: 0.5 };
+    const target = isInside.current ? mouseRef.current : { x: 0.5, y: 0.5 };
+    const ease = isInside.current ? 0.1 : 0.05;
 
-    const ease = isInsideRef.current ? 0.08 : 0.04;
     currentRef.current = {
       x: lerp(currentRef.current.x, target.x, ease),
       y: lerp(currentRef.current.y, target.y, ease),
     };
 
-    const dx = Math.abs(currentRef.current.x - target.x);
-    const dy = Math.abs(currentRef.current.y - target.y);
+    const cx = currentRef.current.x;
+    const cy = currentRef.current.y;
+    const nx = cx - 0.5;
+    const ny = cy - 0.5;
 
-    if (dx > 0.0005 || dy > 0.0005) {
-      setSmooth({ ...currentRef.current });
-    }
+    setTilt({
+      rx: ny * -intensity,
+      ry: nx * intensity,
+      mx: cx,
+      my: cy,
+      active: isInside.current,
+    });
 
     rafRef.current = requestAnimationFrame(tick);
-  }, []);
+  }, [intensity]);
 
   useEffect(() => {
     if (prefersReduced) return;
@@ -76,286 +91,428 @@ export default function HeroCards() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [tick, prefersReduced]);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (prefersReduced) return;
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      mouseRef.current = {
-        x: clamp((e.clientX - rect.left) / rect.width, 0, 1),
-        y: clamp((e.clientY - rect.top) / rect.height, 0, 1),
-      };
-    },
-    [prefersReduced],
-  );
+  const onMove = useCallback((e: React.MouseEvent) => {
+    if (prefersReduced) return;
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseRef.current = {
+      x: Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)),
+      y: Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)),
+    };
+  }, [prefersReduced]);
 
-  const handleMouseEnter = useCallback(() => {
-    isInsideRef.current = true;
-    setIsHovering(true);
-  }, []);
+  const onEnter = useCallback(() => { isInside.current = true; }, []);
+  const onLeave = useCallback(() => { isInside.current = false; }, []);
 
-  const handleMouseLeave = useCallback(() => {
-    isInsideRef.current = false;
-    setIsHovering(false);
-  }, []);
+  /* ── Specular highlight: 마우스 위치를 따라가는 밝은 빛 ── */
+  const hlX = tilt.mx * 100;
+  const hlY = tilt.my * 100;
 
-  /* ── Derived transforms ── */
-  const nx = smooth.x - 0.5; // -0.5 ~ 0.5
-  const ny = smooth.y - 0.5;
-  const tiltX = ny * -12;     // rotateX (inverted)
-  const tiltY = nx * 12;      // rotateY
+  /* ── 동적 그림자: 틸트 반대 방향으로 그림자 이동 ── */
+  const shadowX = -tilt.ry * 0.8;
+  const shadowY = tilt.rx * 0.8;
+  const shadowSpread = tilt.active ? 22 : 12;
 
-  /* Gloss position */
-  const glossX = smooth.x * 100;
-  const glossY = smooth.y * 100;
-
-  /* Per-card parallax offsets (px) */
-  const parallax = (depth: number) => ({
-    x: nx * depth * 28,
-    y: ny * depth * 20,
-  });
-
-  const mainP  = parallax(0.5);
-  const notifP = parallax(1.2);
-  const statsP = parallax(0.85);
+  /* ── Edge light: 빛이 닿는 면 테두리가 밝아짐 ── */
+  const edgeAngle = Math.atan2(tilt.my - 0.5, tilt.mx - 0.5) * (180 / Math.PI) + 180;
 
   return (
-    <div
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="hidden lg:block relative pb-2"
-      style={{
-        perspective: "800px",
-        perspectiveOrigin: "50% 50%",
-      }}
-    >
+    <div style={{ perspective: "600px" }}>
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="relative"
+        ref={cardRef}
+        onMouseMove={onMove}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        initial={{ opacity: 0, scale: 0.88, ...from }}
+        animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+        transition={{ delay, ...SP }}
+        className={`relative overflow-hidden rounded-2xl ${className}`}
         style={{
-          transformStyle: "preserve-3d",
+          background: bg,
           transform: prefersReduced
             ? "none"
-            : `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
-          transition: isHovering ? "none" : "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            : `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) scale(${tilt.active ? 1.03 : 1})`,
+          transition: tilt.active
+            ? "box-shadow 0.2s ease"
+            : "transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.5s ease",
+          boxShadow: tilt.active
+            ? `${shadowX}px ${shadowY}px ${shadowSpread}px -4px rgba(45,106,79,0.13),
+               0 2px 8px -2px rgba(26,25,24,0.08),
+               inset 0 1px 0 rgba(255,255,255,0.5)`
+            : `0 4px 16px -4px rgba(26,25,24,0.08),
+               0 1px 4px -1px rgba(26,25,24,0.04),
+               inset 0 1px 0 rgba(255,255,255,0.4)`,
+          border: `1px solid ${borderColor}`,
           willChange: "transform",
+          transformStyle: "preserve-3d",
         }}
       >
-        {/* ── Gloss overlay ── */}
+        {/* ── Specular highlight layer ── */}
         <div
-          className="pointer-events-none absolute -inset-6 z-10 rounded-3xl opacity-0 transition-opacity duration-500"
+          className="pointer-events-none absolute inset-0 z-10 rounded-2xl"
           style={{
-            opacity: isHovering ? 0.45 : 0,
-            background: `radial-gradient(
-              320px circle at ${glossX}% ${glossY}%,
-              rgba(45, 106, 79, 0.08) 0%,
-              transparent 70%
-            )`,
+            opacity: tilt.active ? 1 : 0,
+            transition: "opacity 0.4s ease",
+            background: `
+              radial-gradient(
+                120px circle at ${hlX}% ${hlY}%,
+                ${specularColor} 0%,
+                rgba(255,255,255,0.12) 35%,
+                transparent 70%
+              )
+            `,
+            mixBlendMode: "overlay",
           }}
         />
 
-        {/* ── Ambient glow behind cards ── */}
+        {/* ── Secondary diffuse light ── */}
         <div
-          className="pointer-events-none absolute z-0"
+          className="pointer-events-none absolute inset-0 z-10 rounded-2xl"
           style={{
-            width: "300px",
-            height: "300px",
-            top: "20%",
-            left: "10%",
-            background: `radial-gradient(circle, rgba(45,106,79,0.06) 0%, transparent 70%)`,
-            filter: "blur(40px)",
-            transform: `translate(${nx * 15}px, ${ny * 10}px)`,
+            opacity: tilt.active ? 0.6 : 0,
+            transition: "opacity 0.4s ease",
+            background: `
+              radial-gradient(
+                200px circle at ${hlX}% ${hlY}%,
+                rgba(255,255,255,0.08) 0%,
+                transparent 60%
+              )
+            `,
           }}
         />
 
-        <div className="relative z-[1] flex flex-col gap-3.5">
-          {/* ── Card 1: Main company card ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.35, ...SP }}
-            className="group w-[284px] rounded-2xl p-5 transition-shadow duration-300"
-            style={{
-              background: "#fff",
-              border: `1px solid ${C.border}`,
-              boxShadow: "0 4px 24px rgba(26,25,24,0.07)",
-              transform: prefersReduced
-                ? "none"
-                : `translate3d(${mainP.x}px, ${mainP.y}px, 20px)`,
-              willChange: "transform",
-            }}
+        {/* ── Edge light: directional border glow ── */}
+        <div
+          className="pointer-events-none absolute inset-0 z-10 rounded-2xl"
+          style={{
+            opacity: tilt.active ? 0.7 : 0,
+            transition: "opacity 0.4s ease",
+            background: `
+              conic-gradient(
+                from ${edgeAngle}deg at 50% 50%,
+                rgba(255,255,255,0.18) 0deg,
+                transparent 60deg,
+                transparent 300deg,
+                rgba(255,255,255,0.18) 360deg
+              )
+            `,
+            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            maskComposite: "exclude",
+            WebkitMaskComposite: "xor",
+            padding: "1px",
+          }}
+        />
+
+        {/* ── Card content ── */}
+        <div className="relative z-[5]">{children}</div>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   SVG 아이콘 헬퍼
+═══════════════════════════════════════════ */
+const Icon = {
+  star: (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="#d97706" stroke="none">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  ),
+  check: (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  ),
+  shield: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  ),
+  home: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  ),
+  clock: (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+    </svg>
+  ),
+  chat: (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  ),
+  users: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  ),
+};
+
+/* ═══════════════════════════════════════════
+   HeroCards — 2열 오프셋 그리드 + 개별 3D Tilt
+═══════════════════════════════════════════ */
+export default function HeroCards() {
+  return (
+    <div className="hidden lg:block relative w-[420px] flex-shrink-0">
+      {/* 배경 ambient glow */}
+      <div
+        className="pointer-events-none absolute -inset-10 z-0"
+        style={{
+          background: "radial-gradient(300px circle at 60% 40%, rgba(45,106,79,0.05) 0%, transparent 70%)",
+          filter: "blur(20px)",
+        }}
+      />
+
+      <div className="relative z-[1] grid grid-cols-2 gap-3" style={{ gridAutoRows: "auto" }}>
+
+        {/* ── 카드 1: 메인 업체 카드 (큰 카드, 2열 차지) ── */}
+        <div className="col-span-2">
+          <TiltCard
+            delay={0.3}
+            intensity={10}
+            specularColor="rgba(255,255,255,0.6)"
           >
-            {/* Inner glow on hover */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-              style={{
-                background: `radial-gradient(
-                  200px circle at ${glossX}% ${glossY}%,
-                  rgba(45,106,79,0.04) 0%,
-                  transparent 70%
-                )`,
-              }}
-            />
-            <div className="relative flex items-center gap-3">
-              <div
-                className="h-10 w-10 flex-shrink-0 rounded-xl flex items-center justify-center"
-                style={{ background: C.greenLight }}
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke={C.green}
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+            <div className="p-5">
+              <div className="flex items-center gap-3.5">
+                <div
+                  className="h-11 w-11 flex-shrink-0 rounded-xl flex items-center justify-center"
+                  style={{ background: C.greenLight }}
                 >
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                  <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
+                  {Icon.home}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-[15px] font-bold truncate" style={{ color: C.text }}>
+                      클린하우스
+                    </p>
+                    <span
+                      className="rounded px-1.5 py-0.5 text-[9px] font-bold"
+                      style={{ background: C.greenLight, color: C.green }}
+                    >
+                      인증
+                    </span>
+                  </div>
+                  <p className="text-[12px] mt-0.5" style={{ color: C.muted }}>
+                    서울 강남구 · 경력 5년
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {Icon.star}
+                  <span className="text-[13px] font-bold" style={{ color: C.text }}>4.9</span>
+                  <span className="text-[11px]" style={{ color: C.muted }}>(128)</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex gap-1.5 flex-wrap">
+                {["입주청소", "이사청소", "거주청소"].map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-md px-2.5 py-1 text-[11px] font-medium"
+                    style={{ background: C.greenLight, color: C.green }}
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+
+              <div
+                className="mt-4 rounded-xl px-4 py-3 flex items-center justify-between"
+                style={{ background: C.cream }}
+              >
+                <span className="text-[12px]" style={{ color: C.muted }}>예상 가격대</span>
+                <span className="text-[16px] font-extrabold tracking-tight" style={{ color: C.text }}>
+                  18~25만원
+                </span>
+              </div>
+            </div>
+          </TiltCard>
+        </div>
+
+        {/* ── 카드 2: 매칭 수락 알림 ── */}
+        <TiltCard
+          delay={0.44}
+          intensity={16}
+          borderColor="#bbf7d0"
+          specularColor="rgba(220,252,231,0.7)"
+          from={{ x: -20 }}
+        >
+          <div className="p-4">
+            <div className="flex items-center gap-2.5">
+              <div
+                className="h-8 w-8 flex-shrink-0 rounded-lg flex items-center justify-center"
+                style={{ background: "#dcfce7" }}
+              >
+                {Icon.check}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-bold truncate" style={{ color: C.text }}>
-                  클린하우스
-                </p>
-                <p className="text-[12px]" style={{ color: C.muted }}>
-                  서울 강남구
-                </p>
+                <p className="text-[12px] font-bold" style={{ color: C.text }}>매칭 수락됨</p>
+                <p className="text-[10px] mt-0.5" style={{ color: C.muted }}>방금 전</p>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="#d97706" stroke="none">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-                <span className="text-[12px] font-semibold" style={{ color: C.text }}>
-                  4.9
-                </span>
+              <motion.div
+                className="h-2 w-2 rounded-full flex-shrink-0"
+                style={{ background: "#16a34a" }}
+                animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </div>
+            <div
+              className="mt-3 rounded-lg px-3 py-2 text-center text-[11px] font-semibold"
+              style={{ background: "rgba(22,163,74,0.08)", color: "#16a34a" }}
+            >
+              채팅방 열기 →
+            </div>
+          </div>
+        </TiltCard>
+
+        {/* ── 카드 3: 평균 응답 시간 ── */}
+        <TiltCard
+          delay={0.52}
+          intensity={16}
+          borderColor="#fde68a"
+          specularColor="rgba(254,243,199,0.65)"
+          from={{ x: 20 }}
+        >
+          <div className="p-4">
+            <div className="flex items-center gap-2.5">
+              <div
+                className="h-8 w-8 flex-shrink-0 rounded-lg flex items-center justify-center"
+                style={{ background: "#fef3c7" }}
+              >
+                {Icon.clock}
+              </div>
+              <div>
+                <p className="text-[10px]" style={{ color: C.muted }}>평균 응답</p>
+                <p className="text-[15px] font-extrabold leading-tight" style={{ color: C.text }}>
+                  15분
+                </p>
               </div>
             </div>
-            <div className="relative mt-3.5 flex gap-1.5">
-              {["입주청소", "이사청소"].map((t) => (
-                <span
-                  key={t}
-                  className="rounded-md px-2 py-0.5 text-[11px] font-medium"
-                  style={{ background: C.greenLight, color: C.green }}
-                >
-                  {t}
-                </span>
+            <div className="mt-3 flex gap-1">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="h-1 flex-1 rounded-full"
+                  style={{
+                    background: i <= 4 ? "#d97706" : "#e2ddd6",
+                    opacity: i <= 4 ? 0.7 : 0.3,
+                  }}
+                />
               ))}
             </div>
-            <div
-              className="relative mt-3.5 rounded-lg px-3 py-2 flex items-center justify-between"
-              style={{ background: C.cream }}
-            >
-              <span className="text-[12px]" style={{ color: C.muted }}>
-                예상 가격대
-              </span>
-              <span className="text-[14px] font-bold" style={{ color: C.text }}>
-                18~25만원
-              </span>
-            </div>
-          </motion.div>
+          </div>
+        </TiltCard>
 
-          {/* ── Card 2: Match notification ── */}
-          <motion.div
-            initial={{ opacity: 0, x: 40, scale: 0.88 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ delay: 0.52, ...SP }}
-            className="w-[240px] self-end rounded-xl px-4 py-3 flex items-center gap-3 transition-shadow duration-300 hover:shadow-[0_8px_28px_-4px_rgba(21,128,61,0.14)]"
-            style={{
-              background: "#fff",
-              border: "1px solid #bbf7d0",
-              boxShadow: "0 4px 12px rgba(21,128,61,0.08)",
-              transform: prefersReduced
-                ? "none"
-                : `translate3d(${notifP.x}px, ${notifP.y}px, 40px)`,
-              willChange: "transform",
-            }}
-          >
-            <div
-              className="h-7 w-7 flex-shrink-0 rounded-lg flex items-center justify-center"
-              style={{ background: "#dcfce7" }}
-            >
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#16a34a"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+        {/* ── 카드 4: 고객 리뷰 미니 카드 ── */}
+        <TiltCard
+          delay={0.6}
+          intensity={18}
+          specularColor="rgba(255,255,255,0.5)"
+          from={{ y: 20 }}
+        >
+          <div className="p-4">
+            <div className="flex gap-0.5 mb-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <span key={i}>{Icon.star}</span>
+              ))}
+            </div>
+            <p className="text-[12px] leading-[1.6]" style={{ color: C.text }}>
+              &ldquo;꼼꼼하고 친절해요. 다음에도 또 이용하고 싶습니다!&rdquo;
+            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <div
+                className="h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                style={{ background: C.greenMid }}
               >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+                김
+              </div>
+              <span className="text-[10px]" style={{ color: C.muted }}>김** · 입주청소</span>
             </div>
-            <div>
-              <p className="text-[12px] font-semibold" style={{ color: C.text }}>
-                매칭 수락됨
-              </p>
-              <p className="text-[11px]" style={{ color: C.muted }}>
-                방금 전
-              </p>
-            </div>
+          </div>
+        </TiltCard>
 
-            {/* Animated pulse ring */}
-            <motion.div
-              className="ml-auto h-2 w-2 rounded-full flex-shrink-0"
-              style={{ background: "#16a34a" }}
-              animate={{ scale: [1, 1.6, 1], opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </motion.div>
-
-          {/* ── Card 3: Response time stats ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 25, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.66, ...SP }}
-            className="w-[240px] rounded-xl px-4 py-3 flex items-center gap-3 transition-shadow duration-300 hover:shadow-[0_6px_20px_-4px_rgba(26,25,24,0.1)]"
-            style={{
-              background: "#fff",
-              border: `1px solid ${C.border}`,
-              boxShadow: "0 4px 12px rgba(26,25,24,0.05)",
-              transform: prefersReduced
-                ? "none"
-                : `translate3d(${statsP.x}px, ${statsP.y}px, 30px)`,
-              willChange: "transform",
-            }}
-          >
-            <div
-              className="h-7 w-7 flex-shrink-0 rounded-lg flex items-center justify-center"
-              style={{ background: "#fef3c7" }}
-            >
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#d97706"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+        {/* ── 카드 5: 플랫폼 신뢰 지표 ── */}
+        <TiltCard
+          delay={0.68}
+          intensity={18}
+          specularColor="rgba(214,237,226,0.6)"
+          from={{ y: 20 }}
+        >
+          <div className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div
+                className="h-7 w-7 flex-shrink-0 rounded-lg flex items-center justify-center"
+                style={{ background: C.greenLight }}
               >
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-[11px]" style={{ color: C.muted }}>
-                평균 응답
-              </p>
-              <p className="text-[13px] font-bold" style={{ color: C.text }}>
-                15분 이내
+                {Icon.shield}
+              </div>
+              <p className="text-[11px] font-bold" style={{ color: C.green }}>
+                100% 검증
               </p>
             </div>
-          </motion.div>
+            <div className="flex flex-col gap-1.5">
+              {[
+                { label: "사업자 인증", done: true },
+                { label: "보험 가입", done: true },
+                { label: "이력 검증", done: true },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-1.5">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span className="text-[10px]" style={{ color: C.muted }}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </TiltCard>
+
+        {/* ── 카드 6: 실시간 채팅 미리보기 (2열 차지) ── */}
+        <div className="col-span-2">
+          <TiltCard
+            delay={0.76}
+            intensity={8}
+            specularColor="rgba(255,255,255,0.5)"
+            from={{ y: 24 }}
+          >
+            <div className="px-4 py-3.5 flex items-center gap-3.5">
+              <div
+                className="h-9 w-9 flex-shrink-0 rounded-xl flex items-center justify-center"
+                style={{ background: C.greenLight }}
+              >
+                {Icon.chat}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-[12px] font-bold truncate" style={{ color: C.text }}>
+                    클린하우스
+                  </p>
+                  <span className="flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#4ade80" }} />
+                    <span className="text-[9px]" style={{ color: C.muted }}>온라인</span>
+                  </span>
+                </div>
+                <p className="text-[11px] mt-0.5 truncate" style={{ color: C.muted }}>
+                  견적은 18만원입니다. 일정 조율 부탁드려요 😊
+                </p>
+              </div>
+              <div
+                className="flex-shrink-0 h-5 min-w-[20px] rounded-full flex items-center justify-center px-1.5 text-[9px] font-bold text-white"
+                style={{ background: C.green }}
+              >
+                2
+              </div>
+            </div>
+          </TiltCard>
         </div>
-      </motion.div>
+
+      </div>
     </div>
   );
 }
