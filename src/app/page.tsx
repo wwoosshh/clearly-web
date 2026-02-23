@@ -908,7 +908,7 @@ export default function Home() {
               </div>
             </FadeIn>
 
-            <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+            <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
               <div className="lg:max-w-[560px]">
                 <FadeIn y={28} delay={0.08} duration={0.7}>
                   <h1
@@ -990,7 +990,9 @@ export default function Home() {
               </div>
 
               {/* 우측 카드 목업 — 3D Tilt + Parallax */}
-              <HeroCards />
+              <div className="lg:mr-[60px] lg:-mt-10">
+                <HeroCards />
+              </div>
             </div>
           </div>
         </section>
