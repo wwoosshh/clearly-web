@@ -22,6 +22,7 @@ import { ChatInputArea } from "./ChatInputArea";
 import { ChatMessages } from "./ChatMessages";
 import { DeclineModal } from "./modals/DeclineModal";
 import { CompleteModal } from "./modals/CompleteModal";
+import { ConsultationCompleteModal, type ConsultationCompleteDetails } from "./modals/ConsultationCompleteModal";
 import { ReportModal } from "./modals/ReportModal";
 import { CompletionReportModal } from "./modals/CompletionReportModal";
 import { CompletionConfirmModal } from "./modals/CompletionConfirmModal";
@@ -50,6 +51,7 @@ export function ChatPageContent() {
     isDeclining, setIsDeclining,
     showReportModal, setShowReportModal,
     showCompleteModal, setShowCompleteModal,
+    showConsultationCompleteModal, setShowConsultationCompleteModal,
     isCompleting, setIsCompleting,
     isLoadingMessages, setIsLoadingMessages,
     isUploadingImage, setIsUploadingImage,
@@ -354,13 +356,17 @@ export function ChatPageContent() {
   };
 
   // ─── 거래완료 ────────────────────────────────────
-  const handleComplete = async () => {
+  const handleComplete = async (details?: ConsultationCompleteDetails) => {
     if (!selectedRoom || isCompleting) return;
     setIsCompleting(true);
     setShowCompleteModal(false);
+    setShowConsultationCompleteModal(false);
 
     try {
-      const completeResponse = await api.patch(`/chat/rooms/${selectedRoom.id}/complete`);
+      const completeResponse = await api.patch(
+        `/chat/rooms/${selectedRoom.id}/complete`,
+        details ?? {},
+      );
       const result = unwrapResponse<{ matchingId?: string; companyId?: string }>(completeResponse);
       // 즉시 UI 반영: 매칭 완료 상태
       const completedPatch = {
@@ -380,6 +386,17 @@ export function ChatPageContent() {
       showToast("오류", msg);
     } finally {
       setIsCompleting(false);
+    }
+  };
+
+  // ─── 거래완료 버튼 클릭 분기 ─────────────────────
+  const handleShowCompleteModal = () => {
+    if (!selectedRoom) return;
+    // 직접 채팅 상담(CONSULTATION)이면 정보입력 모달, 아니면 단순 확인 모달
+    if (selectedRoom.matching?.cleaningType === "CONSULTATION") {
+      setShowConsultationCompleteModal(true);
+    } else {
+      setShowCompleteModal(true);
     }
   };
 
@@ -528,7 +545,7 @@ export function ChatPageContent() {
               onShowReportModal={() => {
                 setShowReportModal(true);
               }}
-              onShowCompleteModal={() => setShowCompleteModal(true)}
+              onShowCompleteModal={handleShowCompleteModal}
               onShowCompletionReportModal={() => {
                 setCompletionImages([]);
                 setShowCompletionReportModal(true);
@@ -590,7 +607,14 @@ export function ChatPageContent() {
       <CompleteModal
         isOpen={showCompleteModal}
         onClose={() => setShowCompleteModal(false)}
-        onComplete={handleComplete}
+        onComplete={() => handleComplete()}
+        isCompleting={isCompleting}
+      />
+
+      <ConsultationCompleteModal
+        isOpen={showConsultationCompleteModal}
+        onClose={() => setShowConsultationCompleteModal(false)}
+        onComplete={(details) => handleComplete(details)}
         isCompleting={isCompleting}
       />
 

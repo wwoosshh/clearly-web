@@ -359,6 +359,7 @@ export interface ChatRoomDetail {
   matching?: {
     id: string;
     status: string;
+    cleaningType?: string;
     completionImages?: string[];
     completionReportedAt?: string;
     completedAt?: string;

@@ -81,6 +81,7 @@ export function useChatState() {
   const [reportSuccess, setReportSuccess] = useState(false);
   const [reportError, setReportError] = useState("");
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showConsultationCompleteModal, setShowConsultationCompleteModal] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -116,6 +117,7 @@ export function useChatState() {
     reportSuccess, setReportSuccess,
     reportError, setReportError,
     showCompleteModal, setShowCompleteModal,
+    showConsultationCompleteModal, setShowConsultationCompleteModal,
     isCompleting, setIsCompleting,
     isLoadingMessages, setIsLoadingMessages,
     isUploadingImage, setIsUploadingImage,
