@@ -270,7 +270,8 @@ export type CleaningType =
   | "STORE"
   | "AIRCON"
   | "CARPET"
-  | "EXTERIOR";
+  | "EXTERIOR"
+  | "CONSULTATION";
 
 /** 청소 유형 라벨 매핑 */
 export const CLEANING_TYPE_LABELS: Record<CleaningType, string> = {
@@ -282,6 +283,7 @@ export const CLEANING_TYPE_LABELS: Record<CleaningType, string> = {
   AIRCON: "에어컨청소",
   CARPET: "카펫청소",
   EXTERIOR: "외벽청소",
+  CONSULTATION: "직접 채팅 상담",
 };
 
 /** 견적요청 */
