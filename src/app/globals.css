@@ -61,6 +61,16 @@
   }
 }
 
+/* ── 채팅 로딩 바 ── */
+.chat-loading-bar {
+  animation: chatLoadSlide 1.2s ease-in-out infinite;
+}
+
+@keyframes chatLoadSlide {
+  0%   { left: -40%; }
+  100% { left: 140%; }
+}
+
 /* ── 인터랙션 애니메이션 ── */
 
 /* 버튼 터치 피드백 */

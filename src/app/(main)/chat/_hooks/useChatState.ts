@@ -98,6 +98,8 @@ export function useChatState() {
   const [isConfirmingCompletion, setIsConfirmingCompletion] = useState(false);
   // ConsultationCompleteModal이 '완료확인' 플로우(완료보고 후 확인)에서 열렸는지 여부
   const [consultationModalForConfirm, setConsultationModalForConfirm] = useState(false);
+  // 백엔드 동기화 중 여부 (방 목록 로딩 중 조작 방지용)
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
@@ -133,6 +135,7 @@ export function useChatState() {
     showCompletionConfirmModal, setShowCompletionConfirmModal,
     isConfirmingCompletion, setIsConfirmingCompletion,
     consultationModalForConfirm, setConsultationModalForConfirm,
+    isRefreshing, setIsRefreshing,
     imageInputRef,
     chatScrollRef,
   };

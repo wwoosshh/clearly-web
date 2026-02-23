@@ -14,6 +14,7 @@ interface ChatHeaderProps {
   onShowCompletionConfirmModal: () => void;
   isCompleting: boolean;
   isConfirmingCompletion: boolean;
+  isRefreshing: boolean;
 }
 
 export function ChatHeader({
@@ -27,9 +28,10 @@ export function ChatHeader({
   onShowCompletionConfirmModal,
   isCompleting,
   isConfirmingCompletion,
+  isRefreshing,
 }: ChatHeaderProps) {
   return (
-    <div className="flex h-14 items-center justify-between border-b border-[#e2ddd6] bg-white px-5">
+    <div className="relative flex h-14 items-center justify-between border-b border-[#e2ddd6] bg-white px-5">
       <div className="flex items-center gap-3">
         <button
           className="md:hidden text-[#72706a]"
@@ -66,7 +68,8 @@ export function ChatHeader({
               {isCompany && !hasReported && matching?.status === "ACCEPTED" && (
                 <button
                   onClick={onShowCompletionReportModal}
-                  className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] active:scale-95"
+                  disabled={isRefreshing}
+                  className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
                 >
                   완료보고
                 </button>
@@ -81,7 +84,7 @@ export function ChatHeader({
               {!isCompany && hasReported && (
                 <button
                   onClick={onShowCompletionConfirmModal}
-                  disabled={isConfirmingCompletion}
+                  disabled={isConfirmingCompletion || isRefreshing}
                   className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
                 >
                   완료 확인
@@ -90,7 +93,7 @@ export function ChatHeader({
               {!isCompany && !hasReported && (
                 <button
                   onClick={onShowCompleteModal}
-                  disabled={isCompleting}
+                  disabled={isCompleting || isRefreshing}
                   className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
                 >
                   거래완료
@@ -99,7 +102,8 @@ export function ChatHeader({
               {/* 거래안함 */}
               <button
                 onClick={onShowDeclineModal}
-                className="rounded-lg border border-[#e2ddd6] px-3 py-1.5 text-[12px] font-medium text-[#72706a] transition-colors hover:bg-[#f0ede8] active:scale-95"
+                disabled={isRefreshing}
+                className="rounded-lg border border-[#e2ddd6] px-3 py-1.5 text-[12px] font-medium text-[#72706a] transition-colors hover:bg-[#f0ede8] disabled:opacity-50 active:scale-95"
               >
                 거래안함
               </button>
@@ -107,6 +111,13 @@ export function ChatHeader({
           );
         })()}
       </div>
+
+      {/* 데이터 동기화 중 로딩 바 */}
+      {isRefreshing && (
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] overflow-hidden bg-[#d4ede4]">
+          <div className="chat-loading-bar absolute h-full w-[40%] rounded-full bg-[#2d6a4f]" />
+        </div>
+      )}
     </div>
   );
 }

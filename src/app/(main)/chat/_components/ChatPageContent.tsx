@@ -65,6 +65,7 @@ export function ChatPageContent() {
     showCompletionConfirmModal, setShowCompletionConfirmModal,
     isConfirmingCompletion, setIsConfirmingCompletion,
     consultationModalForConfirm, setConsultationModalForConfirm,
+    isRefreshing, setIsRefreshing,
     imageInputRef,
     chatScrollRef,
   } = useChatState();
@@ -87,18 +88,26 @@ export function ChatPageContent() {
 
   // ─── 서버에서 방 목록 가져오기 (백그라운드) ──────────
   const syncRooms = useCallback(async () => {
+    setIsRefreshing(true);
     try {
       const response = await api.get("/chat/rooms");
       const result = unwrapResponse<ChatRoomDetail[]>(response);
       const serverRooms: ChatRoomDetail[] = Array.isArray(result) ? result : [];
       setRooms(serverRooms);
       chatCache.setRooms(serverRooms);
+      // 현재 열려있는 방이 있으면 최신 데이터로 동기화 (스테일 캐시로 인한 잘못된 조작 방지)
+      const currentRoom = selectedRoomRef.current;
+      if (currentRoom) {
+        const freshRoom = serverRooms.find((r) => r.id === currentRoom.id);
+        if (freshRoom) setSelectedRoom(freshRoom);
+      }
     } catch {
       // 캐시 데이터 유지
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
-  }, [setRooms, setIsLoading]);
+  }, [setRooms, setIsLoading, setSelectedRoom, setIsRefreshing]);
 
   // ─── 서버에서 메시지 가져오기 (백그라운드) ────────────
   const syncMessages = useCallback(async (roomId: string) => {
@@ -401,7 +410,7 @@ export function ChatPageContent() {
 
   // ─── 거래완료 버튼 클릭 분기 ─────────────────────
   const handleShowCompleteModal = () => {
-    if (!selectedRoom) return;
+    if (!selectedRoom || isRefreshing) return;
     // 이미 완료된 매칭은 재완료 불가 (뒤로가기 후 stale 캐시 상태에서 실수로 재완료 방지)
     if (selectedRoom.matching?.status === "COMPLETED") return;
     // 직접 채팅 상담(CONSULTATION)이면 정보입력 모달, 아니면 단순 확인 모달
@@ -415,7 +424,7 @@ export function ChatPageContent() {
 
   // ─── 완료확인 버튼 클릭 → CompletionConfirmModal 열기 ────────────
   const handleShowCompletionConfirmModal = () => {
-    if (!selectedRoom) return;
+    if (!selectedRoom || isRefreshing) return;
     // 완료보고 이미지 확인 먼저 (CompletionConfirmModal) → 그 다음 타입별 분기
     setShowCompletionConfirmModal(true);
   };
@@ -592,6 +601,7 @@ export function ChatPageContent() {
               onShowCompletionConfirmModal={handleShowCompletionConfirmModal}
               isCompleting={isCompleting}
               isConfirmingCompletion={isConfirmingCompletion}
+              isRefreshing={isRefreshing}
             />
 
             <ChatBanners
@@ -599,6 +609,7 @@ export function ChatPageContent() {
               user={user}
               onConfirmCompletion={handleShowCompletionConfirmModal}
               isConfirmingCompletion={isConfirmingCompletion}
+              isRefreshing={isRefreshing}
               router={router}
             />
 

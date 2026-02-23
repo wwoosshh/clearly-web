@@ -8,6 +8,7 @@ interface ChatBannersProps {
   user: User | null;
   onConfirmCompletion: () => void;
   isConfirmingCompletion: boolean;
+  isRefreshing: boolean;
   router: AppRouterInstance;
 }
 
@@ -16,10 +17,19 @@ export function ChatBanners({
   user,
   onConfirmCompletion,
   isConfirmingCompletion,
+  isRefreshing,
   router,
 }: ChatBannersProps) {
   return (
     <>
+      {/* 동기화 중 스켈레톤 배너 (로딩 중 상태임을 명시) */}
+      {isRefreshing && (
+        <div className="flex items-center gap-2 border-b border-[#e2ddd6] bg-[#f5f3ee] px-5 py-2.5">
+          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#2d6a4f]" />
+          <p className="text-[12px] text-[#a8a49c]">최신 정보를 불러오는 중...</p>
+        </div>
+      )}
+
       {/* 완료보고 배너 (사용자에게 표시 - 아직 완료 확인 전) */}
       {user?.role !== "COMPANY" &&
         selectedRoom.matching?.completionReportedAt &&
@@ -30,7 +40,7 @@ export function ChatBanners({
           </p>
           <button
             onClick={onConfirmCompletion}
-            disabled={isConfirmingCompletion}
+            disabled={isConfirmingCompletion || isRefreshing}
             className="ml-3 flex-shrink-0 rounded-lg bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
           >
             완료 확인
