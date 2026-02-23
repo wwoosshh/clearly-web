@@ -64,6 +64,7 @@ export function ChatPageContent() {
     completionImageInputRef,
     showCompletionConfirmModal, setShowCompletionConfirmModal,
     isConfirmingCompletion, setIsConfirmingCompletion,
+    consultationModalForConfirm, setConsultationModalForConfirm,
     imageInputRef,
     chatScrollRef,
   } = useChatState();
@@ -380,7 +381,8 @@ export function ChatPageContent() {
       setSelectedRoom((prev) => prev ? { ...prev, ...completedPatch } : prev);
       setRooms((prev) => prev.map((r) => r.id === selectedRoom.id ? { ...r, ...completedPatch } : r));
       syncMessages(selectedRoom.id);
-      router.push(`/review/write?matchingId=${result.matchingId}&companyId=${result.companyId}`);
+      // replace: 뒤로가기 시 /chat?companyId=X 로 돌아가지 않도록 히스토리 교체
+      router.replace(`/review/write?matchingId=${result.matchingId}&companyId=${result.companyId}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message || "거래완료 처리에 실패했습니다.";
       showToast("오류", msg);
@@ -392,11 +394,26 @@ export function ChatPageContent() {
   // ─── 거래완료 버튼 클릭 분기 ─────────────────────
   const handleShowCompleteModal = () => {
     if (!selectedRoom) return;
+    // 이미 완료된 매칭은 재완료 불가 (뒤로가기 후 stale 캐시 상태에서 실수로 재완료 방지)
+    if (selectedRoom.matching?.status === "COMPLETED") return;
     // 직접 채팅 상담(CONSULTATION)이면 정보입력 모달, 아니면 단순 확인 모달
     if (selectedRoom.matching?.cleaningType === "CONSULTATION") {
+      setConsultationModalForConfirm(false);
       setShowConsultationCompleteModal(true);
     } else {
       setShowCompleteModal(true);
+    }
+  };
+
+  // ─── 완료확인 버튼 클릭 분기 (완료보고 후 사용자 확인) ──────────
+  const handleShowCompletionConfirmModal = () => {
+    if (!selectedRoom) return;
+    // CONSULTATION 타입이면 거래 정보 입력 모달 먼저 표시
+    if (selectedRoom.matching?.cleaningType === "CONSULTATION") {
+      setConsultationModalForConfirm(true);
+      setShowConsultationCompleteModal(true);
+    } else {
+      setShowCompletionConfirmModal(true);
     }
   };
 
@@ -461,14 +478,16 @@ export function ChatPageContent() {
   };
 
   // ─── 완료확인 (사용자용) ──────────────────────────────
-  const handleConfirmCompletion = async () => {
+  const handleConfirmCompletion = async (details?: ConsultationCompleteDetails) => {
     const confirmMatchingId = selectedRoom?.matching?.id || selectedRoom?.matchingId;
     if (!confirmMatchingId || isConfirmingCompletion) return;
     setIsConfirmingCompletion(true);
     setShowCompletionConfirmModal(false);
+    setShowConsultationCompleteModal(false);
+    setConsultationModalForConfirm(false);
 
     try {
-      await api.patch(`/matchings/requests/${confirmMatchingId}/confirm-completion`);
+      await api.patch(`/matchings/requests/${confirmMatchingId}/confirm-completion`, details ?? {});
       // 즉시 UI 반영: 매칭 완료 상태
       const completedPatch = {
         matching: {
@@ -481,7 +500,8 @@ export function ChatPageContent() {
       setSelectedRoom((prev) => prev ? { ...prev, ...completedPatch } : prev);
       setRooms((prev) => prev.map((r) => r.id === selectedRoom!.id ? { ...r, ...completedPatch } : r));
       syncMessages(selectedRoom!.id);
-      router.push(`/review/write?matchingId=${confirmMatchingId}&companyId=${selectedRoom!.companyId}`);
+      // replace: 뒤로가기 시 /chat?companyId=X 로 돌아가지 않도록 히스토리 교체
+      router.replace(`/review/write?matchingId=${confirmMatchingId}&companyId=${selectedRoom!.companyId}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message || "완료 확인에 실패했습니다.";
       showToast("오류", msg);
@@ -550,7 +570,7 @@ export function ChatPageContent() {
                 setCompletionImages([]);
                 setShowCompletionReportModal(true);
               }}
-              onShowCompletionConfirmModal={() => setShowCompletionConfirmModal(true)}
+              onShowCompletionConfirmModal={handleShowCompletionConfirmModal}
               isCompleting={isCompleting}
               isConfirmingCompletion={isConfirmingCompletion}
             />
@@ -558,7 +578,7 @@ export function ChatPageContent() {
             <ChatBanners
               selectedRoom={selectedRoom}
               user={user}
-              onConfirmCompletion={() => setShowCompletionConfirmModal(true)}
+              onConfirmCompletion={handleShowCompletionConfirmModal}
               isConfirmingCompletion={isConfirmingCompletion}
               router={router}
             />
@@ -613,9 +633,18 @@ export function ChatPageContent() {
 
       <ConsultationCompleteModal
         isOpen={showConsultationCompleteModal}
-        onClose={() => setShowConsultationCompleteModal(false)}
-        onComplete={(details) => handleComplete(details)}
-        isCompleting={isCompleting}
+        onClose={() => {
+          setShowConsultationCompleteModal(false);
+          setConsultationModalForConfirm(false);
+        }}
+        onComplete={(details) => {
+          if (consultationModalForConfirm) {
+            handleConfirmCompletion(details);
+          } else {
+            handleComplete(details);
+          }
+        }}
+        isCompleting={consultationModalForConfirm ? isConfirmingCompletion : isCompleting}
       />
 
       <ReportModal

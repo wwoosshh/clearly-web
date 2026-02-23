@@ -96,6 +96,8 @@ export function useChatState() {
   // 완료확인 (사용자용)
   const [showCompletionConfirmModal, setShowCompletionConfirmModal] = useState(false);
   const [isConfirmingCompletion, setIsConfirmingCompletion] = useState(false);
+  // ConsultationCompleteModal이 '완료확인' 플로우(완료보고 후 확인)에서 열렸는지 여부
+  const [consultationModalForConfirm, setConsultationModalForConfirm] = useState(false);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
@@ -130,6 +132,7 @@ export function useChatState() {
     completionImageInputRef,
     showCompletionConfirmModal, setShowCompletionConfirmModal,
     isConfirmingCompletion, setIsConfirmingCompletion,
+    consultationModalForConfirm, setConsultationModalForConfirm,
     imageInputRef,
     chatScrollRef,
   };
