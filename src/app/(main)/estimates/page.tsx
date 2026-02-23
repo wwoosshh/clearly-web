@@ -33,7 +33,7 @@ export default function EstimatesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<EstimateRequest | null>(null);
   const [showSubmitForm, setShowSubmitForm] = useState(false);
-  const { estimateLimit, fetchEstimateLimit } = useSubscriptionStore();
+  const { estimateLimit, fetchEstimateLimit, subscription, subscriptionLoaded, fetchSubscription } = useSubscriptionStore();
 
   // 견적 작성 폼
   const [price, setPrice] = useState("");
@@ -50,6 +50,7 @@ export default function EstimatesPage() {
   useEffect(() => {
     if (!user) return;
     loadData();
+    fetchSubscription();
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = async () => {
@@ -117,6 +118,8 @@ export default function EstimatesPage() {
     return new Date(dateStr).toLocaleDateString("ko-KR");
   };
 
+  const hasNoSubscription = subscriptionLoaded && !subscription;
+
   if (!user || user.role !== "COMPANY") {
     return (
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-20 text-center">
@@ -149,7 +152,24 @@ export default function EstimatesPage() {
           </div>
 
           <div className="mt-4">
-            <EstimateLimitBanner />
+            {hasNoSubscription ? (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3.5">
+                <div className="flex items-start gap-3">
+                  <svg className="mt-0.5 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  <div>
+                    <p className="text-[13px] font-semibold text-amber-800">활성 요금제가 없습니다</p>
+                    <p className="mt-0.5 text-[12px] text-amber-700">
+                      견적 요청 목록은 열람할 수 있지만, 견적 발송을 하려면 요금제가 필요합니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <EstimateLimitBanner />
+            )}
           </div>
         </motion.div>
 
@@ -301,12 +321,21 @@ export default function EstimatesPage() {
             )}
 
             {!showSubmitForm ? (
+              hasNoSubscription ? (
+                <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3.5 text-center">
+                  <p className="text-[13px] font-semibold text-amber-800">요금제가 필요합니다</p>
+                  <p className="mt-1 text-[12px] text-amber-700">
+                    견적을 발송하려면 베이직 이상의 요금제를 구독하세요.
+                  </p>
+                </div>
+              ) : (
               <button
                 onClick={() => setShowSubmitForm(true)}
                 className="mt-5 flex h-[42px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] press-scale"
               >
                 견적 작성하기
               </button>
+              )
             ) : (
               <div className="mt-5 border-t border-[#e2ddd6] pt-5">
                 <h3 className="text-[15px] font-bold text-[#141412] mb-4">견적 작성</h3>
