@@ -47,7 +47,7 @@ export function ChatBanners({
             거래가 완료되었습니다. 리뷰를 작성해주세요.
           </p>
           <button
-            onClick={() => router.push(`/review/write?matchingId=${selectedRoom.matching!.id}&companyId=${selectedRoom.companyId}`)}
+            onClick={() => router.push(`/review/write?matchingId=${selectedRoom.matching!.id}&company=${selectedRoom.companyId}`)}
             className="ml-3 flex-shrink-0 rounded-lg bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] active:scale-95"
           >
             리뷰 작성
