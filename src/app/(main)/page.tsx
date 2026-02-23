@@ -796,6 +796,8 @@ export default function Home() {
   const handleSearch = () => {
     if (keyword.trim()) {
       router.push(`/search?keyword=${encodeURIComponent(keyword.trim())}`);
+    } else {
+      router.push("/search");
     }
   };
 
