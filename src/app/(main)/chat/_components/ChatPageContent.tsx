@@ -64,6 +64,7 @@ export function ChatPageContent() {
     completionImageInputRef,
     showCompletionConfirmModal, setShowCompletionConfirmModal,
     isConfirmingCompletion, setIsConfirmingCompletion,
+    consultationModalForConfirm, setConsultationModalForConfirm,
     imageInputRef,
     chatScrollRef,
   } = useChatState();
@@ -137,6 +138,8 @@ export function ChatPageContent() {
             companyId: companyIdParam,
           });
           const room = unwrapResponse<ChatRoomDetail>(response);
+          // URL을 ?room=id로 교체하여, 뒤로가기 시 새 매칭이 생성되는 것을 방지
+          window.history.replaceState(null, "", `/chat?room=${room.id}`);
           setSelectedRoom(room);
           setShowMobileChat(true);
           // 캐시에서 메시지 즉시 로드
@@ -151,6 +154,8 @@ export function ChatPageContent() {
     } else if (roomIdParam) {
       (async () => {
         await syncRooms();
+        // 이미 동일한 방이 선택되어 있으면(companyId → room ID 교체 직후) 재로딩 생략
+        if (selectedRoomRef.current?.id === roomIdParam) return;
         try {
           const response = await api.get(`/chat/rooms/${roomIdParam}`);
           const room = unwrapResponse<ChatRoomDetail>(response);
@@ -460,15 +465,20 @@ export function ChatPageContent() {
     }
   };
 
-  // ─── 완료확인 (사용자용) ──────────────────────────────
-  const handleConfirmCompletion = async () => {
+  // ─── 완료확인 내부 처리 (실제 API 호출) ─────────────────
+  const confirmCompletionInternal = async (details?: ConsultationCompleteDetails) => {
     const confirmMatchingId = selectedRoom?.matching?.id || selectedRoom?.matchingId;
     if (!confirmMatchingId || isConfirmingCompletion) return;
     setIsConfirmingCompletion(true);
     setShowCompletionConfirmModal(false);
+    setShowConsultationCompleteModal(false);
+    setConsultationModalForConfirm(false);
 
     try {
-      await api.patch(`/matchings/requests/${confirmMatchingId}/confirm-completion`);
+      await api.patch(
+        `/matchings/requests/${confirmMatchingId}/confirm-completion`,
+        details ?? {},
+      );
       // 즉시 UI 반영: 매칭 완료 상태
       const completedPatch = {
         matching: {
@@ -488,6 +498,18 @@ export function ChatPageContent() {
     } finally {
       setIsConfirmingCompletion(false);
     }
+  };
+
+  // ─── 완료확인 (사용자용) ──────────────────────────────
+  // CONSULTATION이면 정보입력 모달을 먼저 보여주고, 이후 confirmCompletionInternal 호출
+  const handleConfirmCompletion = async () => {
+    if (selectedRoom?.matching?.cleaningType === "CONSULTATION") {
+      setShowCompletionConfirmModal(false);
+      setConsultationModalForConfirm(true);
+      setShowConsultationCompleteModal(true);
+      return;
+    }
+    await confirmCompletionInternal();
   };
 
   // ─── Room selection handler ─────────────────────────
@@ -613,9 +635,16 @@ export function ChatPageContent() {
 
       <ConsultationCompleteModal
         isOpen={showConsultationCompleteModal}
-        onClose={() => setShowConsultationCompleteModal(false)}
-        onComplete={(details) => handleComplete(details)}
-        isCompleting={isCompleting}
+        onClose={() => {
+          setShowConsultationCompleteModal(false);
+          setConsultationModalForConfirm(false);
+        }}
+        onComplete={(details) =>
+          consultationModalForConfirm
+            ? confirmCompletionInternal(details)
+            : handleComplete(details)
+        }
+        isCompleting={consultationModalForConfirm ? isConfirmingCompletion : isCompleting}
       />
 
       <ReportModal
