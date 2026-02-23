@@ -70,6 +70,8 @@ export function ChatPageContent() {
   } = useChatState();
 
   const selectedRoomRef = useRef<ChatRoomDetail | null>(null);
+  // POST /chat/rooms 중복 호출 방지: 동일 companyId로 이미 방 생성이 시작된 경우 차단
+  const roomCreatedForCompanyRef = useRef<string | null>(null);
 
   // selectedRoom이 바뀔 때 ref도 동기화 (소켓 콜백 내에서 최신값 참조용)
   useEffect(() => {
@@ -132,6 +134,10 @@ export function ChatPageContent() {
     if (!user) return;
 
     if (companyIdParam) {
+      // Next.js soft navigation 중 useSearchParams 값이 일시 변동하여 useEffect가
+      // 재실행될 수 있음 → 같은 companyId로 이미 방 생성을 시작했다면 중복 차단
+      if (roomCreatedForCompanyRef.current === companyIdParam) return;
+      roomCreatedForCompanyRef.current = companyIdParam;
       (async () => {
         try {
           const response = await api.post("/chat/rooms", {
@@ -405,15 +411,24 @@ export function ChatPageContent() {
     }
   };
 
-  // ─── 완료확인 버튼 클릭 분기 (완료보고 후 사용자 확인) ──────────
+  // ─── 완료확인 버튼 클릭 → CompletionConfirmModal 열기 ────────────
   const handleShowCompletionConfirmModal = () => {
     if (!selectedRoom) return;
-    // CONSULTATION 타입이면 거래 정보 입력 모달 먼저 표시
-    if (selectedRoom.matching?.cleaningType === "CONSULTATION") {
+    // 완료보고 이미지 확인 먼저 (CompletionConfirmModal) → 그 다음 타입별 분기
+    setShowCompletionConfirmModal(true);
+  };
+
+  // ─── CompletionConfirmModal "완료 확인" 클릭 분기 ─────────────
+  // 1) CompletionConfirmModal을 닫고
+  // 2) CONSULTATION이면 ConsultationCompleteModal(거래정보 입력) 열기
+  // 3) 아니면 바로 confirm-completion API 호출
+  const handleCompletionConfirmModalConfirm = () => {
+    setShowCompletionConfirmModal(false);
+    if (selectedRoom?.matching?.cleaningType === "CONSULTATION") {
       setConsultationModalForConfirm(true);
       setShowConsultationCompleteModal(true);
     } else {
-      setShowCompletionConfirmModal(true);
+      handleConfirmCompletion();
     }
   };
 
@@ -672,7 +687,7 @@ export function ChatPageContent() {
       <CompletionConfirmModal
         isOpen={showCompletionConfirmModal}
         onClose={() => setShowCompletionConfirmModal(false)}
-        onConfirm={handleConfirmCompletion}
+        onConfirm={handleCompletionConfirmModalConfirm}
         selectedRoom={selectedRoom}
         isConfirming={isConfirmingCompletion}
         setLightboxImages={setLightboxImages}
