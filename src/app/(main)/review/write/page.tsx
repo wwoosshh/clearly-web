@@ -47,7 +47,9 @@ function ReviewWriteContent() {
   const { user } = useAuthStore();
 
   const matchingId = searchParams.get("matchingId");
-  const companyId = searchParams.get("companyId");
+  // 'company' 파라미터 우선 읽기 (chat 페이지의 companyId useSearchParams 중복 트리거 방지 목적)
+  // 구형 링크 호환을 위해 'companyId'도 fallback으로 지원
+  const companyId = searchParams.get("company") || searchParams.get("companyId");
 
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);

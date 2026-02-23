@@ -388,7 +388,9 @@ export function ChatPageContent() {
       setRooms((prev) => prev.map((r) => r.id === selectedRoom.id ? { ...r, ...completedPatch } : r));
       syncMessages(selectedRoom.id);
       // replace: 뒤로가기 시 /chat?companyId=X 로 돌아가지 않도록 히스토리 교체
-      router.replace(`/review/write?matchingId=${result.matchingId}&companyId=${result.companyId}`);
+      // 'company' 파라미터명 사용: chat 페이지의 'companyId' useSearchParams와 구별하여
+      // useEffect 중복 트리거(POST /chat/rooms 재호출) 방지
+      router.replace(`/review/write?matchingId=${result.matchingId}&company=${result.companyId}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message || "거래완료 처리에 실패했습니다.";
       showToast("오류", msg);
@@ -516,7 +518,9 @@ export function ChatPageContent() {
       setRooms((prev) => prev.map((r) => r.id === selectedRoom!.id ? { ...r, ...completedPatch } : r));
       syncMessages(selectedRoom!.id);
       // replace: 뒤로가기 시 /chat?companyId=X 로 돌아가지 않도록 히스토리 교체
-      router.replace(`/review/write?matchingId=${confirmMatchingId}&companyId=${selectedRoom!.companyId}`);
+      // 'company' 파라미터명 사용: chat 페이지의 'companyId' useSearchParams와 구별하여
+      // useEffect 중복 트리거(POST /chat/rooms 재호출) 방지
+      router.replace(`/review/write?matchingId=${confirmMatchingId}&company=${selectedRoom!.companyId}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message || "완료 확인에 실패했습니다.";
       showToast("오류", msg);
