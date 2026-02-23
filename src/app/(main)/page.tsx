@@ -4,8 +4,6 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { useAuthStore } from "@/stores/auth.store";
 import FadeIn from "@/components/animation/FadeIn";
 import HeroCards from "@/components/home/HeroCards";
@@ -886,13 +884,9 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col" style={{ background: C.cream }}>
-      <Header />
-
-      <main className="flex-1">
-
-        {/* ════════ HERO ════════ */}
-        <section className="relative overflow-hidden pt-14 pb-20 sm:pt-24 sm:pb-32">
+    <>
+      {/* ════════ HERO ════════ */}
+      <section className="relative overflow-hidden pt-14 pb-20 sm:pt-24 sm:pb-32" style={{ background: C.cream }}>
           <div
             className="pointer-events-none absolute right-0 top-0 h-[520px] w-[520px] rounded-full opacity-[0.055]"
             style={{ background: C.green, filter: "blur(90px)", transform: "translate(38%, -28%)" }}
@@ -1046,9 +1040,6 @@ export default function Home() {
           </div>
         </div>
 
-      </main>
-
-      <Footer />
-    </div>
+    </>
   );
 }
