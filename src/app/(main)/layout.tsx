@@ -7,12 +7,14 @@ import { Footer } from "@/components/layout/Footer";
 import PageTransition from "@/components/animation/PageTransition";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useAuthStore } from "@/stores/auth.store";
+import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, isInitialized } = useAuthStore();
+  const isChat = pathname.startsWith("/chat");
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -26,14 +28,14 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={cn("flex flex-col", isChat ? "h-screen overflow-hidden" : "min-h-screen")}>
       <Header />
-      <main className="flex-1 overflow-x-clip">
+      <main className={cn("flex-1", isChat ? "overflow-hidden" : "overflow-x-clip")}>
         <ErrorBoundary>
           <PageTransition>{children}</PageTransition>
         </ErrorBoundary>
       </main>
-      <Footer />
+      {!isChat && <Footer />}
     </div>
   );
 }

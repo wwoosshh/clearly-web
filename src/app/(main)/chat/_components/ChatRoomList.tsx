@@ -23,16 +23,16 @@ export function ChatRoomList({
   return (
     <div
       className={cn(
-        "w-full border-r border-[#e2ddd6] bg-white md:w-80 md:flex-shrink-0",
-        showMobileChat ? "hidden md:block" : "block"
+        "flex flex-col h-full w-full border-r border-[#e2ddd6] bg-white md:w-80 md:flex-shrink-0",
+        showMobileChat ? "hidden md:flex" : "flex"
       )}
     >
-      <div className="flex h-14 items-center border-b border-[#e2ddd6] px-5">
+      <div className="flex h-14 flex-shrink-0 items-center border-b border-[#e2ddd6] px-5">
         <h2 className="text-[16px] font-bold text-[#141412]">채팅</h2>
       </div>
 
       {rooms.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 px-5">
+        <div className="flex flex-1 flex-col items-center justify-center py-20 px-5">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f0ede8]">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#72706a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -42,7 +42,7 @@ export function ChatRoomList({
           <p className="mt-1 text-[13px] text-[#a8a49c]">업체에 채팅 상담을 시작해보세요</p>
         </div>
       ) : (
-        <div className="overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           {rooms.map((room) => (
             <button
               key={room.id}
