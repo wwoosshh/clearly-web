@@ -152,38 +152,22 @@ const SORT_OPTIONS = [
   { value: "price_high", label: "가격높은순" },
 ] as const;
 
-/* ── 배너 데이터 ────────────────────────────────── */
-const BANNERS = [
-  {
-    bg: "linear-gradient(135deg, #2d6a4f 0%, #1a4030 100%)",
-    title: "입주청소, 검증된 업체와 함께",
-    subtitle: "사업자 인증 완료 업체만 모았습니다",
-    cta: "업체 둘러보기",
-    ctaHref: "#list",
-    accent: "#7dd3b0",
-  },
-  {
-    bg: "linear-gradient(135deg, #1a3a4a 0%, #0f2530 100%)",
-    title: "견적 비교로 합리적인 선택",
-    subtitle: "여러 업체 견적을 한눈에 비교하세요",
-    cta: "견적 요청하기",
-    ctaHref: "/estimate/request",
-    accent: "#7bc8f6",
-  },
-  {
-    bg: "linear-gradient(135deg, #3d2d1a 0%, #2a1e10 100%)",
-    title: "수수료 0원, 무료 매칭",
-    subtitle: "고객과 업체 모두 무료로 이용 가능",
-    cta: "지금 시작하기",
-    ctaHref: "/register",
-    accent: "#f0c67a",
-  },
-];
+/* ── 배너 타입 ────────────────────────────────── */
+interface BannerData {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  imageUrl: string | null;
+  bgColor: string;
+  linkUrl: string | null;
+  linkText: string | null;
+  sortOrder: number;
+}
 
 /* ════════════════════════════════════════════════════
    배너 캐러셀
 ════════════════════════════════════════════════════ */
-function BannerCarousel() {
+function BannerCarousel({ banners }: { banners: BannerData[] }) {
   const [current, setCurrent] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const x = useMotionValue(0);
@@ -191,22 +175,24 @@ function BannerCarousel() {
 
   // 자동 재생
   useEffect(() => {
-    if (isDragging) return;
+    if (isDragging || banners.length === 0) return;
     const timer = setInterval(() => {
-      setCurrent((p) => (p + 1) % BANNERS.length);
+      setCurrent((p) => (p + 1) % banners.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, [isDragging]);
+  }, [isDragging, banners.length]);
 
   const handleDragEnd = (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
     setIsDragging(false);
     const swipe = info.offset.x + info.velocity.x * 0.3;
     if (swipe < -40) {
-      setCurrent((p) => Math.min(p + 1, BANNERS.length - 1));
+      setCurrent((p) => Math.min(p + 1, banners.length - 1));
     } else if (swipe > 40) {
       setCurrent((p) => Math.max(p - 1, 0));
     }
   };
+
+  if (banners.length === 0) return null;
 
   return (
     <div className="relative overflow-hidden" ref={containerRef}>
@@ -221,43 +207,42 @@ function BannerCarousel() {
         onDragEnd={handleDragEnd}
         style={{ x }}
       >
-        {BANNERS.map((banner, i) => (
+        {banners.map((banner) => (
           <div
-            key={i}
+            key={banner.id}
             className="w-full flex-shrink-0 px-4 pt-3 pb-2 md:px-0"
           >
             <div
-              className="relative overflow-hidden rounded-2xl px-6 py-7 md:rounded-xl md:px-10 md:py-10"
-              style={{ background: banner.bg }}
+              className="relative overflow-hidden rounded-2xl h-[160px] md:h-[200px] md:rounded-xl flex flex-col justify-center px-6 md:px-10"
+              style={{
+                background: banner.imageUrl
+                  ? `url(${banner.imageUrl}) center/cover`
+                  : banner.bgColor,
+              }}
             >
-              {/* 장식 서클 */}
-              <div
-                className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full opacity-[0.08]"
-                style={{ background: banner.accent }}
-              />
-              <div
-                className="pointer-events-none absolute -bottom-6 -left-6 h-28 w-28 rounded-full opacity-[0.06]"
-                style={{ background: banner.accent }}
-              />
+              {/* 이미지 위 오버레이 */}
+              {banner.imageUrl && (
+                <div className="absolute inset-0 bg-black/30" />
+              )}
 
-              <p
-                className="relative text-[19px] font-bold leading-snug tracking-[-0.02em] text-white md:text-[24px]"
-              >
+              <p className="relative text-[19px] font-bold leading-snug tracking-[-0.02em] text-white md:text-[24px]">
                 {banner.title}
               </p>
-              <p
-                className="relative mt-1.5 text-[13px] leading-relaxed md:text-[14px]"
-                style={{ color: "rgba(255,255,255,0.55)" }}
-              >
-                {banner.subtitle}
-              </p>
-              {banner.ctaHref !== "#list" && (
+              {banner.subtitle && (
+                <p
+                  className="relative mt-1.5 text-[13px] leading-relaxed md:text-[14px]"
+                  style={{ color: "rgba(255,255,255,0.55)" }}
+                >
+                  {banner.subtitle}
+                </p>
+              )}
+              {banner.linkUrl && banner.linkText && (
                 <Link
-                  href={banner.ctaHref}
-                  className="relative mt-4 inline-flex h-[34px] items-center rounded-lg px-4 text-[12px] font-semibold text-white transition-opacity hover:opacity-90 md:mt-5 md:h-[38px] md:text-[13px]"
+                  href={banner.linkUrl}
+                  className="relative mt-4 inline-flex h-[34px] w-fit items-center rounded-lg px-4 text-[12px] font-semibold text-white transition-opacity hover:opacity-90 md:mt-5 md:h-[38px] md:text-[13px]"
                   style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)" }}
                 >
-                  {banner.cta}
+                  {banner.linkText}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-1.5">
                     <polyline points="9 18 15 12 9 6" />
                   </svg>
@@ -269,19 +254,21 @@ function BannerCarousel() {
       </motion.div>
 
       {/* 인디케이터 */}
-      <div className="flex items-center justify-center gap-1.5 pb-1 pt-2">
-        {BANNERS.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className="relative h-1.5 rounded-full transition-all duration-300"
-            style={{
-              width: i === current ? 18 : 6,
-              background: i === current ? C.green : "#d4d0ca",
-            }}
-          />
-        ))}
-      </div>
+      {banners.length > 1 && (
+        <div className="flex items-center justify-center gap-1.5 pb-1 pt-2">
+          {banners.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className="relative h-1.5 rounded-full transition-all duration-300"
+              style={{
+                width: i === current ? 18 : 6,
+                background: i === current ? C.green : "#d4d0ca",
+              }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -659,6 +646,7 @@ function HomeContent() {
   const [sortBy, setSortBy] = useState(
     searchParams.get("sortBy") || "score"
   );
+  const [banners, setBanners] = useState<BannerData[]>([]);
   const [companies, setCompanies] = useState<CompanySearchResult[]>([]);
   const [meta, setMeta] = useState<CompanySearchResponse["meta"] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -734,6 +722,14 @@ function HomeContent() {
     []
   );
 
+  // 배너 로드
+  useEffect(() => {
+    api.get("/banners").then(({ data: res }) => {
+      const payload = res.data ?? res;
+      setBanners(Array.isArray(payload) ? payload : []);
+    }).catch(() => {});
+  }, []);
+
   // 초기 로드
   useEffect(() => {
     fetchCompanies({
@@ -793,7 +789,7 @@ function HomeContent() {
   return (
     <div className="mx-auto max-w-2xl bg-white lg:max-w-3xl">
       {/* 배너 캐러셀 */}
-      <BannerCarousel />
+      <BannerCarousel banners={banners} />
 
       {/* 검색 바 */}
       <SearchBar keyword={keyword} onChange={setKeyword} onSearch={handleSearch} />
