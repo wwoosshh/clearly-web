@@ -47,7 +47,6 @@ const Header = React.memo(function Header() {
   const navLinks = isAdmin
     ? [{ href: "/admin", label: "관리자 페이지" }]
     : [
-        { href: "/search", label: "업체 찾기" },
         ...(!isCompany ? [{ href: "/matching", label: "매칭 내역" }] : []),
         { href: "/chat", label: "채팅" },
         ...(isCompany
