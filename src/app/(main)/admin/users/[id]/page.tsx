@@ -108,7 +108,7 @@ export default function AdminUserDetailPage() {
   const roleBadge = (role: string) => {
     const map: Record<string, { label: string; style: string }> = {
       USER: { label: "일반", style: "bg-[#f0ede8] text-[#72706a]" },
-      COMPANY: { label: "업체", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      COMPANY: { label: "업체", style: "bg-[#E0F2FE] text-[#0284C7]" },
       ADMIN: { label: "관리자", style: "bg-red-50 text-red-600" },
     };
     const info = map[role] || { label: role, style: "bg-[#f0ede8] text-[#72706a]" };
@@ -122,7 +122,7 @@ export default function AdminUserDetailPage() {
   const estimateStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
       SUBMITTED: { label: "대기중", style: "bg-[#fef9ee] text-[#b45309]" },
-      ACCEPTED: { label: "수락됨", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      ACCEPTED: { label: "수락됨", style: "bg-[#E0F2FE] text-[#0284C7]" },
       REJECTED: { label: "거절됨", style: "bg-red-50 text-red-600" },
     };
     const info = map[status] || { label: status, style: "bg-[#f0ede8] text-[#72706a]" };
@@ -136,8 +136,8 @@ export default function AdminUserDetailPage() {
   const matchingStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
       REQUESTED: { label: "요청", style: "bg-[#fef9ee] text-[#b45309]" },
-      ACCEPTED: { label: "수락", style: "bg-[#eef7f3] text-[#2d6a4f]" },
-      COMPLETED: { label: "완료", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      ACCEPTED: { label: "수락", style: "bg-[#E0F2FE] text-[#0284C7]" },
+      COMPLETED: { label: "완료", style: "bg-[#E0F2FE] text-[#0284C7]" },
       CANCELLED: { label: "취소", style: "bg-red-50 text-red-600" },
       REJECTED: { label: "거절", style: "bg-red-50 text-red-600" },
     };
@@ -152,7 +152,7 @@ export default function AdminUserDetailPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -184,7 +184,7 @@ export default function AdminUserDetailPage() {
             <span
               className={cn(
                 "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-                user.isActive ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-red-50 text-red-600"
+                user.isActive ? "bg-[#E0F2FE] text-[#0284C7]" : "bg-red-50 text-red-600"
               )}
             >
               {user.isActive ? "활성" : "비활성"}
@@ -218,7 +218,7 @@ export default function AdminUserDetailPage() {
               <p className="text-[#72706a]">연결 업체</p>
               <Link
                 href={`/admin/companies/${user.company.id}`}
-                className="mt-0.5 text-[13px] font-medium text-[#2d6a4f] hover:underline"
+                className="mt-0.5 text-[13px] font-medium text-[#0284C7] hover:underline"
               >
                 {user.company.businessName}
               </Link>
@@ -235,7 +235,7 @@ export default function AdminUserDetailPage() {
                 "rounded-lg px-4 py-2 text-[13px] font-medium transition-colors disabled:opacity-50",
                 user.isActive
                   ? "bg-red-600 text-white hover:bg-red-700"
-                  : "bg-[#2d6a4f] text-[#f5f3ee] hover:bg-[#4a8c6a]"
+                  : "bg-[#0284C7] text-[#f5f3ee] hover:bg-[#0EA5E9]"
               )}
             >
               {user.isActive
@@ -388,7 +388,7 @@ export default function AdminUserDetailPage() {
                       <span className="text-[13px] font-medium text-[#1a1918]">{er.cleaningType}</span>
                       <span className={cn(
                         "rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                        er.status === "OPEN" ? "bg-[#eef7f3] text-[#2d6a4f]" :
+                        er.status === "OPEN" ? "bg-[#E0F2FE] text-[#0284C7]" :
                         er.status === "CLOSED" ? "bg-[#f0ede8] text-[#72706a]" :
                         "bg-red-50 text-red-600"
                       )}>
@@ -421,7 +421,7 @@ export default function AdminUserDetailPage() {
                       <span className={cn(
                         "rounded-full px-2 py-0.5 text-[11px] font-semibold",
                         report.reporterId === userId
-                          ? "bg-[#eef7f3] text-[#2d6a4f]"
+                          ? "bg-[#E0F2FE] text-[#0284C7]"
                           : "bg-red-50 text-red-600"
                       )}>
                         {report.reporterId === userId ? "신고함" : "신고당함"}
@@ -431,9 +431,9 @@ export default function AdminUserDetailPage() {
                     <span className={cn(
                       "rounded-full px-2 py-0.5 text-[11px] font-semibold",
                       report.status === "PENDING" ? "bg-[#fef9ee] text-[#b45309]" :
-                      report.status === "RESOLVED" ? "bg-[#eef7f3] text-[#2d6a4f]" :
+                      report.status === "RESOLVED" ? "bg-[#E0F2FE] text-[#0284C7]" :
                       report.status === "DISMISSED" ? "bg-[#f0ede8] text-[#72706a]" :
-                      "bg-[#eef7f3] text-[#2d6a4f]"
+                      "bg-[#E0F2FE] text-[#0284C7]"
                     )}>
                       {report.status === "PENDING" ? "대기" :
                        report.status === "REVIEWED" ? "검토중" :

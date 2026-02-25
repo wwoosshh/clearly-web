@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const C = {
   cream:    "#f5f3ee",
-  green:    "#2d6a4f",
-  greenMid: "#4a8c6a",
+  green:    "#0284C7",
+  greenMid: "#0EA5E9",
   text:     "#141412",
   dark:     "#1a1918",
   muted:    "#72706a",
@@ -240,7 +240,7 @@ function ScreenSearch() {
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
                 <span style={{ fontSize: 16, fontWeight: 700, color: C.text }}>새벽청소단</span>
-                <span style={{ background: "#eef7f3", color: C.green, fontSize: 10, fontWeight: 600, borderRadius: 99, padding: "2px 6px" }}>프로</span>
+                <span style={{ background: "#E0F2FE", color: C.green, fontSize: 10, fontWeight: 600, borderRadius: 99, padding: "2px 6px" }}>프로</span>
               </div>
               <span style={{ fontSize: 13, color: C.muted }}>서울 마포구</span>
             </div>
@@ -278,7 +278,7 @@ function ScreenDetail() {
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
                 <span style={{ fontSize: 22, fontWeight: 700, color: C.text }}>클린하우스</span>
-                <span style={{ background: "#eef7f3", color: C.green, fontSize: 11, fontWeight: 600, borderRadius: 99, padding: "2px 8px" }}>인증완료</span>
+                <span style={{ background: "#E0F2FE", color: C.green, fontSize: 11, fontWeight: 600, borderRadius: 99, padding: "2px 8px" }}>인증완료</span>
               </div>
               <span style={{ fontSize: 14, color: C.muted }}>서울 강남구</span>
             </div>
@@ -590,14 +590,14 @@ export default function HeroCards() {
       <div className="pointer-events-none absolute" style={{
         inset: "-32px -24px",
         background: `
-          radial-gradient(ellipse 260px 220px at 72% 38%, rgba(45,106,79,0.10) 0%, transparent 70%),
-          radial-gradient(ellipse 180px 150px at 28% 70%, rgba(45,106,79,0.06) 0%, transparent 70%)
+          radial-gradient(ellipse 260px 220px at 72% 38%, rgba(2,132,199,0.10) 0%, transparent 70%),
+          radial-gradient(ellipse 180px 150px at 28% 70%, rgba(2,132,199,0.06) 0%, transparent 70%)
         `,
         zIndex: 0,
       }} />
       <div className="pointer-events-none absolute opacity-[0.20]" style={{
         inset: "-32px -24px",
-        backgroundImage: `radial-gradient(circle, rgba(45,106,79,0.18) 1px, transparent 1px)`,
+        backgroundImage: `radial-gradient(circle, rgba(2,132,199,0.18) 1px, transparent 1px)`,
         backgroundSize: "18px 18px",
         zIndex: 0,
       }} />
@@ -669,7 +669,7 @@ export default function HeroCards() {
           zIndex: 20,
           background: "#fff", border: `1px solid ${C.border}`, borderRadius: 14,
           padding: "10px 14px",
-          boxShadow: "0 8px 28px -6px rgba(45,106,79,0.18), 0 2px 8px -2px rgba(26,25,24,0.10)",
+          boxShadow: "0 8px 28px -6px rgba(2,132,199,0.18), 0 2px 8px -2px rgba(26,25,24,0.10)",
           display: "flex", alignItems: "center", gap: 10, minWidth: 158,
         }}
       >

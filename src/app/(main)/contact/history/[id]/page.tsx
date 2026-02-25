@@ -36,7 +36,7 @@ interface InquiryDetail {
 
 const STATUS_LABELS: Record<string, { text: string; color: string }> = {
   PENDING: { text: "대기중", color: "bg-amber-100 text-amber-700" },
-  ANSWERED: { text: "답변완료", color: "bg-[#d4ede4] text-[#2d6a4f]" },
+  ANSWERED: { text: "답변완료", color: "bg-[#BAE6FD] text-[#0284C7]" },
   CLOSED: { text: "종료", color: "bg-[#e2ddd6] text-[#72706a]" },
 };
 
@@ -71,7 +71,7 @@ export default function InquiryDetailPage() {
   if (!isInitialized || isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -140,12 +140,12 @@ export default function InquiryDetailPage() {
 
         {/* 관리자 답변 */}
         {inquiry.adminAnswer && (
-          <motion.div variants={fadeUp} className="mt-4 rounded-xl border border-[#a8d5bf] bg-[#eef7f3] p-6">
-            <h2 className="text-[13px] font-semibold text-[#2d6a4f]">
+          <motion.div variants={fadeUp} className="mt-4 rounded-xl border border-[#a8d5bf] bg-[#E0F2FE] p-6">
+            <h2 className="text-[13px] font-semibold text-[#0284C7]">
               관리자 답변
             </h2>
             {inquiry.answeredAt && (
-              <p className="mt-1 text-[12px] text-[#4a8c6a]">
+              <p className="mt-1 text-[12px] text-[#0EA5E9]">
                 {new Date(inquiry.answeredAt).toLocaleDateString("ko-KR", {
                   year: "numeric",
                   month: "long",

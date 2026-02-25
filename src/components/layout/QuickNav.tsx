@@ -247,7 +247,7 @@ export function QuickNav({ className }: { className?: string }) {
                 className={cn(
                   "flex flex-shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-medium transition-all duration-200",
                   isActive
-                    ? "bg-[#2d6a4f] text-white shadow-[0_2px_8px_rgba(45,106,79,0.2)]"
+                    ? "bg-[#0284C7] text-white shadow-[0_2px_8px_rgba(2,132,199,0.2)]"
                     : "bg-[#f7f5f0] text-[#72706a] hover:bg-[#edeae4] hover:text-[#1a1918]"
                 )}
               >

@@ -87,7 +87,7 @@ export default function AdminEstimateRequestsPage() {
 
   const statusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
-      OPEN: { label: "진행중", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      OPEN: { label: "진행중", style: "bg-[#E0F2FE] text-[#0284C7]" },
       CLOSED: { label: "마감", style: "bg-[#f0ede8] text-[#72706a]" },
       EXPIRED: { label: "만료", style: "bg-red-50 text-red-600" },
     };
@@ -125,7 +125,7 @@ export default function AdminEstimateRequestsPage() {
         <select
           value={cleaningTypeFilter}
           onChange={(e) => { setCleaningTypeFilter(e.target.value); setPage(1); }}
-          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
         >
           <option value="">전체 청소 유형</option>
           {Object.entries(cleaningTypeLabels).map(([key, label]) => (
@@ -136,7 +136,7 @@ export default function AdminEstimateRequestsPage() {
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show">
@@ -174,7 +174,7 @@ export default function AdminEstimateRequestsPage() {
                             <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                               req.serviceTier === "PREMIUM_CLEAN" ? "bg-amber-50 text-amber-700"
                               : req.serviceTier === "DEEP_CLEAN" ? "bg-blue-50 text-blue-700"
-                              : "bg-green-50 text-green-700"
+                              : "bg-sky-50 text-sky-700"
                             }`}>
                               {serviceTierLabels[req.serviceTier] || req.serviceTier}
                             </span>

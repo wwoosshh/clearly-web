@@ -248,7 +248,7 @@ export default function MyPage() {
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
             className="relative flex h-16 w-16 items-center justify-center rounded-full text-[22px] font-bold text-[#f5f3ee] overflow-hidden group"
-            style={{ backgroundColor: "#2d6a4f" }}
+            style={{ backgroundColor: "#0284C7" }}
           >
             {user.profileImage ? (
               <img
@@ -276,7 +276,7 @@ export default function MyPage() {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-[20px] font-bold text-[#141412]">{user.name}</h1>
-              <span className="rounded-full bg-[#eef7f3] px-2.5 py-0.5 text-[12px] font-medium text-[#2d6a4f]">
+              <span className="rounded-full bg-[#E0F2FE] px-2.5 py-0.5 text-[12px] font-medium text-[#0284C7]">
                 {ROLE_LABELS[user.role] || user.role}
               </span>
             </div>
@@ -301,7 +301,7 @@ export default function MyPage() {
           <h2 className="text-[15px] font-semibold text-[#1a1918]">활동 요약</h2>
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Spinner size="md" className="text-[#4a8c6a]" />
+              <Spinner size="md" className="text-[#0EA5E9]" />
             </div>
           ) : isCompany ? (
             <>
@@ -312,7 +312,7 @@ export default function MyPage() {
                 const totalDays = Math.max(1, Math.ceil((end - start) / 86400000));
                 const remainingDays = Math.max(0, Math.ceil((end - now) / 86400000));
                 const remainingPercent = Math.min(100, Math.round((remainingDays / totalDays) * 100));
-                const fillColor = remainingPercent >= 50 ? "#2d6a4f" : remainingPercent >= 20 ? "#eab308" : "#ef4444";
+                const fillColor = remainingPercent >= 50 ? "#0284C7" : remainingPercent >= 20 ? "#eab308" : "#ef4444";
                 return (
                   <div
                     className="mt-3 mb-3 relative rounded-xl border border-[#e2ddd6] overflow-hidden p-4"
@@ -346,14 +346,14 @@ export default function MyPage() {
                         <div className="flex items-center gap-2">
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                             s.plan.tier === "BASIC" ? "bg-[#f0ede8] text-[#72706a]" :
-                            s.plan.tier === "PRO" ? "bg-[#eef7f3] text-[#2d6a4f]" :
+                            s.plan.tier === "PRO" ? "bg-[#E0F2FE] text-[#0284C7]" :
                             "bg-[#141412] text-[#f5f3ee]"
                           }`}>
                             {s.plan.tier}
                           </span>
                           <span className="text-[13px] font-medium text-[#1a1918]">{s.plan.name}</span>
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                            s.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" : "bg-[#eef7f3] text-[#2d6a4f]"
+                            s.status === "PAUSED" ? "bg-yellow-50 text-yellow-700" : "bg-[#E0F2FE] text-[#0284C7]"
                           }`}>
                             {s.status === "PAUSED" ? "일시정지" : "대기"}
                           </span>
@@ -373,18 +373,18 @@ export default function MyPage() {
                   href="/my-estimates"
                   className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
                 >
-                  <p className="text-[22px] font-bold text-[#2d6a4f]">{companyStats.submittedEstimates}</p>
+                  <p className="text-[22px] font-bold text-[#0284C7]">{companyStats.submittedEstimates}</p>
                   <p className="mt-1 text-[13px] text-[#72706a]">제출 견적</p>
                 </Link>
                 <Link
                   href="/my-reviews"
                   className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
                 >
-                  <p className="text-[22px] font-bold text-[#2d6a4f]">{companyStats.receivedReviews}</p>
+                  <p className="text-[22px] font-bold text-[#0284C7]">{companyStats.receivedReviews}</p>
                   <p className="mt-1 text-[13px] text-[#72706a]">받은 리뷰</p>
                 </Link>
                 <div className="rounded-xl border border-[#e2ddd6] bg-white p-4 text-center">
-                  <p className="text-[22px] font-bold text-[#2d6a4f]">{companyStats.completedMatchings}</p>
+                  <p className="text-[22px] font-bold text-[#0284C7]">{companyStats.completedMatchings}</p>
                   <p className="mt-1 text-[13px] text-[#72706a]">완료 매칭</p>
                 </div>
               </div>
@@ -395,28 +395,28 @@ export default function MyPage() {
                 href="/matching"
                 className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
               >
-                <p className="text-[22px] font-bold text-[#2d6a4f]">{userStats.estimateRequests}</p>
+                <p className="text-[22px] font-bold text-[#0284C7]">{userStats.estimateRequests}</p>
                 <p className="mt-1 text-[13px] text-[#72706a]">견적요청</p>
               </Link>
               <Link
                 href="/matching"
                 className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
               >
-                <p className="text-[22px] font-bold text-[#2d6a4f]">{userStats.estimates}</p>
+                <p className="text-[22px] font-bold text-[#0284C7]">{userStats.estimates}</p>
                 <p className="mt-1 text-[13px] text-[#72706a]">받은 견적</p>
               </Link>
               <Link
                 href="/matching"
                 className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
               >
-                <p className="text-[22px] font-bold text-[#2d6a4f]">{userStats.completedMatchings}</p>
+                <p className="text-[22px] font-bold text-[#0284C7]">{userStats.completedMatchings}</p>
                 <p className="mt-1 text-[13px] text-[#72706a]">완료 매칭</p>
               </Link>
               <Link
                 href="/my-reviews"
                 className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
               >
-                <p className="text-[22px] font-bold text-[#2d6a4f]">{userStats.reviews}</p>
+                <p className="text-[22px] font-bold text-[#0284C7]">{userStats.reviews}</p>
                 <p className="mt-1 text-[13px] text-[#72706a]">작성 리뷰</p>
               </Link>
             </div>
@@ -434,7 +434,7 @@ export default function MyPage() {
               className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]"
             >
               <div className="flex items-center gap-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
                 <span className="text-[14px] font-medium text-[#1a1918]">
@@ -450,7 +450,7 @@ export default function MyPage() {
               <>
                 <Link href="/customers" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
                   <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                       <circle cx="9" cy="7" r="4" />
                       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -462,7 +462,7 @@ export default function MyPage() {
                 </Link>
                 <Link href="/mypage/company-edit" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
                   <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                     </svg>
@@ -472,7 +472,7 @@ export default function MyPage() {
                 </Link>
                 <Link href="/estimates" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
                   <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                       <polyline points="14 2 14 8 20 8" />
                     </svg>
@@ -482,7 +482,7 @@ export default function MyPage() {
                 </Link>
                 <Link href="/my-estimates" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
                   <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9 11 12 14 22 4" />
                       <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                     </svg>
@@ -492,7 +492,7 @@ export default function MyPage() {
                 </Link>
                 <Link href="/pricing" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
                   <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="2" y="4" width="20" height="16" rx="2" />
                       <line x1="2" y1="10" x2="22" y2="10" />
                     </svg>
@@ -505,7 +505,7 @@ export default function MyPage() {
               <>
                 <Link href="/mypage/user-edit" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
                   <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                     </svg>
@@ -515,7 +515,7 @@ export default function MyPage() {
                 </Link>
                 <Link href="/matching" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
                   <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                       <polyline points="14 2 14 8 20 8" />
                     </svg>
@@ -528,7 +528,7 @@ export default function MyPage() {
 
             <Link href="/chat" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
               <div className="flex items-center gap-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
                 <span className="text-[14px] font-medium text-[#1a1918]">채팅</span>
@@ -546,7 +546,7 @@ export default function MyPage() {
           <div className="mt-3 divide-y divide-[#f0ede8] rounded-xl border border-[#e2ddd6] bg-white overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <polyline points="22,6 12,13 2,6" />
                 </svg>
@@ -560,7 +560,7 @@ export default function MyPage() {
                 onClick={handleMarketingToggle}
                 disabled={isMarketingToggling}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${
-                  agreeMarketing ? "bg-[#2d6a4f]" : "bg-[#e2ddd6]"
+                  agreeMarketing ? "bg-[#0284C7]" : "bg-[#e2ddd6]"
                 }`}
               >
                 <span

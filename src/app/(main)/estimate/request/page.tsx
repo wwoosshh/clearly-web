@@ -75,7 +75,7 @@ export default function EstimateRequestPage() {
         <p className="mt-1.5 text-[13px] text-[#72706a]">견적 요청은 일반 회원만 이용할 수 있습니다</p>
         <button
           onClick={() => router.push("/estimates")}
-          className="press-scale mt-4 rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors"
+          className="press-scale mt-4 rounded-lg bg-[#0284C7] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0369A1] transition-colors"
         >
           견적 리스트 보기
         </button>
@@ -221,8 +221,8 @@ export default function EstimateRequestPage() {
                     className={cn(
                       "press-scale rounded-lg border px-3 py-2.5 text-[13px] font-medium transition-colors",
                       selectedType === value
-                        ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
-                        : "border-[#e2ddd6] text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]"
+                        ? "border-[#0284C7] bg-[#0284C7] text-[#f5f3ee]"
+                        : "border-[#e2ddd6] text-[#72706a] hover:border-[#0284C7] hover:text-[#0284C7]"
                     )}
                   >
                     {label}
@@ -253,8 +253,8 @@ export default function EstimateRequestPage() {
                     className={cn(
                       "press-scale rounded-lg border px-3 py-2.5 text-[13px] font-medium transition-colors",
                       selectedServiceTier === value
-                        ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
-                        : "border-[#e2ddd6] text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]"
+                        ? "border-[#0284C7] bg-[#0284C7] text-[#f5f3ee]"
+                        : "border-[#e2ddd6] text-[#72706a] hover:border-[#0284C7] hover:text-[#0284C7]"
                     )}
                   >
                     {label}
@@ -324,7 +324,7 @@ export default function EstimateRequestPage() {
           )}
           {priceEstimate && !priceLoading && (
             <motion.div variants={fadeUp}>
-              <div className="rounded-lg border border-[#d4ede4] bg-[#eef7f3] px-4 py-3.5">
+              <div className="rounded-lg border border-[#BAE6FD] bg-[#E0F2FE] px-4 py-3.5">
                 <p className="text-[13px] font-semibold text-[#1a1918]">
                   예상 가격 범위
                 </p>
@@ -372,7 +372,7 @@ export default function EstimateRequestPage() {
             </label>
             <select
               {...register("desiredTime")}
-              className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] text-[#1a1918] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+              className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] text-[#1a1918] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
             >
               <option value="">선택 안함</option>
               {TIME_OPTIONS.map((opt) => (
@@ -419,7 +419,7 @@ export default function EstimateRequestPage() {
                 "placeholder:text-[#a8a49c]",
                 errors.message
                   ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
-                  : "border-[#e2ddd6] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20",
+                  : "border-[#e2ddd6] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20",
                 "focus:outline-none"
               )}
             />
@@ -444,7 +444,7 @@ export default function EstimateRequestPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg bg-[#0284C7] text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <svg

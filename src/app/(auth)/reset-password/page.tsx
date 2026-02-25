@@ -89,8 +89,8 @@ function ResetPasswordForm() {
         <motion.div variants={fadeUp}>
           <Link
             href="/forgot-password"
-            className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840]"
-            style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
+            className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0369A1]"
+            style={{ backgroundColor: "#0284C7", color: "#f5f3ee" }}
           >
             비밀번호 찾기
           </Link>
@@ -104,12 +104,12 @@ function ResetPasswordForm() {
     return (
       <motion.div variants={stagger} initial="hidden" animate="show">
         <motion.div variants={fadeUp} className="mb-8">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#eef7f3]">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#E0F2FE]">
             <svg
               className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="#2d6a4f"
+              stroke="#0284C7"
               strokeWidth={2}
             >
               <path
@@ -130,8 +130,8 @@ function ResetPasswordForm() {
         <motion.div variants={fadeUp}>
           <Link
             href="/login"
-            className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors hover:bg-[#235840]"
-            style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
+            className="press-scale flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors hover:bg-[#0369A1]"
+            style={{ backgroundColor: "#0284C7", color: "#f5f3ee" }}
           >
             로그인하기
           </Link>
@@ -198,8 +198,8 @@ function ResetPasswordForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="press-scale mt-1 flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#235840]"
-          style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
+          className="press-scale mt-1 flex h-[46px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0369A1]"
+          style={{ backgroundColor: "#0284C7", color: "#f5f3ee" }}
         >
           {isSubmitting ? (
             <svg

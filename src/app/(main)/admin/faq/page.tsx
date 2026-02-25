@@ -145,7 +145,7 @@ export default function AdminFaqPage() {
         </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a]"
+          className="rounded-lg bg-[#0284C7] px-4 py-2 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9]"
         >
           새 FAQ
         </button>
@@ -159,7 +159,7 @@ export default function AdminFaqPage() {
             className={cn(
               "rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
               !filterCategory
-                ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                ? "bg-[#0284C7] text-[#f5f3ee]"
                 : "bg-[#f0ede8] text-[#72706a] hover:bg-[#e2ddd6]"
             )}
           >
@@ -172,7 +172,7 @@ export default function AdminFaqPage() {
               className={cn(
                 "rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
                 filterCategory === cat
-                  ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                  ? "bg-[#0284C7] text-[#f5f3ee]"
                   : "bg-[#f0ede8] text-[#72706a] hover:bg-[#e2ddd6]"
               )}
             >
@@ -185,7 +185,7 @@ export default function AdminFaqPage() {
       {/* 테이블 */}
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : faqs.length === 0 ? (
         <motion.div variants={fadeUp} className="mt-8 text-center text-sm text-[#72706a]">
@@ -243,7 +243,7 @@ export default function AdminFaqPage() {
                         onClick={() => handleToggleVisible(faq)}
                         className={cn(
                           "inline-block h-5 w-9 rounded-full transition-colors",
-                          faq.isVisible ? "bg-[#2d6a4f]" : "bg-[#e2ddd6]"
+                          faq.isVisible ? "bg-[#0284C7]" : "bg-[#e2ddd6]"
                         )}
                       >
                         <span
@@ -258,7 +258,7 @@ export default function AdminFaqPage() {
                       <div className="flex items-center justify-end gap-3">
                         <button
                           onClick={() => openEdit(faq)}
-                          className="text-[12px] font-medium text-[#2d6a4f] hover:text-[#4a8c6a]"
+                          className="text-[12px] font-medium text-[#0284C7] hover:text-[#0EA5E9]"
                         >
                           수정
                         </button>
@@ -299,7 +299,7 @@ export default function AdminFaqPage() {
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
                   placeholder="예: 서비스 이용, 결제/환불"
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 />
               </div>
               <div>
@@ -308,7 +308,7 @@ export default function AdminFaqPage() {
                   type="text"
                   value={form.question}
                   onChange={(e) => setForm({ ...form, question: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 />
               </div>
               <div>
@@ -317,7 +317,7 @@ export default function AdminFaqPage() {
                   value={form.answer}
                   onChange={(e) => setForm({ ...form, answer: e.target.value })}
                   rows={5}
-                  className="mt-1 w-full resize-none rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full resize-none rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 />
               </div>
               <div className="flex gap-4">
@@ -327,7 +327,7 @@ export default function AdminFaqPage() {
                     type="number"
                     value={form.sortOrder}
                     onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
-                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                   />
                 </div>
                 <div className="flex items-end pb-1">
@@ -336,7 +336,7 @@ export default function AdminFaqPage() {
                       type="checkbox"
                       checked={form.isVisible}
                       onChange={(e) => setForm({ ...form, isVisible: e.target.checked })}
-                      className="h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f]"
+                      className="h-4 w-4 rounded border-[#e2ddd6] accent-[#0284C7]"
                     />
                     노출
                   </label>
@@ -354,7 +354,7 @@ export default function AdminFaqPage() {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-sm font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
+                className="rounded-lg bg-[#0284C7] px-4 py-2 text-sm font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50"
               >
                 {isSaving ? "저장 중..." : "저장"}
               </button>

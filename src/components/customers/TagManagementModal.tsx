@@ -13,8 +13,8 @@ interface TagManagementModalProps {
 }
 
 const PRESET_COLORS = [
-  "#2d6a4f",
-  "#4a8c6a",
+  "#0284C7",
+  "#0EA5E9",
   "#d97706",
   "#dc2626",
   "#7c3aed",
@@ -137,7 +137,7 @@ export default function TagManagementModal({
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                   placeholder="새 태그 이름"
                   maxLength={50}
-                  className="flex-1 rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3 py-2 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#4a8c6a] focus:bg-white focus:outline-none transition-colors"
+                  className="flex-1 rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3 py-2 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#0EA5E9] focus:bg-white focus:outline-none transition-colors"
                 />
                 <button
                   onClick={handleCreate}

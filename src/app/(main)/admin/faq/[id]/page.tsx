@@ -76,7 +76,7 @@ export default function AdminFaqEditPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function AdminFaqEditPage() {
               type="text"
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+              className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
             />
           </div>
           <div>
@@ -114,7 +114,7 @@ export default function AdminFaqEditPage() {
               type="text"
               value={form.question}
               onChange={(e) => setForm({ ...form, question: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+              className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
             />
           </div>
           <div>
@@ -123,7 +123,7 @@ export default function AdminFaqEditPage() {
               value={form.answer}
               onChange={(e) => setForm({ ...form, answer: e.target.value })}
               rows={8}
-              className="mt-1 w-full resize-none rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+              className="mt-1 w-full resize-none rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
             />
           </div>
           <div className="flex gap-4">
@@ -133,7 +133,7 @@ export default function AdminFaqEditPage() {
                 type="number"
                 value={form.sortOrder}
                 onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
-                className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
               />
             </div>
             <div className="flex items-end pb-1">
@@ -142,7 +142,7 @@ export default function AdminFaqEditPage() {
                   type="checkbox"
                   checked={form.isVisible}
                   onChange={(e) => setForm({ ...form, isVisible: e.target.checked })}
-                  className="h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f]"
+                  className="h-4 w-4 rounded border-[#e2ddd6] accent-[#0284C7]"
                 />
                 노출
               </label>
@@ -160,7 +160,7 @@ export default function AdminFaqEditPage() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-sm font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
+            className="rounded-lg bg-[#0284C7] px-5 py-2.5 text-sm font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50"
           >
             {isSaving ? "저장 중..." : "저장"}
           </button>

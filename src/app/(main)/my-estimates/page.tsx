@@ -123,7 +123,7 @@ export default function SubmittedEstimatesPage() {
   const getStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
       SUBMITTED: { label: "대기중", style: "bg-[#fef9ee] text-[#b45309] border border-[#fde68a]" },
-      ACCEPTED: { label: "수락됨", style: "bg-[#eef7f3] text-[#2d6a4f] border border-[#d4ede4]" },
+      ACCEPTED: { label: "수락됨", style: "bg-[#E0F2FE] text-[#0284C7] border border-[#BAE6FD]" },
       REJECTED: { label: "거절됨", style: "bg-red-50 text-red-600" },
     };
     const info = map[status] || { label: status, style: "bg-[#f0ede8] text-[#72706a]" };
@@ -166,8 +166,8 @@ export default function SubmittedEstimatesPage() {
                 className={cn(
                   "flex-1 rounded-md py-2 text-[14px] font-medium transition-colors press-scale",
                   statusFilter === tab.key
-                    ? "bg-[#2d6a4f] text-[#f5f3ee] shadow-sm"
-                    : "text-[#72706a] hover:text-[#2d6a4f]"
+                    ? "bg-[#0284C7] text-[#f5f3ee] shadow-sm"
+                    : "text-[#72706a] hover:text-[#0284C7]"
                 )}
               >
                 {tab.label}
@@ -178,7 +178,7 @@ export default function SubmittedEstimatesPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Spinner size="lg" className="text-[#4a8c6a]" />
+            <Spinner size="lg" className="text-[#0EA5E9]" />
           </div>
         ) : filtered.length === 0 ? (
           <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center text-center">
@@ -196,7 +196,7 @@ export default function SubmittedEstimatesPage() {
             </p>
             <Link
               href="/estimates"
-              className="mt-4 rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] transition-colors press-scale"
+              className="mt-4 rounded-lg bg-[#0284C7] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] transition-colors press-scale"
             >
               견적 리스트 보기
             </Link>
@@ -451,7 +451,7 @@ export default function SubmittedEstimatesPage() {
               <div className="mt-5">
                 <Link
                   href={`/chat?companyId=${selected.estimateRequest?.user?.id || ""}`}
-                  className="flex h-[38px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] press-scale"
+                  className="flex h-[38px] w-full items-center justify-center rounded-lg bg-[#0284C7] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] press-scale"
                   onClick={() => setSelected(null)}
                 >
                   채팅방으로 이동

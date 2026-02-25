@@ -78,12 +78,12 @@ export function ChatInputArea({
             }
           }}
           placeholder="메시지를 입력하세요"
-          className="h-[44px] flex-1 rounded-lg border border-[#e2ddd6] px-4 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 focus:outline-none"
+          className="h-[44px] flex-1 rounded-lg border border-[#e2ddd6] px-4 text-[14px] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10 focus:outline-none"
         />
         <button
           onClick={onSend}
           disabled={!newMessage.trim() || isSending}
-          className="flex h-[44px] w-[44px] items-center justify-center rounded-lg bg-[#2d6a4f] text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+          className="flex h-[44px] w-[44px] items-center justify-center rounded-lg bg-[#0284C7] text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="22" y1="2" x2="11" y2="13" />

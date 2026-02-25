@@ -81,7 +81,7 @@ export default function AdminReportDetailPage() {
     const map: Record<string, { label: string; style: string }> = {
       PENDING: { label: "대기", style: "bg-[#fef9ee] text-[#b45309]" },
       REVIEWED: { label: "검토중", style: "bg-[#fef9ee] text-[#b45309]" },
-      RESOLVED: { label: "해결", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      RESOLVED: { label: "해결", style: "bg-[#E0F2FE] text-[#0284C7]" },
       DISMISSED: { label: "기각", style: "bg-[#f0ede8] text-[#72706a]" },
     };
     const info = map[s] || { label: s, style: "bg-[#f0ede8] text-[#72706a]" };
@@ -91,7 +91,7 @@ export default function AdminReportDetailPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -153,7 +153,7 @@ export default function AdminReportDetailPage() {
           {report.adminNote && (
             <div className="mt-4">
               <p className="text-[13px] text-[#72706a]">관리자 메모</p>
-              <p className="mt-1 whitespace-pre-wrap rounded-lg bg-[#eef7f3] p-3 text-[13px] text-[#2d6a4f]">
+              <p className="mt-1 whitespace-pre-wrap rounded-lg bg-[#E0F2FE] p-3 text-[13px] text-[#0284C7]">
                 {report.adminNote}
               </p>
             </div>
@@ -171,7 +171,7 @@ export default function AdminReportDetailPage() {
             </div>
             <Link
               href={`/admin/users/${report.reporter?.id}`}
-              className="mt-2 inline-flex items-center gap-1 text-[12px] text-[#2d6a4f] hover:underline"
+              className="mt-2 inline-flex items-center gap-1 text-[12px] text-[#0284C7] hover:underline"
             >
               사용자 상세 보기
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -193,7 +193,7 @@ export default function AdminReportDetailPage() {
                     <p className="text-[#72706a]">
                       상태: {report.target.isActive ? "활성" : "비활성"}
                     </p>
-                    <Link href={`/admin/users/${report.target.id}`} className="inline-flex items-center gap-1 text-[12px] text-[#2d6a4f] hover:underline">
+                    <Link href={`/admin/users/${report.target.id}`} className="inline-flex items-center gap-1 text-[12px] text-[#0284C7] hover:underline">
                       사용자 상세 보기
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                         <path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -208,7 +208,7 @@ export default function AdminReportDetailPage() {
                     <p className="text-[#72706a]">
                       상태: {report.target.verificationStatus}
                     </p>
-                    <Link href={`/admin/companies/${report.target.id}`} className="inline-flex items-center gap-1 text-[12px] text-[#2d6a4f] hover:underline">
+                    <Link href={`/admin/companies/${report.target.id}`} className="inline-flex items-center gap-1 text-[12px] text-[#0284C7] hover:underline">
                       업체 상세 보기
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                         <path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -279,7 +279,7 @@ export default function AdminReportDetailPage() {
                 <select
                   value={resolveStatus}
                   onChange={(e) => setResolveStatus(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 >
                   <option value="REVIEWED">검토중</option>
                   <option value="RESOLVED">해결</option>
@@ -294,7 +294,7 @@ export default function AdminReportDetailPage() {
                   onChange={(e) => setAdminNote(e.target.value)}
                   placeholder="처리 내용을 기록해주세요..."
                   rows={3}
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 />
               </div>
 
@@ -303,7 +303,7 @@ export default function AdminReportDetailPage() {
                 <select
                   value={actionType}
                   onChange={(e) => setActionType(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 >
                   <option value="">조치 없음</option>
                   {report.targetType === "USER" && <option value="SUSPEND_USER">유저 정지</option>}
@@ -315,7 +315,7 @@ export default function AdminReportDetailPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-lg bg-[#2d6a4f] px-6 py-2.5 text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-50"
+                className="rounded-lg bg-[#0284C7] px-6 py-2.5 text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] disabled:opacity-50"
               >
                 {isSubmitting ? "처리중..." : "처리 완료"}
               </button>

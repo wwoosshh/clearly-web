@@ -571,7 +571,7 @@ export function ChatPageContent() {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <Spinner size="lg" className="text-[#4a8c6a]" />
+        <Spinner size="lg" className="text-[#0EA5E9]" />
       </div>
     );
   }

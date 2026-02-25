@@ -208,7 +208,7 @@ export default function RegisterCompanyPage() {
         animate="show"
         className="flex flex-col items-center text-center"
       >
-        <motion.div variants={fadeUp} className="flex h-16 w-16 items-center justify-center rounded-full bg-[#2d6a4f]">
+        <motion.div variants={fadeUp} className="flex h-16 w-16 items-center justify-center rounded-full bg-[#0284C7]">
           <svg
             width="28"
             height="28"
@@ -260,7 +260,7 @@ export default function RegisterCompanyPage() {
           variants={fadeUp}
           whileTap={{ scale: 0.97 }}
           onClick={() => router.push("/login")}
-          className="mt-6 flex h-[46px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840]"
+          className="mt-6 flex h-[46px] w-full items-center justify-center rounded-lg bg-[#0284C7] text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0369A1]"
         >
           로그인 페이지로 이동
         </motion.button>
@@ -297,7 +297,7 @@ export default function RegisterCompanyPage() {
       >
         {/* 섹션: 담당자 정보 */}
         <motion.div variants={fadeUp} className="flex items-center gap-3">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#2d6a4f] text-[11px] font-bold text-[#f5f3ee]">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0284C7] text-[11px] font-bold text-[#f5f3ee]">
             1
           </div>
           <span className="text-[14px] font-semibold text-[#141412]">
@@ -359,7 +359,7 @@ export default function RegisterCompanyPage() {
 
         {/* 섹션: 업체 정보 */}
         <motion.div variants={fadeUp} className="flex items-center gap-3">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#2d6a4f] text-[11px] font-bold text-[#f5f3ee]">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0284C7] text-[11px] font-bold text-[#f5f3ee]">
             2
           </div>
           <span className="text-[14px] font-semibold text-[#141412]">
@@ -441,7 +441,7 @@ export default function RegisterCompanyPage() {
 
         {/* 섹션: 서비스 정보 */}
         <motion.div variants={fadeUp} className="flex items-center gap-3">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#d4ede4] text-[11px] font-bold text-[#2d6a4f]">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#BAE6FD] text-[11px] font-bold text-[#0284C7]">
             3
           </div>
           <span className="text-[14px] font-semibold text-[#141412]">
@@ -472,8 +472,8 @@ export default function RegisterCompanyPage() {
                   className={cn(
                     "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
                     isSelected
-                      ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
-                      : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#4a8c6a]"
+                      ? "border-[#0284C7] bg-[#0284C7] text-[#f5f3ee]"
+                      : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#0EA5E9]"
                   )}
                 >
                   {spec}
@@ -506,8 +506,8 @@ export default function RegisterCompanyPage() {
                   className={cn(
                     "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
                     isSelected
-                      ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
-                      : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#4a8c6a]"
+                      ? "border-[#0284C7] bg-[#0284C7] text-[#f5f3ee]"
+                      : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#0EA5E9]"
                   )}
                 >
                   {tier.label}
@@ -541,8 +541,8 @@ export default function RegisterCompanyPage() {
                   className={cn(
                     "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
                     isSelected
-                      ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
-                      : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#4a8c6a]"
+                      ? "border-[#0284C7] bg-[#0284C7] text-[#f5f3ee]"
+                      : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#0EA5E9]"
                   )}
                 >
                   {region}
@@ -563,7 +563,7 @@ export default function RegisterCompanyPage() {
             className={cn(
               "w-full rounded-lg border px-3.5 py-3 text-[14px] transition-colors resize-none",
               "placeholder:text-[#a8a49c]",
-              "border-[#e2ddd6] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none"
+              "border-[#e2ddd6] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none"
             )}
             {...register("description")}
           />
@@ -578,14 +578,14 @@ export default function RegisterCompanyPage() {
             <input
               type="number"
               placeholder="최소 가격"
-              className="h-[44px] min-w-0 flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none"
+              className="h-[44px] min-w-0 flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none"
               {...register("minPrice")}
             />
             <span className="flex-shrink-0 text-[#a8a49c]">~</span>
             <input
               type="number"
               placeholder="최대 가격"
-              className="h-[44px] min-w-0 flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none"
+              className="h-[44px] min-w-0 flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none"
               {...register("maxPrice")}
             />
           </div>
@@ -597,7 +597,7 @@ export default function RegisterCompanyPage() {
             <input
               type="checkbox"
               className={cn(
-                "mt-0.5 h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f] cursor-pointer",
+                "mt-0.5 h-4 w-4 rounded border-[#e2ddd6] accent-[#0284C7] cursor-pointer",
                 errors.agreeTerms && "border-red-500"
               )}
               {...register("agreeTerms")}
@@ -633,7 +633,7 @@ export default function RegisterCompanyPage() {
           <label className="flex items-start gap-2.5 cursor-pointer">
             <input
               type="checkbox"
-              className="mt-0.5 h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f] cursor-pointer"
+              className="mt-0.5 h-4 w-4 rounded border-[#e2ddd6] accent-[#0284C7] cursor-pointer"
               {...register("agreeMarketing")}
             />
             <span className="text-[13px] leading-snug text-[#72706a]">
@@ -665,11 +665,11 @@ export default function RegisterCompanyPage() {
           whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={isSubmitting}
-          className="mt-1 flex h-[46px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-1 flex h-[46px] w-full items-center justify-center rounded-lg bg-[#0284C7] text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? (
             <svg
-              className="h-5 w-5 animate-spin text-[#4a8c6a]"
+              className="h-5 w-5 animate-spin text-[#0EA5E9]"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"

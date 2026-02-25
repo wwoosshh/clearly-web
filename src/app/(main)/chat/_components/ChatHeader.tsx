@@ -69,14 +69,14 @@ export function ChatHeader({
                 <button
                   onClick={onShowCompletionReportModal}
                   disabled={isRefreshing}
-                  className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
+                  className="rounded-lg border border-[#0284C7] bg-[#0284C7] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 active:scale-95"
                 >
                   완료보고
                 </button>
               )}
               {/* 업체: 보고 완료 상태 */}
               {isCompany && hasReported && (
-                <span className="rounded-lg border border-[#d4ede4] bg-[#eef7f3] px-3 py-1.5 text-[12px] font-medium text-[#2d6a4f]">
+                <span className="rounded-lg border border-[#BAE6FD] bg-[#E0F2FE] px-3 py-1.5 text-[12px] font-medium text-[#0284C7]">
                   보고 완료
                 </span>
               )}
@@ -85,7 +85,7 @@ export function ChatHeader({
                 <button
                   onClick={onShowCompletionConfirmModal}
                   disabled={isConfirmingCompletion || isRefreshing}
-                  className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
+                  className="rounded-lg border border-[#0284C7] bg-[#0284C7] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 active:scale-95"
                 >
                   완료 확인
                 </button>
@@ -94,7 +94,7 @@ export function ChatHeader({
                 <button
                   onClick={onShowCompleteModal}
                   disabled={isCompleting || isRefreshing}
-                  className="rounded-lg border border-[#2d6a4f] bg-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
+                  className="rounded-lg border border-[#0284C7] bg-[#0284C7] px-3 py-1.5 text-[12px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 active:scale-95"
                 >
                   거래완료
                 </button>
@@ -114,8 +114,8 @@ export function ChatHeader({
 
       {/* 데이터 동기화 중 로딩 바 */}
       {isRefreshing && (
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] overflow-hidden bg-[#d4ede4]">
-          <div className="chat-loading-bar absolute h-full w-[40%] rounded-full bg-[#2d6a4f]" />
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] overflow-hidden bg-[#BAE6FD]">
+          <div className="chat-loading-bar absolute h-full w-[40%] rounded-full bg-[#0284C7]" />
         </div>
       )}
     </div>

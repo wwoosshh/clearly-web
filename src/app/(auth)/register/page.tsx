@@ -236,7 +236,7 @@ export default function RegisterPage() {
             <input
               type="checkbox"
               className={cn(
-                "mt-0.5 h-4 w-4 rounded cursor-pointer accent-[#2d6a4f]",
+                "mt-0.5 h-4 w-4 rounded cursor-pointer accent-[#0284C7]",
                 errors.agreeTerms ? "border-red-500" : "border-[#e2ddd6]"
               )}
               {...register("agreeTerms")}
@@ -244,7 +244,7 @@ export default function RegisterPage() {
             <span className="text-[13px] leading-snug" style={{ color: "#72706a" }}>
               <Link
                 href="/terms"
-                className="underline transition-colors hover:text-[#2d6a4f]"
+                className="underline transition-colors hover:text-[#0284C7]"
                 target="_blank"
               >
                 이용약관
@@ -252,7 +252,7 @@ export default function RegisterPage() {
               {" "}및{" "}
               <Link
                 href="/privacy"
-                className="underline transition-colors hover:text-[#2d6a4f]"
+                className="underline transition-colors hover:text-[#0284C7]"
                 target="_blank"
               >
                 개인정보처리방침
@@ -272,14 +272,14 @@ export default function RegisterPage() {
           <label className="flex items-start gap-2.5 cursor-pointer">
             <input
               type="checkbox"
-              className="mt-0.5 h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f] cursor-pointer"
+              className="mt-0.5 h-4 w-4 rounded border-[#e2ddd6] accent-[#0284C7] cursor-pointer"
               {...register("agreeMarketing")}
             />
             <span className="text-[13px] leading-snug" style={{ color: "#72706a" }}>
               <span className="text-[#b0aca6]">(선택)</span>{" "}
               <Link
                 href="/marketing"
-                className="underline transition-colors hover:text-[#2d6a4f]"
+                className="underline transition-colors hover:text-[#0284C7]"
                 target="_blank"
               >
                 마케팅 정보 수신
@@ -299,7 +299,7 @@ export default function RegisterPage() {
           type="submit"
           disabled={isSubmitting}
           className="press-scale mt-1 flex h-[48px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
+          style={{ backgroundColor: "#0284C7", color: "#f5f3ee" }}
         >
           {isSubmitting ? (
             <svg
@@ -322,7 +322,7 @@ export default function RegisterPage() {
           청소 업체이신가요?{" "}
           <Link
             href="/register/company"
-            className="font-semibold text-[#2d6a4f] hover:underline"
+            className="font-semibold text-[#0284C7] hover:underline"
           >
             업체 회원가입
           </Link>
@@ -331,7 +331,7 @@ export default function RegisterPage() {
           이미 계정이 있으신가요?{" "}
           <Link
             href="/login"
-            className="font-semibold text-[#2d6a4f] hover:underline"
+            className="font-semibold text-[#0284C7] hover:underline"
           >
             로그인
           </Link>

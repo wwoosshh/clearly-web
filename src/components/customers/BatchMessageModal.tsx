@@ -68,7 +68,7 @@ export default function BatchMessageModal({
                 </h3>
                 {!result && (
                   <p className="mt-0.5 text-[13px] text-[#72706a]">
-                    <span className="font-semibold text-[#2d6a4f]">{recipientCount}명</span>의 고객에게 발송합니다
+                    <span className="font-semibold text-[#0284C7]">{recipientCount}명</span>의 고객에게 발송합니다
                   </p>
                 )}
               </div>
@@ -93,17 +93,17 @@ export default function BatchMessageModal({
                   transition={{ duration: 0.2 }}
                   className="mt-4 space-y-3"
                 >
-                  <div className="rounded-xl border border-[#d6ede2] bg-[#ebf5ef] px-4 py-3.5">
+                  <div className="rounded-xl border border-[#BAE6FD] bg-[#ebf5ef] px-4 py-3.5">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2d6a4f]">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0284C7]">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
                       </div>
-                      <p className="text-[14px] font-bold text-[#2d6a4f]">발송 완료</p>
+                      <p className="text-[14px] font-bold text-[#0284C7]">발송 완료</p>
                     </div>
                     <div className="flex gap-4 text-[13px]">
-                      <span className="font-semibold text-[#2d6a4f]">
+                      <span className="font-semibold text-[#0284C7]">
                         성공 {result.successCount}건
                       </span>
                       {result.failCount > 0 && (
@@ -133,7 +133,7 @@ export default function BatchMessageModal({
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="메시지 내용을 입력하세요"
                     rows={4}
-                    className="w-full resize-none rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-3 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#4a8c6a] focus:bg-white focus:outline-none transition-colors"
+                    className="w-full resize-none rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-3 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#0EA5E9] focus:bg-white focus:outline-none transition-colors"
                   />
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] text-[#a8a49c] tabular-nums">
@@ -143,7 +143,7 @@ export default function BatchMessageModal({
                       onClick={handleSend}
                       disabled={sending || !content.trim()}
                       className="rounded-xl px-6 py-2.5 text-[14px] font-bold text-white transition-all active:scale-[0.98] disabled:opacity-40"
-                      style={{ backgroundColor: "#2d6a4f" }}
+                      style={{ backgroundColor: "#0284C7" }}
                     >
                       {sending ? (
                         <span className="flex items-center gap-1.5">

@@ -31,7 +31,7 @@ export default function ReviewWritePage() {
       fallback={
         <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-10">
           <div className="flex items-center justify-center py-20">
-            <Spinner size="lg" className="text-[#4a8c6a]" />
+            <Spinner size="lg" className="text-[#0EA5E9]" />
           </div>
         </div>
       }
@@ -200,7 +200,7 @@ function ReviewWriteContent() {
             placeholder="서비스 이용 경험을 자유롭게 작성해주세요 (선택)"
             rows={5}
             maxLength={2000}
-            className="mt-2 w-full rounded-lg border border-[#e2ddd6] px-4 py-3 text-[14px] leading-relaxed resize-none placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+            className="mt-2 w-full rounded-lg border border-[#e2ddd6] px-4 py-3 text-[14px] leading-relaxed resize-none placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
           />
           <div className="mt-1 text-right text-[12px] text-[#a8a49c]">
             {content.length}/2000
@@ -229,7 +229,7 @@ function ReviewWriteContent() {
           <button
             onClick={handleSubmit}
             disabled={rating === 0 || isSubmitting}
-            className="press-scale flex h-[46px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="press-scale flex h-[46px] flex-1 items-center justify-center rounded-lg bg-[#0284C7] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "등록중..." : "리뷰 등록"}
           </button>

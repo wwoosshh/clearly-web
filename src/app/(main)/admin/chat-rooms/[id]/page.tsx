@@ -98,7 +98,7 @@ export default function AdminChatRoomDetailPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -125,7 +125,7 @@ export default function AdminChatRoomDetailPage() {
           <div className="flex gap-1">
             <span className={cn(
               "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-              room.isActive ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-red-50 text-red-600"
+              room.isActive ? "bg-[#E0F2FE] text-[#0284C7]" : "bg-red-50 text-red-600"
             )}>
               {room.isActive ? "활성" : "종료"}
             </span>
@@ -133,7 +133,7 @@ export default function AdminChatRoomDetailPage() {
               <span className={cn(
                 "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
                 room.refundStatus === "REQUESTED" ? "bg-[#fef9ee] text-[#b45309]" :
-                room.refundStatus === "APPROVED" ? "bg-[#eef7f3] text-[#2d6a4f]" :
+                room.refundStatus === "APPROVED" ? "bg-[#E0F2FE] text-[#0284C7]" :
                 "bg-red-50 text-red-600"
               )}>
                 환불 {room.refundStatus === "REQUESTED" ? "요청" : room.refundStatus === "APPROVED" ? "승인" : "거절"}
@@ -145,13 +145,13 @@ export default function AdminChatRoomDetailPage() {
         <div className="mt-4 grid grid-cols-2 gap-4 text-[13px] sm:grid-cols-4">
           <div>
             <p className="text-[#72706a]">사용자</p>
-            <Link href={`/admin/users/${room.user?.id}`} className="mt-0.5 text-[13px] font-medium text-[#2d6a4f] hover:underline">
+            <Link href={`/admin/users/${room.user?.id}`} className="mt-0.5 text-[13px] font-medium text-[#0284C7] hover:underline">
               {room.user?.name}
             </Link>
           </div>
           <div>
             <p className="text-[#72706a]">업체</p>
-            <Link href={`/admin/companies/${room.company?.id}`} className="mt-0.5 text-[13px] font-medium text-[#2d6a4f] hover:underline">
+            <Link href={`/admin/companies/${room.company?.id}`} className="mt-0.5 text-[13px] font-medium text-[#0284C7] hover:underline">
               {room.company?.businessName}
             </Link>
           </div>
@@ -168,7 +168,7 @@ export default function AdminChatRoomDetailPage() {
         {/* 연결 정보 */}
         <div className="mt-3 flex flex-wrap gap-2">
           {room.matching && (
-            <span className="rounded-lg bg-[#eef7f3] px-3 py-1 text-[12px] text-[#2d6a4f]">
+            <span className="rounded-lg bg-[#E0F2FE] px-3 py-1 text-[12px] text-[#0284C7]">
               매칭: {room.matching.cleaningType} ({room.matching.status})
               {room.matching.estimatedPrice && ` - ${room.matching.estimatedPrice.toLocaleString()}원`}
             </span>
@@ -194,7 +194,7 @@ export default function AdminChatRoomDetailPage() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={isLoadingMessages}
-              className="text-[12px] text-[#2d6a4f] hover:underline disabled:opacity-50"
+              className="text-[12px] text-[#0284C7] hover:underline disabled:opacity-50"
             >
               {isLoadingMessages ? "불러오는 중..." : "이전 메시지 불러오기"}
             </button>
@@ -226,7 +226,7 @@ export default function AdminChatRoomDetailPage() {
                     className={cn("flex", isCompany ? "justify-end" : "justify-start")}
                   >
                     <div className={cn("max-w-[70%]", isCompany ? "items-end" : "items-start")}>
-                      <p className={cn("mb-0.5 text-[11px]", isCompany ? "text-right text-[#2d6a4f]" : "text-[#72706a]")}>
+                      <p className={cn("mb-0.5 text-[11px]", isCompany ? "text-right text-[#0284C7]" : "text-[#72706a]")}>
                         {msg.sender?.name}
                         <span className="ml-1 text-[10px] text-[#72706a]">
                           ({isCompany ? "업체" : "사용자"})
@@ -236,7 +236,7 @@ export default function AdminChatRoomDetailPage() {
                         className={cn(
                           "rounded-2xl px-4 py-2.5 text-[13px]",
                           isCompany
-                            ? "rounded-tr-md bg-[#2d6a4f] text-white"
+                            ? "rounded-tr-md bg-[#0284C7] text-white"
                             : "rounded-tl-md bg-[#f0ede8] text-[#1a1918]"
                         )}
                       >

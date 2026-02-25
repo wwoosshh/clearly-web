@@ -179,7 +179,7 @@ function LoginPageContent() {
           <div className="mt-1.5 text-right">
             <Link
               href="/forgot-password"
-              className="text-[12px] text-[#72706a] transition-colors hover:text-[#2d6a4f]"
+              className="text-[12px] text-[#72706a] transition-colors hover:text-[#0284C7]"
             >
               비밀번호를 잊으셨나요?
             </Link>
@@ -196,7 +196,7 @@ function LoginPageContent() {
           type="submit"
           disabled={isSubmitting}
           className="press-scale mt-1 flex h-[48px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
+          style={{ backgroundColor: "#0284C7", color: "#f5f3ee" }}
         >
           {isSubmitting ? (
             <svg
@@ -222,7 +222,7 @@ function LoginPageContent() {
         아직 계정이 없으신가요?{" "}
         <Link
           href="/register"
-          className="font-semibold text-[#2d6a4f] hover:underline"
+          className="font-semibold text-[#0284C7] hover:underline"
         >
           회원가입
         </Link>

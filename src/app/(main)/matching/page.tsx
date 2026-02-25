@@ -122,7 +122,7 @@ export default function MatchingPage() {
   const getStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
       SUBMITTED: { label: "대기중", style: "bg-[#fef9ee] text-[#b45309] border border-[#fde68a]" },
-      ACCEPTED: { label: "수락됨", style: "bg-[#eef7f3] text-[#2d6a4f] border border-[#d4ede4]" },
+      ACCEPTED: { label: "수락됨", style: "bg-[#E0F2FE] text-[#0284C7] border border-[#BAE6FD]" },
       REJECTED: { label: "거절됨", style: "bg-red-50 text-red-600" },
       OPEN: { label: "모집중", style: "bg-[#fef9ee] text-[#b45309] border border-[#fde68a]" },
       CLOSED: { label: "마감", style: "bg-[#f0ede8] text-[#72706a]" },
@@ -162,8 +162,8 @@ export default function MatchingPage() {
               className={cn(
                 "flex-1 rounded-md py-2 text-[14px] font-medium transition-colors press-scale",
                 tab === "estimates"
-                  ? "bg-[#2d6a4f] text-[#f5f3ee] shadow-sm"
-                  : "text-[#72706a] hover:text-[#2d6a4f]"
+                  ? "bg-[#0284C7] text-[#f5f3ee] shadow-sm"
+                  : "text-[#72706a] hover:text-[#0284C7]"
               )}
             >
               받은 견적
@@ -174,8 +174,8 @@ export default function MatchingPage() {
                 className={cn(
                   "flex-1 rounded-md py-2 text-[14px] font-medium transition-colors press-scale",
                   tab === "requests"
-                    ? "bg-[#2d6a4f] text-[#f5f3ee] shadow-sm"
-                    : "text-[#72706a] hover:text-[#2d6a4f]"
+                    ? "bg-[#0284C7] text-[#f5f3ee] shadow-sm"
+                    : "text-[#72706a] hover:text-[#0284C7]"
                 )}
               >
                 내 견적요청
@@ -186,7 +186,7 @@ export default function MatchingPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Spinner size="lg" className="text-[#4a8c6a]" />
+            <Spinner size="lg" className="text-[#0EA5E9]" />
           </div>
         ) : tab === "estimates" ? (
           // 받은 견적 목록
@@ -202,7 +202,7 @@ export default function MatchingPage() {
               <p className="mt-1.5 text-[13px] text-[#72706a]">견적을 요청하면 업체들이 견적을 보내드립니다</p>
               <Link
                 href="/estimate/request"
-                className="mt-4 rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] transition-colors press-scale"
+                className="mt-4 rounded-lg bg-[#0284C7] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] transition-colors press-scale"
               >
                 견적 요청하기
               </Link>
@@ -270,7 +270,7 @@ export default function MatchingPage() {
               <p className="mt-4 text-[15px] font-medium text-[#1a1918]">견적요청이 없습니다</p>
               <Link
                 href="/estimate/request"
-                className="mt-4 rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] transition-colors press-scale"
+                className="mt-4 rounded-lg bg-[#0284C7] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] transition-colors press-scale"
               >
                 견적 요청하기
               </Link>
@@ -313,7 +313,7 @@ export default function MatchingPage() {
                       {req.estimates && req.estimates.length >= 2 && (
                         <button
                           onClick={() => router.push(`/estimate-compare/${req.id}`)}
-                          className="rounded-lg border border-[#2d6a4f] px-3 py-1.5 text-[12px] font-medium text-[#2d6a4f] hover:bg-[#eef7f3] transition-colors press-scale"
+                          className="rounded-lg border border-[#0284C7] px-3 py-1.5 text-[12px] font-medium text-[#0284C7] hover:bg-[#E0F2FE] transition-colors press-scale"
                         >
                           견적 비교
                         </button>
@@ -393,7 +393,7 @@ export default function MatchingPage() {
                 <button
                   onClick={() => handleAccept(selectedEstimate.id)}
                   disabled={isAccepting || isRejecting}
-                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-50 press-scale"
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#0284C7] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] disabled:opacity-50 press-scale"
                 >
                   {isAccepting ? "처리중..." : "견적 수락"}
                 </button>

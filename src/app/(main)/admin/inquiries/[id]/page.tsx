@@ -34,7 +34,7 @@ interface InquiryDetail {
 
 const STATUS_LABELS: Record<string, { text: string; style: string }> = {
   PENDING: { text: "대기중", style: "bg-[#fef9ee] text-[#b45309]" },
-  ANSWERED: { text: "답변완료", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+  ANSWERED: { text: "답변완료", style: "bg-[#E0F2FE] text-[#0284C7]" },
   CLOSED: { text: "종료", style: "bg-[#f0ede8] text-[#72706a]" },
 };
 
@@ -90,7 +90,7 @@ export default function AdminInquiryDetailPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -163,12 +163,12 @@ export default function AdminInquiryDetailPage() {
 
       {/* 기존 답변 표시 */}
       {inquiry.adminAnswer && inquiry.status !== "PENDING" && (
-        <motion.div variants={fadeUp} className="mt-4 rounded-xl border border-[#d4ede4] bg-[#eef7f3] p-4 sm:p-5">
-          <h2 className="text-[13px] font-semibold text-[#2d6a4f]">
+        <motion.div variants={fadeUp} className="mt-4 rounded-xl border border-[#BAE6FD] bg-[#E0F2FE] p-4 sm:p-5">
+          <h2 className="text-[13px] font-semibold text-[#0284C7]">
             관리자 답변
           </h2>
           {inquiry.answeredAt && (
-            <p className="mt-1 text-[12px] text-[#4a8c6a]">
+            <p className="mt-1 text-[12px] text-[#0EA5E9]">
               {new Date(inquiry.answeredAt).toLocaleDateString("ko-KR", {
                 year: "numeric",
                 month: "long",
@@ -178,7 +178,7 @@ export default function AdminInquiryDetailPage() {
               })}
             </p>
           )}
-          <p className="mt-3 whitespace-pre-wrap text-[14px] leading-relaxed text-[#2d6a4f]">
+          <p className="mt-3 whitespace-pre-wrap text-[14px] leading-relaxed text-[#0284C7]">
             {inquiry.adminAnswer}
           </p>
         </motion.div>
@@ -195,13 +195,13 @@ export default function AdminInquiryDetailPage() {
             onChange={(e) => setAnswer(e.target.value)}
             rows={5}
             placeholder="답변 내용을 입력하세요..."
-            className="mt-3 w-full resize-none rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+            className="mt-3 w-full resize-none rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
           />
           <div className="mt-4 flex gap-3">
             <button
               onClick={handleAnswer}
               disabled={isSaving || !answer.trim()}
-              className="rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-sm font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
+              className="rounded-lg bg-[#0284C7] px-5 py-2.5 text-sm font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50"
             >
               {isSaving ? "저장 중..." : "답변 저장"}
             </button>

@@ -9,7 +9,7 @@ export default function SearchPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center py-20">
-          <Spinner size="lg" className="text-[#4a8c6a]" />
+          <Spinner size="lg" className="text-[#0EA5E9]" />
         </div>
       }
     >
@@ -33,7 +33,7 @@ function SearchRedirect() {
 
   return (
     <div className="flex items-center justify-center py-20">
-      <Spinner size="lg" className="text-[#4a8c6a]" />
+      <Spinner size="lg" className="text-[#0EA5E9]" />
     </div>
   );
 }

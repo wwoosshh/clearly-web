@@ -23,7 +23,7 @@ function Card({
         "rounded-xl border border-[#e2ddd6] bg-white shadow-sm",
         !noPadding && "p-6",
         hoverable &&
-          "cursor-pointer transition-all duration-[280ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-4px_rgba(45,106,79,0.10),0_3px_10px_-4px_rgba(45,106,79,0.06)]",
+          "cursor-pointer transition-all duration-[280ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-4px_rgba(2,132,199,0.10),0_3px_10px_-4px_rgba(2,132,199,0.06)]",
         className
       )}
       {...props}

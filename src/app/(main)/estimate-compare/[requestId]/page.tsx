@@ -62,7 +62,7 @@ interface ComparisonResponse {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const COMPANY_COLORS = ["#2d6a4f", "#4a8c6a", "#8db4a0", "#b5cfc4", "#d4e6de"];
+const COMPANY_COLORS = ["#0284C7", "#0EA5E9", "#38BDF8", "#7DD3FC", "#BAE6FD"];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -159,7 +159,7 @@ function PriceTooltip({ active, payload, label }: CustomTooltipProps) {
   return (
     <div className="rounded-xl border border-[#e2ddd6] bg-white px-4 py-3 shadow-lg">
       <p className="text-[13px] font-semibold text-[#141412]">{label}</p>
-      <p className="text-[15px] font-bold text-[#2d6a4f]">
+      <p className="text-[15px] font-bold text-[#0284C7]">
         {payload[0].value.toLocaleString()}원
       </p>
     </div>
@@ -292,7 +292,7 @@ export default function EstimateComparePage() {
         <p className="text-[15px] text-[#72706a]">{error ?? "오류가 발생했습니다."}</p>
         <button
           onClick={() => router.back()}
-          className="mt-4 rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-[#4a8c6a]"
+          className="mt-4 rounded-lg bg-[#0284C7] px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-[#0EA5E9]"
         >
           돌아가기
         </button>
@@ -313,7 +313,7 @@ export default function EstimateComparePage() {
           <motion.div variants={fadeUp}>
             <button
               onClick={() => router.back()}
-              className="mb-4 flex items-center gap-1.5 text-[13px] text-[#72706a] hover:text-[#2d6a4f] transition-colors"
+              className="mb-4 flex items-center gap-1.5 text-[13px] text-[#72706a] hover:text-[#0284C7] transition-colors"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6" />
@@ -324,7 +324,7 @@ export default function EstimateComparePage() {
             <h1 className="text-[24px] font-bold tracking-tight text-[#141412]">견적 비교</h1>
 
             <div className="mt-3 flex flex-wrap gap-2">
-              <span className="rounded-full bg-[#2d6a4f] px-3 py-1 text-[12px] font-medium text-white">
+              <span className="rounded-full bg-[#0284C7] px-3 py-1 text-[12px] font-medium text-white">
                 {CLEANING_TYPE_LABELS[request.cleaningType as CleaningType] ?? request.cleaningType}
               </span>
               <span className="rounded-full bg-[#f0ede8] px-3 py-1 text-[12px] text-[#72706a]">{request.address}</span>
@@ -360,7 +360,7 @@ export default function EstimateComparePage() {
                       "flex items-center gap-2 rounded-lg border px-3.5 py-2 text-[13px] font-medium transition-all",
                       isChecked
                         ? "border-transparent text-white shadow-sm"
-                        : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]",
+                        : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#0284C7] hover:text-[#0284C7]",
                       isMaxed && "opacity-40 cursor-not-allowed"
                     )}
                     style={isChecked ? { backgroundColor: color } : undefined}
@@ -403,7 +403,7 @@ export default function EstimateComparePage() {
               {/* ── Price Bar Chart ── */}
               <motion.div variants={fadeUp} className="rounded-xl border border-[#e2ddd6] bg-white p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
                   </svg>
                   <h2 className="text-[15px] font-semibold text-[#141412]">가격 비교</h2>
@@ -430,7 +430,7 @@ export default function EstimateComparePage() {
                 {selected.length >= 2 && (
                   <p className="mt-2 text-center text-[12px] text-[#72706a]">
                     최저가:{" "}
-                    <span className="font-semibold text-[#2d6a4f]">
+                    <span className="font-semibold text-[#0284C7]">
                       {selected.reduce((a, b) => (a.price < b.price ? a : b)).businessName}
                     </span>{" "}
                     ({formatPrice(Math.min(...selected.map((e) => e.price)))})
@@ -441,7 +441,7 @@ export default function EstimateComparePage() {
               {/* ── Radar Chart ── */}
               <motion.div variants={fadeUp} className="rounded-xl border border-[#e2ddd6] bg-white p-5">
                 <div className="flex items-center gap-2 mb-1">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                   </svg>
                   <h2 className="text-[15px] font-semibold text-[#141412]">종합 평가</h2>
@@ -478,7 +478,7 @@ export default function EstimateComparePage() {
               {/* ── Detail Table ── */}
               <motion.div variants={fadeUp} className="rounded-xl border border-[#e2ddd6] bg-white overflow-hidden">
                 <div className="flex items-center gap-2 p-5 pb-0">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
                     <rect x="9" y="3" width="6" height="4" rx="1" />
                     <line x1="9" y1="12" x2="15" y2="12" /><line x1="9" y1="16" x2="13" y2="16" />
@@ -522,11 +522,11 @@ export default function EstimateComparePage() {
                               const raw = row.getRaw(est);
                               const isBest = bestRaw !== null && raw !== null && raw === bestRaw && raws.length > 1;
                               return (
-                                <td key={est.estimateId} className={cn("px-4 py-3.5 text-[13px] font-medium", isBest ? "text-[#2d6a4f]" : "text-[#141412]")}>
-                                  <span className={cn("inline-flex items-center gap-1 rounded-md px-2 py-0.5", isBest && "bg-[#eef7f3]")}>
+                                <td key={est.estimateId} className={cn("px-4 py-3.5 text-[13px] font-medium", isBest ? "text-[#0284C7]" : "text-[#141412]")}>
+                                  <span className={cn("inline-flex items-center gap-1 rounded-md px-2 py-0.5", isBest && "bg-[#E0F2FE]")}>
                                     {row.getValue(est)}
                                     {isBest && (
-                                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <polyline points="20 6 9 17 4 12" />
                                       </svg>
                                     )}
@@ -566,8 +566,8 @@ export default function EstimateComparePage() {
                           className={cn(
                             "rounded-xl border-2 p-4 text-left transition-all w-full",
                             isChosen
-                              ? "border-[#2d6a4f] bg-[#eef7f3] shadow-sm"
-                              : "border-[#e2ddd6] bg-white hover:border-[#8db4a0]",
+                              ? "border-[#0284C7] bg-[#E0F2FE] shadow-sm"
+                              : "border-[#e2ddd6] bg-white hover:border-[#38BDF8]",
                             !isSubmitted && "opacity-50 cursor-not-allowed"
                           )}
                         >
@@ -575,7 +575,7 @@ export default function EstimateComparePage() {
                             <span className="h-2.5 w-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
                             <p className="text-[14px] font-semibold text-[#141412] truncate flex-1">{est.businessName}</p>
                             {est.verificationStatus === "APPROVED" && (
-                              <span className="flex-shrink-0 rounded-full bg-[#eef7f3] px-2 py-0.5 text-[10px] font-medium text-[#2d6a4f] border border-[#d4ede4]">
+                              <span className="flex-shrink-0 rounded-full bg-[#E0F2FE] px-2 py-0.5 text-[10px] font-medium text-[#0284C7] border border-[#BAE6FD]">
                                 인증
                               </span>
                             )}
@@ -590,7 +590,7 @@ export default function EstimateComparePage() {
                             </p>
                           )}
                           {isChosen && (
-                            <div className="mt-2 flex items-center gap-1 text-[12px] font-semibold text-[#2d6a4f]">
+                            <div className="mt-2 flex items-center gap-1 text-[12px] font-semibold text-[#0284C7]">
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="20 6 9 17 4 12" />
                               </svg>
@@ -622,12 +622,12 @@ export default function EstimateComparePage() {
               <div className="min-w-0">
                 <p className="text-[11px] text-[#72706a]">선택한 업체</p>
                 <p className="text-[14px] font-semibold text-[#141412] truncate">{chosenEst.businessName}</p>
-                <p className="text-[13px] font-bold text-[#2d6a4f]">{chosenEst.price.toLocaleString()}원</p>
+                <p className="text-[13px] font-bold text-[#0284C7]">{chosenEst.price.toLocaleString()}원</p>
               </div>
               <button
                 onClick={handleAccept}
                 disabled={actionLoading}
-                className="flex flex-shrink-0 h-[46px] items-center gap-2 rounded-xl bg-[#2d6a4f] px-6 text-[14px] font-semibold text-white hover:bg-[#4a8c6a] disabled:opacity-60 transition-colors"
+                className="flex flex-shrink-0 h-[46px] items-center gap-2 rounded-xl bg-[#0284C7] px-6 text-[14px] font-semibold text-white hover:bg-[#0EA5E9] disabled:opacity-60 transition-colors"
               >
                 {actionLoading ? (
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

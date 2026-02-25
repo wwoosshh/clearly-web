@@ -112,7 +112,7 @@ export default function CompanyDetailPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
         <div className="flex items-center justify-center py-20">
-          <Spinner size="lg" className="text-[#4a8c6a]" />
+          <Spinner size="lg" className="text-[#0EA5E9]" />
         </div>
       </div>
     );
@@ -211,7 +211,7 @@ export default function CompanyDetailPage() {
                     company.subscriptionTier === "PREMIUM"
                       ? "bg-[#141412] text-[#f5f3ee]"
                       : company.subscriptionTier === "PRO"
-                      ? "bg-[#eef7f3] text-[#2d6a4f]"
+                      ? "bg-[#E0F2FE] text-[#0284C7]"
                       : "bg-[#f0ede8] text-[#72706a]"
                   }`}>
                     {company.subscriptionTier === "PREMIUM" ? "프리미엄" :
@@ -219,7 +219,7 @@ export default function CompanyDetailPage() {
                   </span>
                 )}
                 {company.identityVerified && (
-                  <span className="rounded-full bg-[#eef7f3] px-2.5 py-0.5 text-[12px] font-semibold text-[#2d6a4f]">
+                  <span className="rounded-full bg-[#E0F2FE] px-2.5 py-0.5 text-[12px] font-semibold text-[#0284C7]">
                     본인인증
                   </span>
                 )}
@@ -295,7 +295,7 @@ export default function CompanyDetailPage() {
                       ? "bg-amber-50 text-amber-700"
                       : tier === "DEEP_CLEAN"
                       ? "bg-blue-50 text-blue-700"
-                      : "bg-green-50 text-green-700"
+                      : "bg-sky-50 text-sky-700"
                   }`}>
                     {tier === "PREMIUM_CLEAN" ? "프리미엄클린" : tier === "DEEP_CLEAN" ? "딥클린" : "클린"}
                   </span>
@@ -506,7 +506,7 @@ export default function CompanyDetailPage() {
                   type="button"
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
-                  className="w-full rounded-lg bg-[#f0ede8] p-4 text-left transition-colors hover:bg-[#eef7f3]"
+                  className="w-full rounded-lg bg-[#f0ede8] p-4 text-left transition-colors hover:bg-[#E0F2FE]"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[14px] font-semibold text-[#141412]">Q. {item.question}</span>
@@ -533,7 +533,7 @@ export default function CompanyDetailPage() {
             <div className="space-y-2">
               {company.identityVerified && (
                 <div className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                   <span className="text-[14px] text-[#1a1918]">본인인증 완료</span>
@@ -541,7 +541,7 @@ export default function CompanyDetailPage() {
               )}
               {company.businessRegistration && (
                 <div className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                   <span className="text-[14px] text-[#1a1918]">사업자등록증 제출 완료</span>
@@ -549,7 +549,7 @@ export default function CompanyDetailPage() {
               )}
               {certDocs.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                   <span className="text-[14px] text-[#1a1918]">자격증 {certDocs.length}건 등록</span>
@@ -574,7 +574,7 @@ export default function CompanyDetailPage() {
 
           {isLoadingReviews && reviews.length === 0 ? (
             <div className="flex items-center justify-center py-10">
-              <Spinner size="md" className="text-[#4a8c6a]" />
+              <Spinner size="md" className="text-[#0EA5E9]" />
             </div>
           ) : reviews.length === 0 ? (
             <div className="py-10 text-center">
@@ -679,7 +679,7 @@ export default function CompanyDetailPage() {
                       onClick={() => setReviewPage(p)}
                       className={`flex h-8 w-8 items-center justify-center rounded-lg text-[13px] font-medium transition-colors ${
                         p === reviewPage
-                          ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                          ? "bg-[#0284C7] text-[#f5f3ee]"
                           : "text-[#72706a] hover:bg-[#f0ede8]"
                       }`}
                     >
@@ -726,7 +726,7 @@ export default function CompanyDetailPage() {
             <motion.div whileTap={{ scale: 0.97 }} className="flex-1">
               <Link
                 href={`/chat?companyId=${company.id}`}
-                className="flex h-[46px] w-full items-center justify-center rounded-lg bg-[#141412] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#2d6a4f]"
+                className="flex h-[46px] w-full items-center justify-center rounded-lg bg-[#141412] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0284C7]"
               >
                 채팅 상담
               </Link>

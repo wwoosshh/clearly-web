@@ -24,7 +24,7 @@ interface InquiryItem {
 
 const STATUS_LABELS: Record<string, { text: string; style: string }> = {
   PENDING: { text: "대기중", style: "bg-[#fef9ee] text-[#b45309]" },
-  ANSWERED: { text: "답변완료", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+  ANSWERED: { text: "답변완료", style: "bg-[#E0F2FE] text-[#0284C7]" },
   CLOSED: { text: "종료", style: "bg-[#f0ede8] text-[#72706a]" },
 };
 
@@ -95,7 +95,7 @@ export default function AdminInquiriesPage() {
       {/* 테이블 */}
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : inquiries.length === 0 ? (
         <motion.div variants={fadeUp} className="mt-8 text-center text-sm text-[#72706a]">
@@ -133,7 +133,7 @@ export default function AdminInquiriesPage() {
                         <td className="max-w-[200px] truncate px-4 py-3">
                           <Link
                             href={`/admin/inquiries/${inquiry.id}`}
-                            className="text-[13px] font-medium text-[#1a1918] hover:text-[#2d6a4f]"
+                            className="text-[13px] font-medium text-[#1a1918] hover:text-[#0284C7]"
                           >
                             {inquiry.title}
                           </Link>

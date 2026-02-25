@@ -69,10 +69,10 @@ export function CompletionReportModal({
           <button
             onClick={() => imageInputRef.current?.click()}
             disabled={isUploading}
-            className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-[#e2ddd6] text-[#a8a49c] transition-colors hover:border-[#2d6a4f] hover:text-[#2d6a4f] disabled:opacity-50 active:scale-95"
+            className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-[#e2ddd6] text-[#a8a49c] transition-colors hover:border-[#0284C7] hover:text-[#0284C7] disabled:opacity-50 active:scale-95"
           >
             {isUploading ? (
-              <Spinner size="sm" className="text-[#4a8c6a]" />
+              <Spinner size="sm" className="text-[#0EA5E9]" />
             ) : (
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -93,7 +93,7 @@ export function CompletionReportModal({
         <button
           onClick={onSubmit}
           disabled={completionImages.length === 0 || isSubmitting}
-          className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
+          className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#0284C7] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 active:scale-95"
         >
           {isSubmitting ? "제출중..." : "완료 보고"}
         </button>

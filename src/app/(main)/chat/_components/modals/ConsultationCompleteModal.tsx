@@ -116,7 +116,7 @@ export function ConsultationCompleteModal({
                   <select
                     value={cleaningType}
                     onChange={(e) => setCleaningType(e.target.value as CleaningType)}
-                    className="w-full appearance-none rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 pr-9 text-[14px] text-[#141412] focus:border-[#4a8c6a] focus:bg-white focus:outline-none transition-colors"
+                    className="w-full appearance-none rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 pr-9 text-[14px] text-[#141412] focus:border-[#0EA5E9] focus:bg-white focus:outline-none transition-colors"
                   >
                     {CLEANING_OPTIONS.map(([key, label]) => (
                       <option key={key} value={key}>{label}</option>
@@ -139,7 +139,7 @@ export function ConsultationCompleteModal({
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="예: 서울시 강남구 역삼동 123"
                   maxLength={300}
-                  className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#4a8c6a] focus:bg-white focus:outline-none transition-colors"
+                  className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#0EA5E9] focus:bg-white focus:outline-none transition-colors"
                 />
               </div>
 
@@ -156,7 +156,7 @@ export function ConsultationCompleteModal({
                       onChange={(e) => setEstimatedPrice(e.target.value)}
                       placeholder="0"
                       min="0"
-                      className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 pr-7 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#4a8c6a] focus:bg-white focus:outline-none transition-colors"
+                      className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 pr-7 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#0EA5E9] focus:bg-white focus:outline-none transition-colors"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-[#a8a49c]">원</span>
                   </div>
@@ -172,7 +172,7 @@ export function ConsultationCompleteModal({
                       onChange={(e) => setAreaSize(e.target.value)}
                       placeholder="0"
                       min="0"
-                      className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 pr-6 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#4a8c6a] focus:bg-white focus:outline-none transition-colors"
+                      className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 pr-6 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#0EA5E9] focus:bg-white focus:outline-none transition-colors"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-[#a8a49c]">m²</span>
                   </div>
@@ -189,7 +189,7 @@ export function ConsultationCompleteModal({
                     type="date"
                     value={desiredDate}
                     onChange={(e) => setDesiredDate(e.target.value)}
-                    className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 text-[14px] text-[#141412] focus:border-[#4a8c6a] focus:bg-white focus:outline-none transition-colors"
+                    className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 text-[14px] text-[#141412] focus:border-[#0EA5E9] focus:bg-white focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
@@ -200,7 +200,7 @@ export function ConsultationCompleteModal({
                     type="time"
                     value={desiredTime}
                     onChange={(e) => setDesiredTime(e.target.value)}
-                    className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 text-[14px] text-[#141412] focus:border-[#4a8c6a] focus:bg-white focus:outline-none transition-colors"
+                    className="w-full rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3.5 py-2.5 text-[14px] text-[#141412] focus:border-[#0EA5E9] focus:bg-white focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -218,7 +218,7 @@ export function ConsultationCompleteModal({
               <button
                 onClick={handleSubmit}
                 disabled={!isValid || isCompleting}
-                className="flex h-[42px] flex-[2] items-center justify-center rounded-xl bg-[#2d6a4f] text-[13px] font-bold text-white transition-all hover:bg-[#235840] active:scale-[0.98] disabled:opacity-40"
+                className="flex h-[42px] flex-[2] items-center justify-center rounded-xl bg-[#0284C7] text-[13px] font-bold text-white transition-all hover:bg-[#0369A1] active:scale-[0.98] disabled:opacity-40"
               >
                 {isCompleting ? (
                   <span className="flex items-center gap-1.5">

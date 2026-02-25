@@ -47,7 +47,7 @@ function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[13px] text-[#8a8880] transition-colors hover:text-[#d4ede4]"
+                    className="text-[13px] text-[#8a8880] transition-colors hover:text-[#BAE6FD]"
                   >
                     {link.label}
                   </Link>
@@ -69,7 +69,7 @@ function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[13px] text-[#8a8880] transition-colors hover:text-[#d4ede4]"
+                    className="text-[13px] text-[#8a8880] transition-colors hover:text-[#BAE6FD]"
                   >
                     {link.label}
                   </Link>
@@ -92,7 +92,7 @@ function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[13px] text-[#8a8880] transition-colors hover:text-[#d4ede4]"
+                    className="text-[13px] text-[#8a8880] transition-colors hover:text-[#BAE6FD]"
                   >
                     {link.label}
                   </Link>

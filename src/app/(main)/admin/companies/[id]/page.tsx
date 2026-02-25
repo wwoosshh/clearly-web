@@ -126,7 +126,7 @@ export default function AdminCompanyDetailPage() {
   const statusBadge = (s: string) => {
     const map: Record<string, { label: string; style: string }> = {
       PENDING: { label: "대기", style: "bg-[#fef9ee] text-[#b45309]" },
-      APPROVED: { label: "승인", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      APPROVED: { label: "승인", style: "bg-[#E0F2FE] text-[#0284C7]" },
       REJECTED: { label: "반려", style: "bg-red-50 text-red-600" },
       SUSPENDED: { label: "정지", style: "bg-red-50 text-red-600" },
     };
@@ -137,8 +137,8 @@ export default function AdminCompanyDetailPage() {
   const matchingStatusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
       REQUESTED: { label: "요청", style: "bg-[#fef9ee] text-[#b45309]" },
-      ACCEPTED: { label: "수락", style: "bg-[#eef7f3] text-[#2d6a4f]" },
-      COMPLETED: { label: "완료", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      ACCEPTED: { label: "수락", style: "bg-[#E0F2FE] text-[#0284C7]" },
+      COMPLETED: { label: "완료", style: "bg-[#E0F2FE] text-[#0284C7]" },
       CANCELLED: { label: "취소", style: "bg-red-50 text-red-600" },
       REJECTED: { label: "거절", style: "bg-red-50 text-red-600" },
     };
@@ -149,7 +149,7 @@ export default function AdminCompanyDetailPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -182,7 +182,7 @@ export default function AdminCompanyDetailPage() {
             {statusBadge(company.verificationStatus)}
             <span className={cn(
               "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-              company.isActive ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-red-50 text-red-600"
+              company.isActive ? "bg-[#E0F2FE] text-[#0284C7]" : "bg-red-50 text-red-600"
             )}>
               {company.isActive ? "활성" : "비활성"}
             </span>
@@ -193,7 +193,7 @@ export default function AdminCompanyDetailPage() {
         <div className="mt-4 flex flex-wrap gap-2 border-t border-[#e2ddd6] pt-4">
           {company.verificationStatus === "PENDING" && (
             <>
-              <button onClick={handleApprove} disabled={actionLoading} className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50">승인</button>
+              <button onClick={handleApprove} disabled={actionLoading} className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50">승인</button>
               <button onClick={handleReject} disabled={actionLoading} className="rounded-lg bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50">반려</button>
             </>
           )}
@@ -201,7 +201,7 @@ export default function AdminCompanyDetailPage() {
             <button onClick={handleSuspend} disabled={actionLoading} className="rounded-lg bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50">정지</button>
           )}
           {company.verificationStatus === "SUSPENDED" && (
-            <button onClick={handleReactivate} disabled={actionLoading} className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50">정지해제</button>
+            <button onClick={handleReactivate} disabled={actionLoading} className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50">정지해제</button>
           )}
         </div>
       </motion.div>
@@ -357,7 +357,7 @@ export default function AdminCompanyDetailPage() {
                       <span className="text-[12px] text-[#72706a]">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</span>
                       <span className={cn(
                         "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                        r.isVisible ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-[#f0ede8] text-[#72706a]"
+                        r.isVisible ? "bg-[#E0F2FE] text-[#0284C7]" : "bg-[#f0ede8] text-[#72706a]"
                       )}>
                         {r.isVisible ? "표시" : "숨김"}
                       </span>
@@ -397,7 +397,7 @@ export default function AdminCompanyDetailPage() {
                           <span className={cn(
                             "rounded-full px-2 py-0.5 text-[10px] font-semibold",
                             e.status === "SUBMITTED" ? "bg-[#fef9ee] text-[#b45309]" :
-                            e.status === "ACCEPTED" ? "bg-[#eef7f3] text-[#2d6a4f]" :
+                            e.status === "ACCEPTED" ? "bg-[#E0F2FE] text-[#0284C7]" :
                             "bg-red-50 text-red-600"
                           )}>
                             {e.status === "SUBMITTED" ? "대기" : e.status === "ACCEPTED" ? "수락" : "거절"}
@@ -520,7 +520,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
   };
 
   const subStatusStyle = (status: string) => {
-    if (status === "ACTIVE") return "bg-[#eef7f3] text-[#2d6a4f]";
+    if (status === "ACTIVE") return "bg-[#E0F2FE] text-[#0284C7]";
     if (status === "PAUSED") return "bg-[#fef9ee] text-[#b45309]";
     if (status === "QUEUED") return "bg-[#fef9ee] text-[#b45309]";
     if (status === "EXPIRED") return "bg-red-50 text-red-600";
@@ -539,7 +539,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
 
   const tierStyle = (tier: string) => {
     if (tier === "BASIC") return "bg-[#f0ede8] text-[#72706a]";
-    if (tier === "PRO") return "bg-[#eef7f3] text-[#2d6a4f]";
+    if (tier === "PRO") return "bg-[#E0F2FE] text-[#0284C7]";
     return "bg-[#141412] text-white";
   };
 
@@ -650,7 +650,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
             <select
               value={selectedPlanId}
               onChange={(e) => setSelectedPlanId(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#2d6a4f] focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/10"
+              className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#0284C7] focus:outline-none focus:ring-2 focus:ring-[#0284C7]/10"
             >
               {plans.map((p: any) => (
                 <option key={p.id} value={p.id}>
@@ -662,7 +662,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
           <button
             onClick={handleChangePlan}
             disabled={loading === "change"}
-            className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
+            className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50"
           >
             {loading === "change" ? "처리중..." : "변경"}
           </button>
@@ -676,7 +676,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
               <select
                 value={extendMonths}
                 onChange={(e) => setExtendMonths(Number(e.target.value))}
-                className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#2d6a4f] focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/10"
+                className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#0284C7] focus:outline-none focus:ring-2 focus:ring-[#0284C7]/10"
               >
                 {[1, 2, 3, 6, 12].map((m) => (
                   <option key={m} value={m}>{m}개월</option>
@@ -686,7 +686,7 @@ function SubscriptionTab({ companyId, company, onRefresh }: { companyId: string;
             <button
               onClick={handleExtend}
               disabled={loading === "extend"}
-              className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
+              className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50"
             >
               {loading === "extend" ? "처리중..." : "연장"}
             </button>

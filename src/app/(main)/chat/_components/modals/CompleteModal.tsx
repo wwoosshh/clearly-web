@@ -36,7 +36,7 @@ export function CompleteModal({
         <button
           onClick={onComplete}
           disabled={isCompleting}
-          className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 active:scale-95"
+          className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#0284C7] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 active:scale-95"
         >
           {isCompleting ? "처리중..." : "거래 완료"}
         </button>

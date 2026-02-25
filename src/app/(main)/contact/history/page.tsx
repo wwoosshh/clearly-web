@@ -31,7 +31,7 @@ interface InquirySummary {
 
 const STATUS_LABELS: Record<string, { text: string; color: string }> = {
   PENDING: { text: "대기중", color: "bg-amber-100 text-amber-700" },
-  ANSWERED: { text: "답변완료", color: "bg-[#d4ede4] text-[#2d6a4f]" },
+  ANSWERED: { text: "답변완료", color: "bg-[#BAE6FD] text-[#0284C7]" },
   CLOSED: { text: "종료", color: "bg-[#e2ddd6] text-[#72706a]" },
 };
 
@@ -66,7 +66,7 @@ export default function InquiryHistoryPage() {
   if (!isInitialized || !isAuthenticated) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -88,7 +88,7 @@ export default function InquiryHistoryPage() {
           <motion.div whileTap={{ scale: 0.97 }}>
             <Link
               href="/contact"
-              className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840]"
+              className="rounded-lg bg-[#0284C7] px-4 py-2 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1]"
             >
               새 문의
             </Link>
@@ -97,7 +97,7 @@ export default function InquiryHistoryPage() {
 
         {isLoading ? (
           <motion.div variants={fadeUp} className="mt-12 flex justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
           </motion.div>
         ) : inquiries.length === 0 ? (
           <motion.div variants={fadeUp} className="mt-12 text-center">

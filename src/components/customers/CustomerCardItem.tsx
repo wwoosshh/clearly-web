@@ -54,12 +54,12 @@ export default function CustomerCardItem({
             snapshot.isDragging
               ? "rotate-[1.5deg] scale-[1.03] shadow-xl border-[#c8c4bc] cursor-grabbing z-50"
               : isSelected
-              ? "border-[#2d6a4f] shadow-[0_2px_12px_rgba(45,106,79,0.14)] hover:-translate-y-px hover:shadow-md"
+              ? "border-[#0284C7] shadow-[0_2px_12px_rgba(2,132,199,0.14)] hover:-translate-y-px hover:shadow-md"
               : "border-[#e2ddd6] shadow-[0_1px_4px_rgba(20,20,18,0.05)] hover:-translate-y-px hover:shadow-md hover:border-[#c8c4bc]",
           ].join(" ")}
         >
           {isSelected && (
-            <div className="absolute left-0 top-3.5 bottom-3.5 w-[3px] rounded-r-sm bg-[#2d6a4f]" />
+            <div className="absolute left-0 top-3.5 bottom-3.5 w-[3px] rounded-r-sm bg-[#0284C7]" />
           )}
 
           <div className="flex items-start gap-2.5">
@@ -69,7 +69,7 @@ export default function CustomerCardItem({
                 checked={isSelected}
                 onChange={() => onToggleSelect(customer.userId)}
                 className="h-3.5 w-3.5 rounded-sm cursor-pointer"
-                style={{ accentColor: "#2d6a4f" }}
+                style={{ accentColor: "#0284C7" }}
               />
             </div>
             <div className="min-w-0 flex-1">
@@ -78,7 +78,7 @@ export default function CustomerCardItem({
                   {customer.name}
                 </span>
                 {customer.isRepeat && (
-                  <span className="flex-shrink-0 rounded-full bg-[#d6ede2] px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-[#2d6a4f]">
+                  <span className="flex-shrink-0 rounded-full bg-[#BAE6FD] px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-[#0284C7]">
                     재방문
                   </span>
                 )}
@@ -113,7 +113,7 @@ export default function CustomerCardItem({
               )}
 
               <div className="mt-2 flex items-center justify-between border-t border-[#f0ede8] pt-2">
-                <span className="text-[11px] font-semibold tabular-nums text-[#2d6a4f]">
+                <span className="text-[11px] font-semibold tabular-nums text-[#0284C7]">
                   {formatCurrency(customer.totalRevenue)}
                 </span>
                 <span className="text-[10px] text-[#a8a49c]">

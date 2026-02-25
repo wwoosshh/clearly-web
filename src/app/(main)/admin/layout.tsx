@@ -166,7 +166,7 @@ export default function AdminLayout({
   if (!isInitialized) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -196,7 +196,7 @@ export default function AdminLayout({
                   className={cn(
                     "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors",
                     isActive
-                      ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                      ? "bg-[#0284C7] text-[#f5f3ee]"
                       : "text-[#a8a49e] hover:bg-[#1e1e1c] hover:text-[#f5f3ee]"
                   )}
                 >
@@ -226,7 +226,7 @@ export default function AdminLayout({
                 className={cn(
                   "flex shrink-0 flex-col items-center gap-0.5 px-3 py-2 text-[10px] font-medium transition-colors",
                   isActive
-                    ? "text-[#f5f3ee] border-t-2 border-[#2d6a4f]"
+                    ? "text-[#f5f3ee] border-t-2 border-[#0284C7]"
                     : "text-[#72706a] border-t-2 border-transparent hover:text-[#a8a49e]"
                 )}
               >

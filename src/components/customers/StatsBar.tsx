@@ -74,19 +74,19 @@ export default function StatsBar({ stats, loading }: StatsBarProps) {
       label: "이달 신규",
       value: stats.newThisMonth.toLocaleString(),
       suffix: "명",
-      accent: "#4a8c6a",
+      accent: "#0EA5E9",
     },
     {
       label: "재방문율",
       value: `${stats.repeatRate}`,
       suffix: "%",
-      accent: "#2d6a4f",
+      accent: "#0284C7",
     },
     {
       label: "총 매출",
       value: formatCurrency(stats.totalRevenue),
       suffix: "원",
-      accent: "#2d6a4f",
+      accent: "#0284C7",
     },
   ];
 
@@ -144,7 +144,7 @@ export default function StatsBar({ stats, loading }: StatsBarProps) {
               />
               <Bar
                 dataKey="revenue"
-                fill="#2d6a4f"
+                fill="#0284C7"
                 radius={[6, 6, 0, 0]}
               />
             </BarChart>
@@ -181,7 +181,7 @@ export default function StatsBar({ stats, loading }: StatsBarProps) {
                   <span className="text-[11px] text-[#a8a49c]">
                     완료 {c.completedMatchings}건
                   </span>
-                  <span className="text-[13px] font-semibold tabular-nums text-[#2d6a4f]">
+                  <span className="text-[13px] font-semibold tabular-nums text-[#0284C7]">
                     {formatRevenue(c.totalRevenue)}
                   </span>
                 </div>

@@ -141,7 +141,7 @@ export default function AdminCompaniesPage() {
   const statusBadge = (s: string) => {
     const styles: Record<string, string> = {
       PENDING: "bg-[#fef9ee] text-[#b45309]",
-      APPROVED: "bg-[#eef7f3] text-[#2d6a4f]",
+      APPROVED: "bg-[#E0F2FE] text-[#0284C7]",
       REJECTED: "bg-red-50 text-red-600",
       SUSPENDED: "bg-[#f0ede8] text-[#72706a]",
     };
@@ -190,7 +190,7 @@ export default function AdminCompaniesPage() {
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : (
         <>
@@ -252,7 +252,7 @@ export default function AdminCompaniesPage() {
                                 <button
                                   onClick={() => handleApprove(company.id)}
                                   disabled={actionLoading === company.id}
-                                  className="rounded-md bg-[#2d6a4f] px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-50"
+                                  className="rounded-md bg-[#0284C7] px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] disabled:opacity-50"
                                 >
                                   승인
                                 </button>
@@ -278,7 +278,7 @@ export default function AdminCompaniesPage() {
                               <button
                                 onClick={() => handleReactivate(company.id)}
                                 disabled={actionLoading === company.id}
-                                className="rounded-md bg-[#2d6a4f] px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-50"
+                                className="rounded-md bg-[#0284C7] px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] disabled:opacity-50"
                               >
                                 정지해제
                               </button>

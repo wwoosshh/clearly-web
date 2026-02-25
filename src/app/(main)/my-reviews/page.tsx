@@ -189,7 +189,7 @@ export default function MyReviewsPage() {
         {/* 리뷰 목록 */}
         {isLoading ? (
           <motion.div variants={fadeUp} className="flex items-center justify-center py-20">
-            <Spinner size="lg" className="text-[#4a8c6a]" />
+            <Spinner size="lg" className="text-[#0EA5E9]" />
           </motion.div>
         ) : reviews.length === 0 ? (
           <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center text-center">
@@ -207,7 +207,7 @@ export default function MyReviewsPage() {
             {!isCompany && (
               <Link
                 href="/estimate/request"
-                className="mt-4 rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors press-scale"
+                className="mt-4 rounded-lg bg-[#0284C7] px-5 py-2.5 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0369A1] transition-colors press-scale"
               >
                 견적 요청하기
               </Link>
@@ -238,7 +238,7 @@ export default function MyReviewsPage() {
                       )}
                       <div className="mt-2 flex items-center gap-2">
                         {review.matching?.cleaningType && (
-                          <span className="rounded-full bg-[#d4ede4] px-2 py-0.5 text-[12px] font-medium text-[#2d6a4f]">
+                          <span className="rounded-full bg-[#BAE6FD] px-2 py-0.5 text-[12px] font-medium text-[#0284C7]">
                             {CLEANING_TYPE_LABELS[review.matching.cleaningType as CleaningType] || review.matching.cleaningType}
                           </span>
                         )}
@@ -303,7 +303,7 @@ export default function MyReviewsPage() {
                         className={cn(
                           "flex h-[34px] w-[34px] items-center justify-center rounded-lg text-[13px] font-medium transition-colors press-scale",
                           page === item
-                            ? "bg-[#2d6a4f] text-[#f5f3ee]"
+                            ? "bg-[#0284C7] text-[#f5f3ee]"
                             : "text-[#72706a] hover:bg-[#f0ede8]"
                         )}
                       >
@@ -385,7 +385,7 @@ export default function MyReviewsPage() {
                   placeholder="서비스 이용 경험을 자유롭게 작성해주세요 (선택)"
                   rows={4}
                   maxLength={2000}
-                  className="mt-2 w-full rounded-lg border border-[#e2ddd6] px-4 py-3 text-[14px] leading-relaxed resize-none placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                  className="mt-2 w-full rounded-lg border border-[#e2ddd6] px-4 py-3 text-[14px] leading-relaxed resize-none placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
                 />
                 <div className="mt-1 text-right text-[12px] text-[#a8a49c]">
                   {editContent.length}/2000
@@ -402,7 +402,7 @@ export default function MyReviewsPage() {
                 <button
                   onClick={handleSave}
                   disabled={editRating === 0 || isSaving}
-                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
+                  className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#0284C7] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
                 >
                   {isSaving ? "저장중..." : "저장"}
                 </button>

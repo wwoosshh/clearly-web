@@ -74,7 +74,7 @@ function Modal({
               ease: [0.22, 1, 0.36, 1],
             }}
             className={cn(
-              "relative w-full rounded-2xl border border-[#e2ddd6] bg-white shadow-[0_24px_60px_rgba(45,106,79,0.12)] flex flex-col max-h-[85vh]",
+              "relative w-full rounded-2xl border border-[#e2ddd6] bg-white shadow-[0_24px_60px_rgba(2,132,199,0.12)] flex flex-col max-h-[85vh]",
               sizeStyles[size],
               className
             )}

@@ -89,7 +89,7 @@ export default function AdminReportsPage() {
     const map: Record<string, { label: string; style: string }> = {
       PENDING: { label: "대기", style: "bg-[#fef9ee] text-[#b45309]" },
       REVIEWED: { label: "검토중", style: "bg-[#fef9ee] text-[#b45309]" },
-      RESOLVED: { label: "해결", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      RESOLVED: { label: "해결", style: "bg-[#E0F2FE] text-[#0284C7]" },
       DISMISSED: { label: "기각", style: "bg-[#f0ede8] text-[#72706a]" },
     };
     const info = map[s] || { label: s, style: "bg-[#f0ede8] text-[#72706a]" };
@@ -98,8 +98,8 @@ export default function AdminReportsPage() {
 
   const targetTypeBadge = (t: string) => {
     const map: Record<string, { label: string; style: string }> = {
-      USER: { label: "유저", style: "bg-[#eef7f3] text-[#2d6a4f]" },
-      COMPANY: { label: "업체", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      USER: { label: "유저", style: "bg-[#E0F2FE] text-[#0284C7]" },
+      COMPANY: { label: "업체", style: "bg-[#E0F2FE] text-[#0284C7]" },
       REVIEW: { label: "리뷰", style: "bg-[#fef9ee] text-[#b45309]" },
     };
     const info = map[t] || { label: t, style: "bg-[#f0ede8] text-[#72706a]" };
@@ -148,7 +148,7 @@ export default function AdminReportsPage() {
             className={cn(
               "rounded-lg border px-3 py-1.5 text-[12px] font-medium transition-colors",
               targetTypeFilter === opt.key
-                ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                ? "border-[#0284C7] bg-[#0284C7] text-[#f5f3ee]"
                 : "border-[#e2ddd6] text-[#72706a] hover:bg-[#f0ede8]"
             )}
           >
@@ -159,7 +159,7 @@ export default function AdminReportsPage() {
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show">

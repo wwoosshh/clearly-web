@@ -132,7 +132,7 @@ export default function EstimatesPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
         <div className="flex items-center justify-center py-20">
-          <Spinner size="lg" className="text-[#4a8c6a]" />
+          <Spinner size="lg" className="text-[#0EA5E9]" />
         </div>
       </div>
     );
@@ -331,7 +331,7 @@ export default function EstimatesPage() {
               ) : (
               <button
                 onClick={() => setShowSubmitForm(true)}
-                className="mt-5 flex h-[42px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] press-scale"
+                className="mt-5 flex h-[42px] w-full items-center justify-center rounded-lg bg-[#0284C7] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] press-scale"
               >
                 견적 작성하기
               </button>
@@ -356,7 +356,7 @@ export default function EstimatesPage() {
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
                       placeholder="예: 300000"
-                      className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 focus:outline-none"
+                      className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -365,7 +365,7 @@ export default function EstimatesPage() {
                       type="date"
                       value={availableDate}
                       onChange={(e) => setAvailableDate(e.target.value)}
-                      className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 focus:outline-none"
+                      className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -375,7 +375,7 @@ export default function EstimatesPage() {
                       value={estimatedDuration}
                       onChange={(e) => setEstimatedDuration(e.target.value)}
                       placeholder="예: 3~4시간"
-                      className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 focus:outline-none"
+                      className="h-[44px] w-full rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -385,7 +385,7 @@ export default function EstimatesPage() {
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="고객에게 전달할 메시지"
                       rows={3}
-                      className="w-full rounded-lg border border-[#e2ddd6] px-3.5 py-3 text-[14px] resize-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 focus:outline-none"
+                      className="w-full rounded-lg border border-[#e2ddd6] px-3.5 py-3 text-[14px] resize-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10 focus:outline-none"
                     />
                   </div>
                   <ImageUpload
@@ -403,7 +403,7 @@ export default function EstimatesPage() {
                     setShowConfirmModal(true);
                   }}
                   disabled={!price}
-                  className="mt-4 flex h-[42px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
+                  className="mt-4 flex h-[42px] w-full items-center justify-center rounded-lg bg-[#0284C7] text-[14px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
                 >
                   견적 제출하기
                 </button>
@@ -441,7 +441,7 @@ export default function EstimatesPage() {
           <button
             onClick={handleSubmitEstimate}
             disabled={isSubmitting}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-50 press-scale"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#0284C7] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] disabled:opacity-50 press-scale"
           >
             {isSubmitting ? "제출중..." : "제출하기"}
           </button>

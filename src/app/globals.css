@@ -3,9 +3,9 @@
 @theme inline {
   --color-background: #f5f3ee;
   --color-foreground: #1a1918;
-  --color-primary: #2d6a4f;
-  --color-primary-hover: #235840;
-  --color-primary-light: #eef7f3;
+  --color-primary: #0284C7;
+  --color-primary-hover: #0369A1;
+  --color-primary-light: #E0F2FE;
   --color-muted: #72706a;
   --color-border: #e2ddd6;
   --color-surface: #f0ede8;
@@ -88,6 +88,6 @@
 }
 .hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px -4px rgba(45, 106, 79, 0.12),
-    0 3px 10px -4px rgba(45, 106, 79, 0.07);
+  box-shadow: 0 8px 28px -4px rgba(2, 132, 199, 0.12),
+    0 3px 10px -4px rgba(2, 132, 199, 0.07);
 }

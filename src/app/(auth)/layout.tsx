@@ -16,13 +16,13 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           aria-hidden="true"
           preserveAspectRatio="none"
         >
-          <circle cx="460" cy="60" r="220" fill="#2d6a4f" fillOpacity="0.07" />
-          <circle cx="-30" cy="280" r="170" fill="#2d6a4f" fillOpacity="0.10" />
-          <circle cx="380" cy="520" r="90" fill="#4a8c6a" fillOpacity="0.14" />
-          <circle cx="120" cy="520" r="24" fill="#2d6a4f" fillOpacity="0.20" />
-          <rect x="48" y="460" width="100" height="1.5" fill="#4a8c6a" fillOpacity="0.22" rx="1" />
-          <rect x="48" y="468" width="54" height="1.5" fill="#2d6a4f" fillOpacity="0.14" rx="1" />
-          <rect x="300" y="140" width="140" height="140" fill="none" stroke="#2d6a4f" strokeWidth="1" strokeOpacity="0.08" rx="12" />
+          <circle cx="460" cy="60" r="220" fill="#0284C7" fillOpacity="0.07" />
+          <circle cx="-30" cy="280" r="170" fill="#0284C7" fillOpacity="0.10" />
+          <circle cx="380" cy="520" r="90" fill="#0EA5E9" fillOpacity="0.14" />
+          <circle cx="120" cy="520" r="24" fill="#0284C7" fillOpacity="0.20" />
+          <rect x="48" y="460" width="100" height="1.5" fill="#0EA5E9" fillOpacity="0.22" rx="1" />
+          <rect x="48" y="468" width="54" height="1.5" fill="#0284C7" fillOpacity="0.14" rx="1" />
+          <rect x="300" y="140" width="140" height="140" fill="none" stroke="#0284C7" strokeWidth="1" strokeOpacity="0.08" rx="12" />
         </svg>
 
         {/* Logo */}

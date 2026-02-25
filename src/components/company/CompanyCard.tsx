@@ -171,7 +171,7 @@ const CompanyCard = React.memo(function CompanyCard({ company, isCompany = false
                   ? "bg-amber-50 text-amber-700"
                   : tier === "DEEP_CLEAN"
                   ? "bg-blue-50 text-blue-700"
-                  : "bg-green-50 text-green-700"
+                  : "bg-sky-50 text-sky-700"
               }`}
             >
               {tier === "PREMIUM_CLEAN" ? "프리미엄클린" : tier === "DEEP_CLEAN" ? "딥클린" : "클린"}
@@ -206,7 +206,7 @@ const CompanyCard = React.memo(function CompanyCard({ company, isCompany = false
         ) : (
           <Link
             href={`/chat?companyId=${company.id}`}
-            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840]"
+            className="flex h-[38px] flex-1 items-center justify-center rounded-lg bg-[#0284C7] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1]"
           >
             채팅 상담
           </Link>

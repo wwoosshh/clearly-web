@@ -67,13 +67,13 @@ export default function ForgotPasswordPage() {
       >
         <div
           className="mb-4 flex h-12 w-12 items-center justify-center rounded-full"
-          style={{ backgroundColor: "#eef7f3" }}
+          style={{ backgroundColor: "#E0F2FE" }}
         >
           <svg
             className="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="#2d6a4f"
+            stroke="#0284C7"
             strokeWidth={2}
           >
             <path
@@ -99,8 +99,8 @@ export default function ForgotPasswordPage() {
 
         <Link
           href="/login"
-          className="press-scale mt-8 flex h-[48px] w-full items-center justify-center rounded-lg text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840]"
-          style={{ backgroundColor: "#2d6a4f" }}
+          className="press-scale mt-8 flex h-[48px] w-full items-center justify-center rounded-lg text-[14px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0369A1]"
+          style={{ backgroundColor: "#0284C7" }}
         >
           로그인으로 돌아가기
         </Link>
@@ -146,7 +146,7 @@ export default function ForgotPasswordPage() {
           type="submit"
           disabled={isSubmitting}
           className="press-scale mt-1 flex h-[48px] w-full items-center justify-center rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ backgroundColor: "#2d6a4f", color: "#f5f3ee" }}
+          style={{ backgroundColor: "#0284C7", color: "#f5f3ee" }}
         >
           {isSubmitting ? (
             <svg className="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -167,7 +167,7 @@ export default function ForgotPasswordPage() {
         비밀번호가 기억나셨나요?{" "}
         <Link
           href="/login"
-          className="font-semibold text-[#2d6a4f] hover:underline"
+          className="font-semibold text-[#0284C7] hover:underline"
         >
           로그인
         </Link>

@@ -134,7 +134,7 @@ export default function AdminSubscriptionsPage() {
   const tierBadge = (tier: string) => {
     const map: Record<string, { label: string; style: string }> = {
       BASIC: { label: "Basic", style: "bg-[#f0ede8] text-[#72706a]" },
-      PRO: { label: "Pro", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      PRO: { label: "Pro", style: "bg-[#E0F2FE] text-[#0284C7]" },
       PREMIUM: { label: "Premium", style: "bg-[#141412] text-white" },
     };
     const info = map[tier] || { label: tier, style: "bg-[#f0ede8] text-[#72706a]" };
@@ -146,7 +146,7 @@ export default function AdminSubscriptionsPage() {
       return <span className="rounded-full bg-[#f5f3ee] px-2 py-0.5 text-[10px] font-semibold text-[#72706a]">체험</span>;
     }
     const map: Record<string, { label: string; style: string }> = {
-      ACTIVE: { label: "활성", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      ACTIVE: { label: "활성", style: "bg-[#E0F2FE] text-[#0284C7]" },
       PAUSED: { label: "일시정지", style: "bg-[#fef9ee] text-[#b45309]" },
       QUEUED: { label: "대기", style: "bg-[#fef9ee] text-[#b45309]" },
       CANCELLED: { label: "취소", style: "bg-red-50 text-red-600" },
@@ -239,7 +239,7 @@ export default function AdminSubscriptionsPage() {
       {/* 구독 목록 */}
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : subscriptions.length === 0 ? (
         <motion.p variants={fadeUp} className="mt-12 text-center text-[13px] text-[#72706a]">
@@ -291,7 +291,7 @@ export default function AdminSubscriptionsPage() {
                         {sub.status === "ACTIVE" && (
                           <button
                             onClick={() => openModal(sub, "extend")}
-                            className="rounded-md bg-[#eef7f3] px-2 py-1 text-[11px] font-medium text-[#2d6a4f] hover:bg-[#d4ede4]"
+                            className="rounded-md bg-[#E0F2FE] px-2 py-1 text-[11px] font-medium text-[#0284C7] hover:bg-[#BAE6FD]"
                           >
                             연장
                           </button>
@@ -360,7 +360,7 @@ export default function AdminSubscriptionsPage() {
                   <select
                     value={selectedPlanId}
                     onChange={(e) => setSelectedPlanId(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#2d6a4f] focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/10"
+                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#0284C7] focus:outline-none focus:ring-2 focus:ring-[#0284C7]/10"
                   >
                     {plans.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -376,7 +376,7 @@ export default function AdminSubscriptionsPage() {
                   <select
                     value={extendMonths}
                     onChange={(e) => setExtendMonths(Number(e.target.value))}
-                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#2d6a4f] focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/10"
+                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-[13px] text-[#1a1918] focus:border-[#0284C7] focus:outline-none focus:ring-2 focus:ring-[#0284C7]/10"
                   >
                     {[1, 2, 3, 6, 12].map((m) => (
                       <option key={m} value={m}>{m}개월</option>
@@ -385,7 +385,7 @@ export default function AdminSubscriptionsPage() {
                 </div>
               )}
               {actionType === "trial" && (
-                <p className="rounded-lg bg-[#eef7f3] p-3 text-[13px] text-[#2d6a4f]">
+                <p className="rounded-lg bg-[#E0F2FE] p-3 text-[13px] text-[#0284C7]">
                   이 업체에 Basic 3개월 무료 체험을 부여합니다.
                 </p>
               )}
@@ -401,7 +401,7 @@ export default function AdminSubscriptionsPage() {
               <button
                 onClick={handleAction}
                 disabled={actionLoading}
-                className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
+                className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50"
               >
                 {actionLoading ? "처리중..." : "확인"}
               </button>

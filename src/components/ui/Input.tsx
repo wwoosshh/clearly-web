@@ -43,7 +43,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             "placeholder:text-[#a8a49c]",
             error
               ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
-              : "border-[#e2ddd6] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10",
+              : "border-[#e2ddd6] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10",
             "disabled:bg-[#f0ede8] disabled:text-[#a8a49c] disabled:cursor-not-allowed",
             className
           )}

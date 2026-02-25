@@ -85,7 +85,7 @@ export default function AdminReviewsPage() {
         <select
           value={visibleFilter}
           onChange={(e) => { setVisibleFilter(e.target.value); setPage(1); }}
-          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
         >
           <option value="">전체</option>
           <option value="true">표시</option>
@@ -94,7 +94,7 @@ export default function AdminReviewsPage() {
         <select
           value={minRating}
           onChange={(e) => { setMinRating(e.target.value); setPage(1); }}
-          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
         >
           <option value="">최소 별점</option>
           <option value="1">1점 이상</option>
@@ -106,7 +106,7 @@ export default function AdminReviewsPage() {
         <select
           value={maxRating}
           onChange={(e) => { setMaxRating(e.target.value); setPage(1); }}
-          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
         >
           <option value="">최대 별점</option>
           <option value="1">1점 이하</option>
@@ -119,7 +119,7 @@ export default function AdminReviewsPage() {
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show">
@@ -158,7 +158,7 @@ export default function AdminReviewsPage() {
                         <td className="px-4 py-3">
                           <span className={cn(
                             "rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                            review.isVisible ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-red-50 text-red-600"
+                            review.isVisible ? "bg-[#E0F2FE] text-[#0284C7]" : "bg-red-50 text-red-600"
                           )}>
                             {review.isVisible ? "표시" : "숨김"}
                           </span>
@@ -172,7 +172,7 @@ export default function AdminReviewsPage() {
                               "rounded-md px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:opacity-50",
                               review.isVisible
                                 ? "bg-red-600 text-white hover:bg-red-700"
-                                : "bg-[#2d6a4f] text-[#f5f3ee] hover:bg-[#4a8c6a]"
+                                : "bg-[#0284C7] text-[#f5f3ee] hover:bg-[#0EA5E9]"
                             )}
                           >
                             {review.isVisible ? "숨김" : "표시"}

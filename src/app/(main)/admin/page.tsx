@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : stats ? (
         <>
@@ -237,11 +237,11 @@ export default function AdminDashboardPage() {
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-[12px] font-medium text-[#72706a]">{card.label}</p>
-                    <span className="text-[#d4ede4] transition-colors group-hover:text-[#2d6a4f]">
+                    <span className="text-[#BAE6FD] transition-colors group-hover:text-[#0284C7]">
                       {card.icon}
                     </span>
                   </div>
-                  <p className="mt-3 text-2xl font-bold text-[#2d6a4f]">
+                  <p className="mt-3 text-2xl font-bold text-[#0284C7]">
                     {(stats[card.key] ?? 0).toLocaleString()}
                   </p>
                 </Link>
@@ -323,25 +323,25 @@ export default function AdminDashboardPage() {
                   <motion.div variants={fadeUp}>
                     <Link
                       href="/admin/inquiries"
-                      className="flex items-center justify-between rounded-xl border border-[#e2ddd6] bg-[#eef7f3] p-4 transition-colors hover:bg-[#d4ede4]"
+                      className="flex items-center justify-between rounded-xl border border-[#e2ddd6] bg-[#E0F2FE] p-4 transition-colors hover:bg-[#BAE6FD]"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#d4ede4] text-[#2d6a4f]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#BAE6FD] text-[#0284C7]">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             <polyline points="22,6 12,13 2,6" />
                           </svg>
                         </span>
                         <div>
-                          <p className="text-[14px] font-semibold text-[#2d6a4f]">
+                          <p className="text-[14px] font-semibold text-[#0284C7]">
                             미답변 문의 {stats.pendingInquiries}건
                           </p>
-                          <p className="text-[12px] text-[#4a8c6a]">
+                          <p className="text-[12px] text-[#0EA5E9]">
                             답변 대기 중인 문의가 있습니다
                           </p>
                         </div>
                       </div>
-                      <span className="flex items-center gap-1 text-[13px] font-medium text-[#2d6a4f]">
+                      <span className="flex items-center gap-1 text-[13px] font-medium text-[#0284C7]">
                         바로가기
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="9 18 15 12 9 6" />

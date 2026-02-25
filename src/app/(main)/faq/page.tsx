@@ -88,11 +88,11 @@ export default function FaqPage() {
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="질문 검색..."
-              className="flex-1 rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 placeholder:text-[#a8a49c]"
+              className="flex-1 rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 placeholder:text-[#a8a49c]"
             />
             <button
               onClick={handleSearch}
-              className="press-scale rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840]"
+              className="press-scale rounded-lg bg-[#0284C7] px-5 py-2.5 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1]"
             >
               검색
             </button>
@@ -103,7 +103,7 @@ export default function FaqPage() {
       {/* 내용 */}
       {isLoading ? (
         <div className="mt-12 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#d4ede4] border-t-[#4a8c6a]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#BAE6FD] border-t-[#0EA5E9]" />
         </div>
       ) : isEmpty ? (
         <div className="mt-12 text-center">
@@ -133,7 +133,7 @@ export default function FaqPage() {
                       >
                         <span
                           className={`pr-4 text-[14px] font-medium transition-colors ${
-                            isOpen ? "text-[#2d6a4f]" : "text-[#1a1918]"
+                            isOpen ? "text-[#0284C7]" : "text-[#1a1918]"
                           }`}
                         >
                           {faq.question}
@@ -141,7 +141,7 @@ export default function FaqPage() {
                         <span
                           className={`shrink-0 transition-all ${
                             isOpen
-                              ? "text-[#2d6a4f] rotate-180"
+                              ? "text-[#0284C7] rotate-180"
                               : "text-[#a8a49c]"
                           }`}
                         >

@@ -77,7 +77,7 @@ export function ChatMessages({
               </div>
             </div>
             <div className="flex justify-end">
-              <div className="h-10 w-40 bg-[#d4ede4] rounded-2xl rounded-br-md" />
+              <div className="h-10 w-40 bg-[#BAE6FD] rounded-2xl rounded-br-md" />
             </div>
             <div className="flex gap-2 justify-start">
               <div className="h-8 w-8 rounded-full bg-[#e2ddd6] flex-shrink-0 mt-5" />
@@ -150,7 +150,7 @@ export function ChatMessages({
                             className={cn(
                               "rounded-2xl px-4 py-2.5 text-[14px] transition-opacity",
                               isMe
-                                ? "bg-[#2d6a4f] text-[#f5f3ee] rounded-br-md"
+                                ? "bg-[#0284C7] text-[#f5f3ee] rounded-br-md"
                                 : "bg-white text-[#1a1918] border border-[#e2ddd6] rounded-bl-md",
                               isTemp && "opacity-60"
                             )}
@@ -160,7 +160,7 @@ export function ChatMessages({
                         )}
                         <div className={cn("flex items-center gap-1 mt-1", isMe ? "flex-row-reverse" : "flex-row")}>
                           {isMe && !isTemp && !msg.isRead && (
-                            <span className="text-[11px] font-semibold text-[#4a8c6a]">1</span>
+                            <span className="text-[11px] font-semibold text-[#0EA5E9]">1</span>
                           )}
                           <span className="text-[11px] text-[#a8a49c]">
                             {isTemp

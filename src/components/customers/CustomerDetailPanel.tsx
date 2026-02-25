@@ -59,8 +59,8 @@ const STAGES: PipelineStage[] = ["LEAD", "CONSULTING", "BOOKED", "COMPLETED", "V
 
 const STAGE_CONFIG: Record<PipelineStage, { accent: string; bg: string }> = {
   LEAD:       { accent: "#a8a49c", bg: "#a8a49c15" },
-  CONSULTING: { accent: "#4a8c6a", bg: "#4a8c6a15" },
-  BOOKED:     { accent: "#2d6a4f", bg: "#2d6a4f15" },
+  CONSULTING: { accent: "#0EA5E9", bg: "#0EA5E915" },
+  BOOKED:     { accent: "#0284C7", bg: "#0284C715" },
   COMPLETED:  { accent: "#141412", bg: "#14141215" },
   VIP:        { accent: "#d97706", bg: "#d9770615" },
 };
@@ -74,7 +74,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-  COMPLETED: { bg: "#d6ede2",  color: "#2d6a4f" },
+  COMPLETED: { bg: "#BAE6FD",  color: "#0284C7" },
   REJECTED:  { bg: "#fee2e2",  color: "#dc2626" },
   CANCELLED: { bg: "#fee2e2",  color: "#dc2626" },
   REQUESTED: { bg: "#f0ede8",  color: "#72706a" },
@@ -215,7 +215,7 @@ export default function CustomerDetailPanel({
 
             {loading ? (
               <div className="flex flex-col items-center justify-center gap-3 py-24">
-                <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
                 <span className="text-[13px] text-[#a8a49c]">불러오는 중</span>
               </div>
             ) : detail ? (
@@ -399,7 +399,7 @@ export default function CustomerDetailPanel({
                           initial={{ opacity: 0, x: 4 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0 }}
-                          className="text-[11px] font-medium text-[#4a8c6a]"
+                          className="text-[11px] font-medium text-[#0EA5E9]"
                         >
                           저장됨
                         </motion.span>
@@ -411,7 +411,7 @@ export default function CustomerDetailPanel({
                     onChange={(e) => handleMemoChange(e.target.value)}
                     placeholder="메모를 입력하세요"
                     rows={3}
-                    className="w-full resize-none rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3 py-2.5 text-[13px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#4a8c6a] focus:outline-none focus:bg-white transition-colors"
+                    className="w-full resize-none rounded-xl border border-[#e2ddd6] bg-[#f5f3ee] px-3 py-2.5 text-[13px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#0EA5E9] focus:outline-none focus:bg-white transition-colors"
                   />
                 </motion.div>
 
@@ -448,7 +448,7 @@ export default function CustomerDetailPanel({
                             </div>
                             <p className="mt-1 text-[12px] text-[#72706a] truncate">{m.address}</p>
                             <div className="mt-1.5 flex items-center justify-between">
-                              <span className="text-[11px] font-semibold tabular-nums text-[#2d6a4f]">
+                              <span className="text-[11px] font-semibold tabular-nums text-[#0284C7]">
                                 {m.estimatedPrice ? `${m.estimatedPrice.toLocaleString()}원` : "-"}
                               </span>
                               <span className="text-[11px] text-[#a8a49c]">
@@ -458,7 +458,7 @@ export default function CustomerDetailPanel({
                             {m.chatRoomId && (
                               <Link
                                 href={`/chat?room=${m.chatRoomId}`}
-                                className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-medium text-[#4a8c6a] hover:text-[#2d6a4f] transition-colors"
+                                className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-medium text-[#0EA5E9] hover:text-[#0284C7] transition-colors"
                               >
                                 채팅방 바로가기
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">

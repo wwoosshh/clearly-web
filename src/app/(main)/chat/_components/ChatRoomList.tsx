@@ -74,7 +74,7 @@ export function ChatRoomList({
                     {room.lastMessage || "대화를 시작해보세요"}
                   </p>
                   {room.unreadCount > 0 && (
-                    <span className="ml-2 flex h-5 min-w-[20px] flex-shrink-0 items-center justify-center rounded-full bg-[#2d6a4f] px-1.5 text-[11px] font-bold text-[#f5f3ee]">
+                    <span className="ml-2 flex h-5 min-w-[20px] flex-shrink-0 items-center justify-center rounded-full bg-[#0284C7] px-1.5 text-[11px] font-bold text-[#f5f3ee]">
                       {room.unreadCount}
                     </span>
                   )}

@@ -228,7 +228,7 @@ export default function CompanyProfileEditPage() {
   if (isLoading) {
     return (
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-20 flex justify-center">
-        <Spinner size="lg" className="text-[#4a8c6a]" />
+        <Spinner size="lg" className="text-[#0EA5E9]" />
       </div>
     );
   }
@@ -285,7 +285,7 @@ export default function CompanyProfileEditPage() {
                             <circle cx="12" cy="10" r="3" />
                           </svg>
                           <input
-                            className="w-full rounded-lg border border-[#e2ddd6] bg-white py-2.5 pl-10 pr-10 text-[14px] text-[#1a1918] placeholder-[#a8a49c] focus:border-[#2d6a4f] focus:outline-none focus:ring-1 focus:ring-[#2d6a4f]/20 transition-colors"
+                            className="w-full rounded-lg border border-[#e2ddd6] bg-white py-2.5 pl-10 pr-10 text-[14px] text-[#1a1918] placeholder-[#a8a49c] focus:border-[#0284C7] focus:outline-none focus:ring-1 focus:ring-[#0284C7]/20 transition-colors"
                             placeholder="주소 검색 (예: 강남구, 역삼동)"
                             value={showAddressSuggestions ? addressQuery : form.address}
                             onChange={(e) => {
@@ -350,7 +350,7 @@ export default function CompanyProfileEditPage() {
                           </div>
                         )}
                         {form.address && !showAddressSuggestions && (
-                          <p className="mt-1 text-[13px] font-medium text-[#2d6a4f]">{form.address}</p>
+                          <p className="mt-1 text-[13px] font-medium text-[#0284C7]">{form.address}</p>
                         )}
                       </div>
                       <Field label="상세주소" value={form.detailAddress} onChange={(v) => update("detailAddress", v)} />
@@ -386,8 +386,8 @@ export default function CompanyProfileEditPage() {
                                 }}
                                 className={`rounded-full border px-3 py-1.5 text-[13px] transition-colors ${
                                   isSelected
-                                    ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
-                                    : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#4a8c6a]"
+                                    ? "border-[#0284C7] bg-[#0284C7] text-[#f5f3ee]"
+                                    : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#0EA5E9]"
                                 }`}
                               >
                                 {tier.label}
@@ -442,7 +442,7 @@ export default function CompanyProfileEditPage() {
                             type="button"
                             onClick={() => profileImgRef.current?.click()}
                             disabled={isUploading}
-                            className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-[#e2ddd6] text-[#a8a49c] hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors disabled:opacity-50"
+                            className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-[#e2ddd6] text-[#a8a49c] hover:border-[#0284C7] hover:text-[#0284C7] transition-colors disabled:opacity-50"
                           >
                             {isUploading ? <Spinner size="sm" /> : (
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -466,12 +466,12 @@ export default function CompanyProfileEditPage() {
                             value={newVideo}
                             onChange={(e) => setNewVideo(e.target.value)}
                             placeholder="동영상 URL 입력"
-                            className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                            className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
                           />
                           <button
                             type="button"
                             onClick={() => { if (newVideo.trim()) { update("videos", [...form.videos, newVideo.trim()]); setNewVideo(""); } }}
-                            className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors press-scale"
+                            className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0369A1] transition-colors press-scale"
                           >
                             추가
                           </button>
@@ -492,14 +492,14 @@ export default function CompanyProfileEditPage() {
                             value={item.title}
                             onChange={(e) => { const u = [...form.portfolio]; u[idx] = { ...u[idx], title: e.target.value }; update("portfolio", u); }}
                             placeholder="제목"
-                            className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                            className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
                           />
                           <textarea
                             value={item.description}
                             onChange={(e) => { const u = [...form.portfolio]; u[idx] = { ...u[idx], description: e.target.value }; update("portfolio", u); }}
                             placeholder="설명"
                             rows={2}
-                            className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] resize-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                            className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] resize-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
                           />
                           <div className="flex flex-wrap gap-2">
                             {(item.images || []).map((img: string, imgIdx: number) => (
@@ -530,7 +530,7 @@ export default function CompanyProfileEditPage() {
                             <button
                               type="button"
                               onClick={() => portfolioImgRefs.current[idx]?.click()}
-                              className="flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-[#e2ddd6] text-[#a8a49c] hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors"
+                              className="flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-[#e2ddd6] text-[#a8a49c] hover:border-[#0284C7] hover:text-[#0284C7] transition-colors"
                             >
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -542,7 +542,7 @@ export default function CompanyProfileEditPage() {
                       <button
                         type="button"
                         onClick={() => update("portfolio", [...form.portfolio, { title: "", description: "", images: [] }])}
-                        className="w-full rounded-lg border-2 border-dashed border-[#e2ddd6] py-3 text-[14px] text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors press-scale"
+                        className="w-full rounded-lg border-2 border-dashed border-[#e2ddd6] py-3 text-[14px] text-[#72706a] hover:border-[#0284C7] hover:text-[#0284C7] transition-colors press-scale"
                       >
                         + 포트폴리오 추가
                       </button>
@@ -560,9 +560,9 @@ export default function CompanyProfileEditPage() {
                                 key={i}
                                 type="button"
                                 onClick={() => update("certificates", removeAt(form.certificates, i))}
-                                className="rounded-full bg-[#d4ede4] px-3 py-1 text-[13px] text-[#2d6a4f] hover:bg-[#c0e4d8] transition-colors press-scale"
+                                className="rounded-full bg-[#BAE6FD] px-3 py-1 text-[13px] text-[#0284C7] hover:bg-[#c0e4d8] transition-colors press-scale"
                               >
-                                {cert} <span className="ml-1 text-[#4a8c6a]">x</span>
+                                {cert} <span className="ml-1 text-[#0EA5E9]">x</span>
                               </button>
                             ))}
                           </div>
@@ -573,12 +573,12 @@ export default function CompanyProfileEditPage() {
                             onChange={(e) => setNewCert(e.target.value)}
                             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (newCert.trim()) { update("certificates", [...form.certificates, newCert.trim()]); setNewCert(""); } } }}
                             placeholder="자격증명 입력 (예: 청소관련 자격증)"
-                            className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                            className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
                           />
                           <button
                             type="button"
                             onClick={() => { if (newCert.trim()) { update("certificates", [...form.certificates, newCert.trim()]); setNewCert(""); } }}
-                            className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors press-scale"
+                            className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0369A1] transition-colors press-scale"
                           >
                             추가
                           </button>
@@ -596,7 +596,7 @@ export default function CompanyProfileEditPage() {
                           <button
                             type="button"
                             onClick={() => bizRegRef.current?.click()}
-                            className="w-full rounded-lg border-2 border-dashed border-[#e2ddd6] py-3 text-[14px] text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors press-scale"
+                            className="w-full rounded-lg border-2 border-dashed border-[#e2ddd6] py-3 text-[14px] text-[#72706a] hover:border-[#0284C7] hover:text-[#0284C7] transition-colors press-scale"
                           >
                             + 사업자등록증 업로드
                           </button>
@@ -630,12 +630,12 @@ export default function CompanyProfileEditPage() {
                             value={newCertName}
                             onChange={(e) => setNewCertName(e.target.value)}
                             placeholder="자격증명 입력"
-                            className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                            className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
                           />
                           <button
                             type="button"
                             onClick={() => certDocRef.current?.click()}
-                            className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors press-scale"
+                            className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0369A1] transition-colors press-scale"
                           >
                             업로드
                           </button>
@@ -655,7 +655,7 @@ export default function CompanyProfileEditPage() {
                               key={opt}
                               type="button"
                               onClick={() => update("paymentMethods", selected ? form.paymentMethods.filter((m) => m !== opt) : [...form.paymentMethods, opt])}
-                              className={`rounded-full border px-4 py-2 text-[13px] font-medium transition-colors press-scale ${selected ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]" : "border-[#e2ddd6] text-[#72706a] hover:bg-[#f0ede8]"}`}
+                              className={`rounded-full border px-4 py-2 text-[13px] font-medium transition-colors press-scale ${selected ? "border-[#0284C7] bg-[#0284C7] text-[#f5f3ee]" : "border-[#e2ddd6] text-[#72706a] hover:bg-[#f0ede8]"}`}
                             >
                               {opt}
                             </button>
@@ -677,21 +677,21 @@ export default function CompanyProfileEditPage() {
                             value={item.question}
                             onChange={(e) => { const u = [...form.faq]; u[idx] = { ...u[idx], question: e.target.value }; update("faq", u); }}
                             placeholder="질문"
-                            className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                            className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
                           />
                           <textarea
                             value={item.answer}
                             onChange={(e) => { const u = [...form.faq]; u[idx] = { ...u[idx], answer: e.target.value }; update("faq", u); }}
                             placeholder="답변"
                             rows={2}
-                            className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] resize-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                            className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] resize-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
                           />
                         </div>
                       ))}
                       <button
                         type="button"
                         onClick={() => update("faq", [...form.faq, { question: "", answer: "" }])}
-                        className="w-full rounded-lg border-2 border-dashed border-[#e2ddd6] py-3 text-[14px] text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors press-scale"
+                        className="w-full rounded-lg border-2 border-dashed border-[#e2ddd6] py-3 text-[14px] text-[#72706a] hover:border-[#0284C7] hover:text-[#0284C7] transition-colors press-scale"
                       >
                         + Q&A 추가
                       </button>
@@ -709,7 +709,7 @@ export default function CompanyProfileEditPage() {
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="flex h-[50px] w-full items-center justify-center rounded-xl bg-[#2d6a4f] text-[15px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
+            className="flex h-[50px] w-full items-center justify-center rounded-xl bg-[#0284C7] text-[15px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
           >
             {isSaving ? "저장중..." : "저장"}
           </button>
@@ -736,7 +736,7 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={4}
-          className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3.5 py-2.5 text-[14px] text-[#1a1918] resize-none placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+          className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3.5 py-2.5 text-[14px] text-[#1a1918] resize-none placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
         />
       ) : (
         <input
@@ -744,7 +744,7 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3.5 py-2.5 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+          className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3.5 py-2.5 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
         />
       )}
     </div>
@@ -767,9 +767,9 @@ function TagField({
               key={i}
               type="button"
               onClick={() => onRemove(i)}
-              className="rounded-full bg-[#d4ede4] px-3 py-1 text-[13px] text-[#2d6a4f] hover:bg-[#c0e4d8] transition-colors press-scale"
+              className="rounded-full bg-[#BAE6FD] px-3 py-1 text-[13px] text-[#0284C7] hover:bg-[#c0e4d8] transition-colors press-scale"
             >
-              {tag} <span className="ml-1 text-[#4a8c6a]">x</span>
+              {tag} <span className="ml-1 text-[#0EA5E9]">x</span>
             </button>
           ))}
         </div>
@@ -780,12 +780,12 @@ function TagField({
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } }}
           placeholder={`${label} 입력`}
-          className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+          className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[14px] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
         />
         <button
           type="button"
           onClick={onAdd}
-          className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors press-scale"
+          className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0369A1] transition-colors press-scale"
         >
           추가
         </button>

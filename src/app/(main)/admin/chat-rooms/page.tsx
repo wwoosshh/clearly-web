@@ -94,16 +94,16 @@ export default function AdminChatRoomsPage() {
             placeholder="참여자 이름으로 검색..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 placeholder:text-[#72706a]"
+            className="flex-1 rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10 placeholder:text-[#72706a]"
           />
-          <button type="submit" className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#4a8c6a]">
+          <button type="submit" className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] hover:bg-[#0EA5E9]">
             검색
           </button>
         </form>
         <select
           value={isActiveFilter}
           onChange={(e) => { setIsActiveFilter(e.target.value); setPage(1); }}
-          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f]"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7]"
         >
           <option value="">전체 상태</option>
           <option value="true">활성</option>
@@ -112,7 +112,7 @@ export default function AdminChatRoomsPage() {
         <select
           value={refundFilter}
           onChange={(e) => { setRefundFilter(e.target.value); setPage(1); }}
-          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f]"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7]"
         >
           <option value="">환불 상태</option>
           <option value="NONE">없음</option>
@@ -124,7 +124,7 @@ export default function AdminChatRoomsPage() {
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show">
@@ -162,7 +162,7 @@ export default function AdminChatRoomsPage() {
                           <div className="flex gap-1">
                             <span className={cn(
                               "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                              room.isActive ? "bg-[#eef7f3] text-[#2d6a4f]" : "bg-red-50 text-red-600"
+                              room.isActive ? "bg-[#E0F2FE] text-[#0284C7]" : "bg-red-50 text-red-600"
                             )}>
                               {room.isActive ? "활성" : "종료"}
                             </span>
@@ -170,7 +170,7 @@ export default function AdminChatRoomsPage() {
                               <span className={cn(
                                 "rounded-full px-2 py-0.5 text-[10px] font-semibold",
                                 room.refundStatus === "REQUESTED" ? "bg-[#fef9ee] text-[#b45309]" :
-                                room.refundStatus === "APPROVED" ? "bg-[#eef7f3] text-[#2d6a4f]" :
+                                room.refundStatus === "APPROVED" ? "bg-[#E0F2FE] text-[#0284C7]" :
                                 "bg-red-50 text-red-600"
                               )}>
                                 환불{room.refundStatus === "REQUESTED" ? "요청" : room.refundStatus === "APPROVED" ? "승인" : "거절"}

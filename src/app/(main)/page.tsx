@@ -15,9 +15,9 @@ import { QuickNav } from "@/components/layout/QuickNav";
 
 /* ── 디자인 토큰 ─────────────────────────────────── */
 const C = {
-  green: "#2d6a4f",
-  greenMid: "#4a8c6a",
-  greenLight: "#d6ede2",
+  green: "#0284C7",
+  greenMid: "#0EA5E9",
+  greenLight: "#BAE6FD",
   cream: "#f5f3ee",
   text: "#1a1918",
   muted: "#72706a",
@@ -383,7 +383,7 @@ function SearchBar({
   return (
     <div className="px-4 pb-1 pt-4 md:px-6 md:pt-5 md:pb-2">
       <div
-        className="flex items-center gap-2.5 rounded-2xl border border-[#e2ddd6] bg-white px-4 h-[48px] transition-all focus-within:border-[#2d6a4f]/40 focus-within:shadow-[0_0_0_3px_rgba(45,106,79,0.06)] md:h-[56px] md:mx-auto md:max-w-2xl md:px-5 md:shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
+        className="flex items-center gap-2.5 rounded-2xl border border-[#e2ddd6] bg-white px-4 h-[48px] transition-all focus-within:border-[#0284C7]/40 focus-within:shadow-[0_0_0_3px_rgba(2,132,199,0.06)] md:h-[56px] md:mx-auto md:max-w-2xl md:px-5 md:shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
       >
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#b5b0a8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
           <circle cx="11" cy="11" r="8" />
@@ -444,7 +444,7 @@ function CompanyListItem({
   return (
     <Link
       href={`/companies/${company.id}`}
-      className="flex gap-3.5 border-b border-[#f0ede8] px-4 py-4 transition-colors active:bg-[#fafaf8] md:flex-col md:gap-0 md:bg-white md:p-0 md:overflow-hidden md:rounded-2xl md:border md:border-[#eae7e1] md:hover:shadow-[0_4px_20px_rgba(45,106,79,0.08)] md:hover:-translate-y-0.5 md:transition-all"
+      className="flex gap-3.5 border-b border-[#f0ede8] px-4 py-4 transition-colors active:bg-[#fafaf8] md:flex-col md:gap-0 md:bg-white md:p-0 md:overflow-hidden md:rounded-2xl md:border md:border-[#eae7e1] md:hover:shadow-[0_4px_20px_rgba(2,132,199,0.08)] md:hover:-translate-y-0.5 md:transition-all"
     >
       {/* 썸네일 */}
       <div className="relative h-[104px] w-[104px] flex-shrink-0 overflow-hidden rounded-2xl bg-[#f2efea] md:h-[180px] md:w-full md:rounded-none md:rounded-t-2xl">
@@ -520,7 +520,7 @@ function CompanyListItem({
                       ? "bg-amber-50 text-amber-700"
                       : tier === "DEEP_CLEAN"
                       ? "bg-blue-50 text-blue-700"
-                      : "bg-green-50 text-green-700"
+                      : "bg-sky-50 text-sky-700"
                   }`}
                 >
                   {tier === "PREMIUM_CLEAN" ? "프리미엄클린" : tier === "DEEP_CLEAN" ? "딥클린" : "클린"}
@@ -599,7 +599,7 @@ function FilterDropdown({
         className={cn(
           "flex items-center gap-1 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors",
           value
-            ? "bg-[#2d6a4f]/10 text-[#2d6a4f]"
+            ? "bg-[#0284C7]/10 text-[#0284C7]"
             : "text-[#72706a] hover:text-[#1a1918]"
         )}
       >
@@ -637,7 +637,7 @@ function FilterDropdown({
                 className={cn(
                   "flex w-full items-center px-4 py-2 text-[13px] transition-colors",
                   value === opt.value
-                    ? "font-semibold text-[#2d6a4f]"
+                    ? "font-semibold text-[#0284C7]"
                     : "text-[#72706a] hover:bg-[#f5f3ee]"
                 )}
               >
@@ -683,7 +683,7 @@ function FilterSortBar({
       <p className="text-[13px] text-[#72706a]">
         {total != null ? (
           <>
-            총 <span className="font-semibold text-[#2d6a4f]">{total}</span>개
+            총 <span className="font-semibold text-[#0284C7]">{total}</span>개
           </>
         ) : (
           "\u00A0"
@@ -966,7 +966,7 @@ function HomeContent() {
             <div className="flex items-center justify-center gap-2 py-6">
               <svg width="18" height="18" viewBox="0 0 24 24" className="animate-spin" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="#e2ddd6" strokeWidth="2.5" />
-                <path d="M12 2a10 10 0 0 1 10 10" stroke="#2d6a4f" strokeWidth="2.5" strokeLinecap="round" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="#0284C7" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
               <span className="text-[13px] font-medium text-[#72706a]">업체 정보를 불러오는 중...</span>
             </div>
@@ -1013,7 +1013,7 @@ function HomeContent() {
                 <button
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
-                  className="flex h-[48px] w-full items-center justify-center rounded-2xl border border-[#e2ddd6] text-[14px] font-semibold text-[#72706a] transition-all hover:border-[#2d6a4f] hover:text-[#2d6a4f] disabled:opacity-50 md:max-w-md md:mx-auto"
+                  className="flex h-[48px] w-full items-center justify-center rounded-2xl border border-[#e2ddd6] text-[14px] font-semibold text-[#72706a] transition-all hover:border-[#0284C7] hover:text-[#0284C7] disabled:opacity-50 md:max-w-md md:mx-auto"
                 >
                   {isLoadingMore ? (
                     <span className="flex items-center gap-2">
@@ -1069,7 +1069,7 @@ function HomeContent() {
             {!isCompany && (
               <Link
                 href="/estimate/request"
-                className="mt-5 inline-flex h-[40px] items-center rounded-2xl bg-[#2d6a4f] px-6 text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
+                className="mt-5 inline-flex h-[40px] items-center rounded-2xl bg-[#0284C7] px-6 text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
               >
                 견적 직접 요청하기
               </Link>

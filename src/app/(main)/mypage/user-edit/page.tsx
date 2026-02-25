@@ -105,7 +105,7 @@ export default function UserEditPage() {
   if (isLoading) {
     return (
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-20 flex justify-center">
-        <Spinner size="lg" className="text-[#4a8c6a]" />
+        <Spinner size="lg" className="text-[#0EA5E9]" />
       </div>
     );
   }
@@ -194,7 +194,7 @@ export default function UserEditPage() {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-                className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3.5 py-2.5 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3.5 py-2.5 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
               />
             </div>
 
@@ -205,7 +205,7 @@ export default function UserEditPage() {
                 value={form.phone}
                 onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
                 placeholder="010-0000-0000"
-                className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3.5 py-2.5 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none transition-colors"
+                className="w-full rounded-lg border border-[#e2ddd6] bg-white px-3.5 py-2.5 text-[14px] text-[#1a1918] placeholder:text-[#a8a49c] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 focus:outline-none transition-colors"
               />
             </div>
 
@@ -223,7 +223,7 @@ export default function UserEditPage() {
               type="button"
               onClick={handleSave}
               disabled={isSaving || !hasChanges}
-              className="flex h-[50px] w-full items-center justify-center rounded-xl bg-[#2d6a4f] text-[15px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
+              className="flex h-[50px] w-full items-center justify-center rounded-xl bg-[#0284C7] text-[15px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:opacity-50 disabled:cursor-not-allowed press-scale"
             >
               {isSaving ? "저장중..." : "저장"}
             </button>

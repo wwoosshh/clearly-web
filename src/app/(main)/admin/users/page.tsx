@@ -92,7 +92,7 @@ export default function AdminUsersPage() {
   const roleBadge = (role: string) => {
     const styles: Record<string, string> = {
       USER: "bg-[#f0ede8] text-[#72706a]",
-      COMPANY: "bg-[#eef7f3] text-[#2d6a4f]",
+      COMPANY: "bg-[#E0F2FE] text-[#0284C7]",
       ADMIN: "bg-red-50 text-red-600",
     };
     const labels: Record<string, string> = {
@@ -131,12 +131,12 @@ export default function AdminUsersPage() {
               placeholder="이름 또는 이메일로 검색..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full rounded-lg border border-[#e2ddd6] bg-white py-2 pl-9 pr-3 text-[13px] text-[#1a1918] outline-none placeholder:text-[#72706a] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+              className="w-full rounded-lg border border-[#e2ddd6] bg-white py-2 pl-9 pr-3 text-[13px] text-[#1a1918] outline-none placeholder:text-[#72706a] focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
             />
           </div>
           <button
             type="submit"
-            className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a]"
+            className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9]"
           >
             검색
           </button>
@@ -147,7 +147,7 @@ export default function AdminUsersPage() {
             setRoleFilter(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+          className="rounded-lg border border-[#e2ddd6] bg-white px-3 py-2 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
         >
           <option value="">전체 역할</option>
           <option value="USER">일반</option>
@@ -158,7 +158,7 @@ export default function AdminUsersPage() {
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : (
         <>
@@ -204,7 +204,7 @@ export default function AdminUsersPage() {
                             className={cn(
                               "inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold",
                               user.isActive
-                                ? "bg-[#eef7f3] text-[#2d6a4f]"
+                                ? "bg-[#E0F2FE] text-[#0284C7]"
                                 : "bg-red-50 text-red-600"
                             )}
                           >
@@ -230,7 +230,7 @@ export default function AdminUsersPage() {
                                   "rounded-md px-2.5 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors disabled:opacity-50",
                                   user.isActive
                                     ? "bg-[#72706a] hover:bg-[#1a1918]"
-                                    : "bg-[#2d6a4f] hover:bg-[#4a8c6a]"
+                                    : "bg-[#0284C7] hover:bg-[#0EA5E9]"
                                 )}
                               >
                                 {user.isActive ? "비활성화" : "활성화"}

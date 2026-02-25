@@ -60,7 +60,7 @@ export default function PricingPage() {
 
         {/* Basic 요금 카드 */}
         <motion.div variants={fadeUp} className="mt-10">
-          <div className="rounded-xl border border-[#2d6a4f] bg-white p-6 shadow-[0_8px_30px_rgba(45,106,79,0.12)]">
+          <div className="rounded-xl border border-[#0284C7] bg-white p-6 shadow-[0_8px_30px_rgba(2,132,199,0.12)]">
             <div className="text-[12px] font-semibold uppercase tracking-wide text-[#72706a]">
               기본형
             </div>
@@ -86,7 +86,7 @@ export default function PricingPage() {
             <div className="mt-5 space-y-2.5">
               {FEATURES.map((feat) => (
                 <div key={feat} className="flex items-center gap-2 text-[13px] text-[#1a1918]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                   {feat}

@@ -82,9 +82,9 @@ export default function ContactPage() {
     return (
       <div className="mx-auto max-w-xl px-4 sm:px-6 py-24 text-center">
         <FadeIn>
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#d4ede4]">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#BAE6FD]">
             <svg
-              className="h-8 w-8 text-[#2d6a4f]"
+              className="h-8 w-8 text-[#0284C7]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -113,7 +113,7 @@ export default function ContactPage() {
             {isAuthenticated && (
               <Link
                 href="/contact/history"
-                className="rounded-lg bg-[#2d6a4f] px-5 py-2.5 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840]"
+                className="rounded-lg bg-[#0284C7] px-5 py-2.5 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1]"
               >
                 내 문의 내역
               </Link>
@@ -137,7 +137,7 @@ export default function ContactPage() {
             <div className="mt-4">
               <Link
                 href="/contact/history"
-                className="text-sm font-medium text-[#2d6a4f] underline underline-offset-2 hover:text-[#235840] transition-colors"
+                className="text-sm font-medium text-[#0284C7] underline underline-offset-2 hover:text-[#0369A1] transition-colors"
               >
                 내 문의 내역 보기
               </Link>
@@ -157,7 +157,7 @@ export default function ContactPage() {
               value={form.name}
               onChange={handleChange}
               readOnly={isAuthenticated && !!user?.name}
-              className="mt-1.5 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 read-only:bg-[#f0ede8] read-only:text-[#72706a]"
+              className="mt-1.5 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 read-only:bg-[#f0ede8] read-only:text-[#72706a]"
             />
           </motion.div>
 
@@ -172,7 +172,7 @@ export default function ContactPage() {
               value={form.email}
               onChange={handleChange}
               readOnly={isAuthenticated && !!user?.email}
-              className="mt-1.5 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 read-only:bg-[#f0ede8] read-only:text-[#72706a]"
+              className="mt-1.5 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 read-only:bg-[#f0ede8] read-only:text-[#72706a]"
             />
           </motion.div>
 
@@ -185,7 +185,7 @@ export default function ContactPage() {
               name="category"
               value={form.category}
               onChange={handleChange}
-              className="mt-1.5 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 text-[#1a1918]"
+              className="mt-1.5 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 text-[#1a1918]"
             >
               <option value="">선택해주세요</option>
               {INQUIRY_CATEGORIES.map((cat) => (
@@ -207,7 +207,7 @@ export default function ContactPage() {
               value={form.title}
               onChange={handleChange}
               placeholder="문의 제목을 입력해주세요"
-              className="mt-1.5 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 placeholder:text-[#a8a49c]"
+              className="mt-1.5 w-full rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 placeholder:text-[#a8a49c]"
             />
           </motion.div>
 
@@ -222,7 +222,7 @@ export default function ContactPage() {
               onChange={handleChange}
               rows={6}
               placeholder="문의 내용을 자세히 입력해주세요"
-              className="mt-1.5 w-full resize-none rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 placeholder:text-[#a8a49c]"
+              className="mt-1.5 w-full resize-none rounded-lg border border-[#e2ddd6] px-4 py-2.5 text-sm outline-none transition-colors focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/20 placeholder:text-[#a8a49c]"
             />
           </motion.div>
 
@@ -236,7 +236,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="press-scale w-full rounded-lg bg-[#2d6a4f] py-3 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] disabled:cursor-not-allowed disabled:opacity-50"
+              className="press-scale w-full rounded-lg bg-[#0284C7] py-3 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? "접수 중..." : "문의 접수"}
             </button>

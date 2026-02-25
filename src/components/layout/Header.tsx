@@ -63,7 +63,7 @@ const Header = React.memo(function Header() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-200",
         isScrolled
-          ? "border-b border-[#e2ddd6] bg-white/95 backdrop-blur-md shadow-[0_1px_12px_rgba(45,106,79,0.06)]"
+          ? "border-b border-[#e2ddd6] bg-white/95 backdrop-blur-md shadow-[0_1px_12px_rgba(2,132,199,0.06)]"
           : "bg-white"
       )}
     >
@@ -84,13 +84,13 @@ const Header = React.memo(function Header() {
               className={cn(
                 "relative whitespace-nowrap px-4 py-2 text-[14px] font-medium transition-colors",
                 pathname === link.href
-                  ? "text-[#2d6a4f]"
+                  ? "text-[#0284C7]"
                   : "text-[#72706a] hover:text-[#1a1918]"
               )}
             >
               {link.label}
               {pathname === link.href && (
-                <span className="absolute bottom-0 left-4 right-4 h-[2px] bg-[#2d6a4f] rounded-full" />
+                <span className="absolute bottom-0 left-4 right-4 h-[2px] bg-[#0284C7] rounded-full" />
               )}
             </Link>
           ))}
@@ -108,7 +108,7 @@ const Header = React.memo(function Header() {
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 text-sm text-[#1a1918] transition-colors hover:bg-[#f0ede8]"
                 >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2d6a4f] text-[#f5f3ee] overflow-hidden">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0284C7] text-[#f5f3ee] overflow-hidden">
                     {user.profileImage ? (
                       <Image src={user.profileImage} alt="" width={28} height={28} className="h-full w-full object-cover" />
                     ) : (
@@ -130,7 +130,7 @@ const Header = React.memo(function Header() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: -4 }}
                       transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      className="absolute right-0 mt-1.5 w-52 rounded-xl border border-[#e2ddd6] bg-white py-1.5 shadow-[0_8px_30px_rgba(45,106,79,0.10)]"
+                      className="absolute right-0 mt-1.5 w-52 rounded-xl border border-[#e2ddd6] bg-white py-1.5 shadow-[0_8px_30px_rgba(2,132,199,0.10)]"
                     >
                       <div className="px-4 py-2.5 border-b border-[#f0ede8]">
                         <p className="text-[13px] font-semibold text-[#1a1918]">{user.name}</p>
@@ -180,7 +180,7 @@ const Header = React.memo(function Header() {
               </Link>
               <Link
                 href="/register"
-                className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840]"
+                className="rounded-lg bg-[#0284C7] px-4 py-2 text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1]"
               >
                 시작하기
               </Link>
@@ -231,7 +231,7 @@ const Header = React.memo(function Header() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="absolute left-0 right-0 top-[60px] z-50 border-t border-[#e2ddd6] bg-white shadow-[0_8px_24px_rgba(45,106,79,0.08)] md:hidden"
+              className="absolute left-0 right-0 top-[60px] z-50 border-t border-[#e2ddd6] bg-white shadow-[0_8px_24px_rgba(2,132,199,0.08)] md:hidden"
             >
               <nav className="flex flex-col px-5 pt-3">
                 {navLinks.map((link) => (
@@ -241,7 +241,7 @@ const Header = React.memo(function Header() {
                     className={cn(
                       "py-2.5 text-[15px] font-medium transition-colors",
                       pathname === link.href
-                        ? "text-[#2d6a4f]"
+                        ? "text-[#0284C7]"
                         : "text-[#72706a]"
                     )}
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -282,7 +282,7 @@ const Header = React.memo(function Header() {
                     </Link>
                     <Link
                       href="/register"
-                      className="flex h-11 items-center justify-center rounded-lg bg-[#2d6a4f] text-[14px] font-medium text-[#f5f3ee] hover:bg-[#235840] transition-colors"
+                      className="flex h-11 items-center justify-center rounded-lg bg-[#0284C7] text-[14px] font-medium text-[#f5f3ee] hover:bg-[#0369A1] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       시작하기

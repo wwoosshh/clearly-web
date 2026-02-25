@@ -9,7 +9,7 @@ export default function ChatPage() {
     <Suspense
       fallback={
         <div className="flex h-[calc(100vh-60px)] items-center justify-center">
-          <Spinner size="lg" className="text-[#4a8c6a]" />
+          <Spinner size="lg" className="text-[#0EA5E9]" />
         </div>
       }
     >

@@ -118,8 +118,8 @@ function TypeIcon({ type }: { type: NotificationType }) {
     // 매칭 요청 — 사람 + 화살표 (포레스트 그린)
     case "MATCHING_REQUEST":
       return (
-        <span className={`${base} bg-[#eef7f3]`}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <span className={`${base} bg-[#E0F2FE]`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
             <circle cx="9" cy="7" r="4" />
             <line x1="19" y1="8" x2="19" y2="14" />

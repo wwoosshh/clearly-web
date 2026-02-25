@@ -88,7 +88,7 @@ export default function AdminSettingsPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -131,14 +131,14 @@ export default function AdminSettingsPage() {
                           onChange={(e) =>
                             setEditValues((prev) => ({ ...prev, [key]: e.target.value }))
                           }
-                          className="w-full rounded-lg border border-[#e2ddd6] px-2.5 py-1.5 text-[13px] text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                          className="w-full rounded-lg border border-[#e2ddd6] px-2.5 py-1.5 text-[13px] text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                         />
                       </td>
                       <td className="px-4 py-3">
                         <button
                           onClick={() => handleSave(key)}
                           disabled={!hasChanged || saving === key}
-                          className="rounded-lg bg-[#2d6a4f] px-3 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a] disabled:opacity-30"
+                          className="rounded-lg bg-[#0284C7] px-3 py-1 text-[11px] font-semibold text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9] disabled:opacity-30"
                         >
                           {saving === key ? "..." : "저장"}
                         </button>

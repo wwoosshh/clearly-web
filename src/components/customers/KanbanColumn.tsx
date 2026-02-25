@@ -13,8 +13,8 @@ const STAGE_CONFIG: Record<
   { accent: string; bg: string; activeBg: string; countBg: string }
 > = {
   LEAD:       { accent: "#a8a49c", bg: "transparent",  activeBg: "#ede9e3",  countBg: "#a8a49c18" },
-  CONSULTING: { accent: "#4a8c6a", bg: "transparent",  activeBg: "#e4f2ea",  countBg: "#4a8c6a18" },
-  BOOKED:     { accent: "#2d6a4f", bg: "transparent",  activeBg: "#ddeee6",  countBg: "#2d6a4f18" },
+  CONSULTING: { accent: "#0EA5E9", bg: "transparent",  activeBg: "#e4f2ea",  countBg: "#0EA5E918" },
+  BOOKED:     { accent: "#0284C7", bg: "transparent",  activeBg: "#ddeee6",  countBg: "#0284C718" },
   COMPLETED:  { accent: "#141412", bg: "transparent",  activeBg: "#e6e2dc",  countBg: "#14141218" },
   VIP:        { accent: "#d97706", bg: "transparent",  activeBg: "#fdf3d7",  countBg: "#d9770618" },
 };

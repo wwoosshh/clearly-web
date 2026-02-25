@@ -79,8 +79,8 @@ export default function AdminMatchingsPage() {
   const statusBadge = (status: string) => {
     const map: Record<string, { label: string; style: string }> = {
       REQUESTED: { label: "요청", style: "bg-[#fef9ee] text-[#b45309]" },
-      ACCEPTED: { label: "수락", style: "bg-[#eef7f3] text-[#2d6a4f]" },
-      COMPLETED: { label: "완료", style: "bg-[#eef7f3] text-[#2d6a4f]" },
+      ACCEPTED: { label: "수락", style: "bg-[#E0F2FE] text-[#0284C7]" },
+      COMPLETED: { label: "완료", style: "bg-[#E0F2FE] text-[#0284C7]" },
       CANCELLED: { label: "취소", style: "bg-red-50 text-red-600" },
       REJECTED: { label: "거절", style: "bg-red-50 text-red-600" },
     };
@@ -115,7 +115,7 @@ export default function AdminMatchingsPage() {
 
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show">

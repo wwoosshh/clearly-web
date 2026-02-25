@@ -262,7 +262,7 @@ export default function CustomersPage() {
   if (!isInitialized) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
       </div>
     );
   }
@@ -285,7 +285,7 @@ export default function CustomersPage() {
             <p className="mt-1 text-[14px] text-[#72706a]">
               파이프라인으로 고객을 단계별로 관리하세요
               {totalCustomers > 0 && (
-                <span className="ml-2 text-[13px] font-semibold text-[#4a8c6a]">
+                <span className="ml-2 text-[13px] font-semibold text-[#0EA5E9]">
                   · 총 {totalCustomers}명
                 </span>
               )}
@@ -356,7 +356,7 @@ export default function CustomersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="이름, 전화번호 검색"
-              className="w-full rounded-xl border border-[#e2ddd6] bg-white py-2 pl-9 pr-9 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#4a8c6a] focus:outline-none transition-colors"
+              className="w-full rounded-xl border border-[#e2ddd6] bg-white py-2 pl-9 pr-9 text-[14px] text-[#141412] placeholder:text-[#c8c4bc] focus:border-[#0EA5E9] focus:outline-none transition-colors"
             />
             <AnimatePresence>
               {searching && (
@@ -366,7 +366,7 @@ export default function CustomersPage() {
                   exit={{ opacity: 0 }}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
-                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#4a8c6a]" />
+                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0EA5E9]" />
                 </motion.div>
               )}
               {search && !searching && (
@@ -391,7 +391,7 @@ export default function CustomersPage() {
             <select
               value={filterTag}
               onChange={(e) => setFilterTag(e.target.value)}
-              className="appearance-none rounded-xl border border-[#e2ddd6] bg-white py-2 pl-3 pr-8 text-[13px] font-medium text-[#141412] focus:border-[#4a8c6a] focus:outline-none transition-colors"
+              className="appearance-none rounded-xl border border-[#e2ddd6] bg-white py-2 pl-3 pr-8 text-[13px] font-medium text-[#141412] focus:border-[#0EA5E9] focus:outline-none transition-colors"
             >
               <option value="">전체 태그</option>
               {companyTags.map((tag) => (

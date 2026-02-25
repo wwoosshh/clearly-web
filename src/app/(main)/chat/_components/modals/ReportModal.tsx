@@ -69,8 +69,8 @@ export function ReportModal({
     >
       {reportSuccess ? (
         <div className="text-center py-4">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#eef7f3]">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E0F2FE]">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
@@ -78,7 +78,7 @@ export function ReportModal({
           <p className="mt-1 text-[13px] text-[#72706a]">관리자가 검토 후 조치하겠습니다.</p>
           <button
             onClick={resetAndClose}
-            className="mt-5 flex h-[38px] w-full items-center justify-center rounded-lg bg-[#2d6a4f] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#235840] active:scale-95"
+            className="mt-5 flex h-[38px] w-full items-center justify-center rounded-lg bg-[#0284C7] text-[13px] font-medium text-[#f5f3ee] transition-colors hover:bg-[#0369A1] active:scale-95"
           >
             확인
           </button>
@@ -114,14 +114,14 @@ export function ReportModal({
                   className={cn(
                     "flex items-center rounded-lg border px-4 py-3 text-[14px] text-left transition-colors active:scale-[0.98]",
                     reportReason === opt.value
-                      ? "border-[#2d6a4f] bg-[#eef7f3] font-medium text-[#141412]"
+                      ? "border-[#0284C7] bg-[#E0F2FE] font-medium text-[#141412]"
                       : "border-[#e2ddd6] text-[#72706a] hover:bg-[#f5f3ee]"
                   )}
                 >
                   <span className={cn(
                     "mr-3 flex h-5 w-5 items-center justify-center rounded-full border-2",
                     reportReason === opt.value
-                      ? "border-[#2d6a4f] bg-[#2d6a4f]"
+                      ? "border-[#0284C7] bg-[#0284C7]"
                       : "border-[#e2ddd6]"
                   )}>
                     {reportReason === opt.value && (
@@ -143,7 +143,7 @@ export function ReportModal({
               onChange={(e) => setReportDescription(e.target.value)}
               placeholder="구체적인 상황을 설명해주세요"
               rows={3}
-              className="w-full rounded-lg border border-[#e2ddd6] px-3.5 py-3 text-[14px] resize-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10 focus:outline-none"
+              className="w-full rounded-lg border border-[#e2ddd6] px-3.5 py-3 text-[14px] resize-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10 focus:outline-none"
             />
           </div>
 

@@ -36,7 +36,7 @@ export default function AdminBannersPage() {
     title: "",
     subtitle: "",
     imageUrl: "",
-    bgColor: "#2d6a4f",
+    bgColor: "#0284C7",
     linkUrl: "",
     linkText: "",
     sortOrder: 0,
@@ -67,7 +67,7 @@ export default function AdminBannersPage() {
       title: "",
       subtitle: "",
       imageUrl: "",
-      bgColor: "#2d6a4f",
+      bgColor: "#0284C7",
       linkUrl: "",
       linkText: "",
       sortOrder: 0,
@@ -97,7 +97,7 @@ export default function AdminBannersPage() {
     try {
       const payload: Record<string, unknown> = {
         title: form.title,
-        bgColor: form.bgColor || "#2d6a4f",
+        bgColor: form.bgColor || "#0284C7",
         sortOrder: form.sortOrder,
         isVisible: form.isVisible,
       };
@@ -169,7 +169,7 @@ export default function AdminBannersPage() {
         </div>
         <button
           onClick={openCreate}
-          className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#4a8c6a]"
+          className="rounded-lg bg-[#0284C7] px-4 py-2 text-sm font-medium text-[#f5f3ee] transition-colors hover:bg-[#0EA5E9]"
         >
           새 배너
         </button>
@@ -178,7 +178,7 @@ export default function AdminBannersPage() {
       {/* 테이블 */}
       {isLoading ? (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#2d6a4f]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#e2ddd6] border-t-[#0284C7]" />
         </div>
       ) : banners.length === 0 ? (
         <motion.div variants={fadeUp} className="mt-8 text-center text-sm text-[#72706a]">
@@ -219,7 +219,7 @@ export default function AdminBannersPage() {
                     </td>
                     <td className="max-w-[160px] px-4 py-3">
                       {banner.linkUrl ? (
-                        <span className="truncate text-[12px] text-[#2d6a4f]">{banner.linkText || banner.linkUrl}</span>
+                        <span className="truncate text-[12px] text-[#0284C7]">{banner.linkText || banner.linkUrl}</span>
                       ) : (
                         <span className="text-[12px] text-[#c4bfb6]">—</span>
                       )}
@@ -252,7 +252,7 @@ export default function AdminBannersPage() {
                         onClick={() => handleToggleVisible(banner)}
                         className={cn(
                           "inline-block h-5 w-9 rounded-full transition-colors",
-                          banner.isVisible ? "bg-[#2d6a4f]" : "bg-[#e2ddd6]"
+                          banner.isVisible ? "bg-[#0284C7]" : "bg-[#e2ddd6]"
                         )}
                       >
                         <span
@@ -267,7 +267,7 @@ export default function AdminBannersPage() {
                       <div className="flex items-center justify-end gap-3">
                         <button
                           onClick={() => openEdit(banner)}
-                          className="text-[12px] font-medium text-[#2d6a4f] hover:text-[#4a8c6a]"
+                          className="text-[12px] font-medium text-[#0284C7] hover:text-[#0EA5E9]"
                         >
                           수정
                         </button>
@@ -308,7 +308,7 @@ export default function AdminBannersPage() {
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="배너 제목"
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 />
               </div>
               <div>
@@ -318,7 +318,7 @@ export default function AdminBannersPage() {
                   value={form.subtitle}
                   onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
                   placeholder="배너 부제/설명"
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 />
               </div>
               <div>
@@ -328,8 +328,8 @@ export default function AdminBannersPage() {
                     type="text"
                     value={form.bgColor}
                     onChange={(e) => setForm({ ...form, bgColor: e.target.value })}
-                    placeholder="예: #2d6a4f 또는 linear-gradient(135deg, #2d6a4f, #1a4030)"
-                    className="w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                    placeholder="예: #0284C7 또는 linear-gradient(135deg, #0284C7, #1a4030)"
+                    className="w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                   />
                   <div
                     className="h-9 w-12 shrink-0 rounded-lg border border-[#e2ddd6]"
@@ -353,7 +353,7 @@ export default function AdminBannersPage() {
                   value={form.linkUrl}
                   onChange={(e) => setForm({ ...form, linkUrl: e.target.value })}
                   placeholder="예: /estimate/request"
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 />
               </div>
               <div>
@@ -363,7 +363,7 @@ export default function AdminBannersPage() {
                   value={form.linkText}
                   onChange={(e) => setForm({ ...form, linkText: e.target.value })}
                   placeholder="예: 견적 요청하기"
-                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                  className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                 />
               </div>
               <div className="flex gap-4">
@@ -373,7 +373,7 @@ export default function AdminBannersPage() {
                     type="number"
                     value={form.sortOrder}
                     onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
-                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/10"
+                    className="mt-1 w-full rounded-lg border border-[#e2ddd6] px-3 py-2 text-sm text-[#1a1918] outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10"
                   />
                 </div>
                 <div className="flex items-end pb-1">
@@ -382,7 +382,7 @@ export default function AdminBannersPage() {
                       type="checkbox"
                       checked={form.isVisible}
                       onChange={(e) => setForm({ ...form, isVisible: e.target.checked })}
-                      className="h-4 w-4 rounded border-[#e2ddd6] accent-[#2d6a4f]"
+                      className="h-4 w-4 rounded border-[#e2ddd6] accent-[#0284C7]"
                     />
                     노출
                   </label>
@@ -397,7 +397,7 @@ export default function AdminBannersPage() {
                   style={{
                     background: form.imageUrl
                       ? `url(${form.imageUrl}) center/cover`
-                      : form.bgColor || "#2d6a4f",
+                      : form.bgColor || "#0284C7",
                   }}
                 >
                   {form.imageUrl && (
@@ -433,7 +433,7 @@ export default function AdminBannersPage() {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="rounded-lg bg-[#2d6a4f] px-4 py-2 text-sm font-medium text-[#f5f3ee] hover:bg-[#4a8c6a] disabled:opacity-50"
+                className="rounded-lg bg-[#0284C7] px-4 py-2 text-sm font-medium text-[#f5f3ee] hover:bg-[#0EA5E9] disabled:opacity-50"
               >
                 {isSaving ? "저장 중..." : "저장"}
               </button>
