@@ -20,8 +20,8 @@ function OAuthCallbackContent() {
       return;
     }
 
-    // accessToken만 localStorage에 저장 (refreshToken은 메모리 전용)
     localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
 
     // 사용자 정보 조회 후 인증 상태 설정
     api

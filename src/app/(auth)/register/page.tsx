@@ -89,8 +89,8 @@ export default function RegisterPage() {
 
       const { user, tokens } = res.data;
 
-      // accessToken만 localStorage에 저장 (refreshToken은 메모리 전용)
       localStorage.setItem("accessToken", tokens.accessToken);
+      localStorage.setItem("refreshToken", tokens.refreshToken);
 
       useAuthStore.setState({
         user,
