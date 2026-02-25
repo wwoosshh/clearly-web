@@ -531,18 +531,18 @@ export default function RegisterCompanyPage() {
           <label className="text-[13px] font-medium text-[#1a1918]">
             예상 가격 범위 (원)
           </label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full min-w-0">
             <input
               type="number"
               placeholder="최소 가격"
-              className="h-[44px] flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none"
+              className="h-[44px] min-w-0 flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none"
               {...register("minPrice")}
             />
-            <span className="text-[#a8a49c]">~</span>
+            <span className="flex-shrink-0 text-[#a8a49c]">~</span>
             <input
               type="number"
               placeholder="최대 가격"
-              className="h-[44px] flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none"
+              className="h-[44px] min-w-0 flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] placeholder:text-[#a8a49c] focus:border-[#2d6a4f] focus:ring-2 focus:ring-[#2d6a4f]/20 focus:outline-none"
               {...register("maxPrice")}
             />
           </div>
