@@ -212,79 +212,130 @@ function BannerSlide({ banner }: { banner: BannerData }) {
 function BannerCarousel({ banners }: { banners: BannerData[] }) {
   const len = banners.length;
   // 내부 인덱스: 0=클론(마지막), 1~len=실제, len+1=클론(첫번째)
-  const [current, setCurrent] = useState(1);
-  const [isDragging, setIsDragging] = useState(false);
-  const [animate, setAnimate] = useState(true);
+  const [idx, setIdx] = useState(1);
+  const [dragPx, setDragPx] = useState(0);
+  const [smooth, setSmooth] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+  const startX = useRef(0);
+  const idxRef = useRef(idx);
+  idxRef.current = idx;
 
-  // 확장 슬라이드: [마지막 클론, ...실제 배너들, 첫번째 클론]
   const slides = len > 0 ? [banners[len - 1], ...banners, banners[0]] : [];
 
-  // 자동 재생
+  /** 슬라이드 이동 */
+  const go = useCallback((to: number, animated: boolean) => {
+    setSmooth(animated);
+    setIdx(to);
+    setDragPx(0);
+  }, []);
+
+  /** 자동 재생 — 슬라이드 전환 후 4.5초 뒤 다음으로 */
   useEffect(() => {
-    if (isDragging || len === 0) return;
-    const timer = setInterval(() => {
-      setAnimate(true);
-      setCurrent((p) => p + 1);
+    if (len <= 1) return;
+    const id = setTimeout(() => {
+      if (!dragging.current) go(idxRef.current + 1, true);
     }, 4500);
-    return () => clearInterval(timer);
-  }, [isDragging, len, current]);
+    return () => clearTimeout(id);
+  }, [idx, len, go]);
 
-  // 클론 도달 시 실제 위치로 순간 이동
-  useEffect(() => {
-    if (!animate) return;
-    if (current === len + 1) {
-      const timeout = setTimeout(() => {
-        setAnimate(false);
-        setCurrent(1);
-      }, 400);
-      return () => clearTimeout(timeout);
+  /** 클론 도달 시 실제 위치로 순간 이동 */
+  const handleTransitionEnd = useCallback(() => {
+    if (idxRef.current === len + 1) {
+      setSmooth(false);
+      setIdx(1);
+    } else if (idxRef.current === 0) {
+      setSmooth(false);
+      setIdx(len);
     }
-    if (current === 0) {
-      const timeout = setTimeout(() => {
-        setAnimate(false);
-        setCurrent(len);
-      }, 400);
-      return () => clearTimeout(timeout);
-    }
-  }, [current, len, animate]);
+  }, [len]);
 
-  const handleDragEnd = (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
-    setIsDragging(false);
-    const swipe = info.offset.x + info.velocity.x * 0.3;
-    setAnimate(true);
-    if (swipe < -40) {
-      setCurrent((p) => p + 1);
-    } else if (swipe > 40) {
-      setCurrent((p) => p - 1);
-    }
-  };
+  /** 드래그 시작 */
+  const onDragStart = useCallback((clientX: number) => {
+    dragging.current = true;
+    startX.current = clientX;
+    setSmooth(false);
+    setDragPx(0);
+  }, []);
 
-  // 인디케이터용 실제 인덱스 (0-based)
-  const realIndex = current === 0 ? len - 1 : current === len + 1 ? 0 : current - 1;
+  /** 드래그 이동 */
+  const onDragMove = useCallback((clientX: number) => {
+    if (!dragging.current) return;
+    setDragPx(clientX - startX.current);
+  }, []);
+
+  /** 드래그 종료 → 방향 판정 후 스냅 */
+  const onDragEnd = useCallback((clientX: number) => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    const diff = clientX - startX.current;
+    const w = containerRef.current?.offsetWidth || 300;
+    if (diff < -w * 0.15) {
+      go(idxRef.current + 1, true);
+    } else if (diff > w * 0.15) {
+      go(idxRef.current - 1, true);
+    } else {
+      go(idxRef.current, true);
+    }
+  }, [go]);
+
+  /* ── 터치 이벤트 (모바일) ── */
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    onDragStart(e.touches[0].clientX);
+  }, [onDragStart]);
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    onDragMove(e.touches[0].clientX);
+  }, [onDragMove]);
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    onDragEnd(e.changedTouches[0].clientX);
+  }, [onDragEnd]);
+
+  /* ── 마우스 이벤트 (데스크톱) ── */
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    onDragStart(e.clientX);
+    const moveHandler = (ev: MouseEvent) => onDragMove(ev.clientX);
+    const upHandler = (ev: MouseEvent) => {
+      onDragEnd(ev.clientX);
+      window.removeEventListener("mousemove", moveHandler);
+      window.removeEventListener("mouseup", upHandler);
+    };
+    window.addEventListener("mousemove", moveHandler);
+    window.addEventListener("mouseup", upHandler);
+  }, [onDragStart, onDragMove, onDragEnd]);
+
+  /* ── 위치 계산 ── */
+  const w = containerRef.current?.offsetWidth || 1;
+  const pct = -(idx * 100) + (dragPx / w) * 100;
+  const realIndex = idx === 0 ? len - 1 : idx === len + 1 ? 0 : idx - 1;
 
   if (len === 0) return null;
 
   return (
-    <div className="relative overflow-hidden" ref={containerRef}>
-      <motion.div
-        className="flex"
-        animate={{ x: `-${current * 100}%` }}
-        transition={
-          animate
-            ? { type: "spring", stiffness: 260, damping: 30, mass: 0.9 }
-            : { duration: 0 }
-        }
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.12}
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={handleDragEnd}
+    <div
+      ref={containerRef}
+      className="relative overflow-hidden"
+      style={{ touchAction: "pan-y" }}
+    >
+      <div
+        className="flex select-none"
+        style={{
+          transform: `translateX(${pct}%)`,
+          transition: smooth
+            ? "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+            : "none",
+        }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onMouseDown={onMouseDown}
+        onTransitionEnd={handleTransitionEnd}
+        onDragStart={(e) => e.preventDefault()}
       >
         {slides.map((banner, i) => (
           <BannerSlide key={`${banner.id}-${i}`} banner={banner} />
         ))}
-      </motion.div>
+      </div>
 
       {/* 인디케이터 */}
       {len > 1 && (
@@ -292,10 +343,7 @@ function BannerCarousel({ banners }: { banners: BannerData[] }) {
           {banners.map((_, i) => (
             <button
               key={i}
-              onClick={() => {
-                setAnimate(true);
-                setCurrent(i + 1);
-              }}
+              onClick={() => go(i + 1, true)}
               className="relative h-[5px] rounded-full transition-all duration-300"
               style={{
                 width: i === realIndex ? 20 : 5,
