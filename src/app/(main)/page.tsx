@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import type { CompanySearchResponse, CompanySearchResult } from "@/types";
 import { unwrapPaginatedResponse } from "@/lib/apiHelpers";
+import { QuickNav } from "@/components/layout/QuickNav";
 
 /* ── 디자인 토큰 ─────────────────────────────────── */
 const C = {
@@ -274,114 +275,7 @@ function BannerCarousel({ banners }: { banners: BannerData[] }) {
   );
 }
 
-/* ════════════════════════════════════════════════════
-   카테고리 필터 (수평 스크롤 + 화살표 가이드)
-════════════════════════════════════════════════════ */
-function CategoryFilter({
-  selected,
-  onSelect,
-}: {
-  selected: string;
-  onSelect: (key: string) => void;
-}) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const checkScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-  }, []);
-
-  useEffect(() => {
-    checkScroll();
-    const el = scrollRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", checkScroll, { passive: true });
-    window.addEventListener("resize", checkScroll);
-    return () => {
-      el.removeEventListener("scroll", checkScroll);
-      window.removeEventListener("resize", checkScroll);
-    };
-  }, [checkScroll]);
-
-  const scroll = (dir: "left" | "right") => {
-    scrollRef.current?.scrollBy({ left: dir === "left" ? -160 : 160, behavior: "smooth" });
-  };
-
-  return (
-    <div className="relative">
-      {/* 좌측 화살표 + 페이드 */}
-      <div
-        className={cn(
-          "pointer-events-none absolute left-0 top-0 z-10 flex h-full w-10 items-center justify-start bg-gradient-to-r from-white to-transparent transition-opacity duration-200 md:hidden",
-          canScrollLeft ? "opacity-100" : "opacity-0"
-        )}
-      >
-        <button
-          onClick={() => scroll("left")}
-          className="pointer-events-auto flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-[0_1px_4px_rgba(0,0,0,0.1)] backdrop-blur-sm"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#72706a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-      </div>
-
-      {/* 우측 화살표 + 페이드 */}
-      <div
-        className={cn(
-          "pointer-events-none absolute right-0 top-0 z-10 flex h-full w-10 items-center justify-end bg-gradient-to-l from-white to-transparent transition-opacity duration-200 md:hidden",
-          canScrollRight ? "opacity-100" : "opacity-0"
-        )}
-      >
-        <button
-          onClick={() => scroll("right")}
-          className="pointer-events-auto flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-[0_1px_4px_rgba(0,0,0,0.1)] backdrop-blur-sm"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#72706a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-      </div>
-
-      <div
-        ref={scrollRef}
-        className="-mx-4 overflow-x-auto px-4 md:-mx-0 md:px-0"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
-      >
-        <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
-        <div className="flex gap-1.5 py-3 md:flex-wrap md:gap-2">
-          {CATEGORIES.map((cat) => {
-            const isActive = selected === cat.key;
-            return (
-              <button
-                key={cat.key}
-                onClick={() => onSelect(cat.key)}
-                className={cn(
-                  "flex flex-shrink-0 flex-col items-center gap-1 rounded-2xl px-3.5 py-2.5 transition-all duration-200 md:flex-row md:gap-2 md:rounded-full md:px-4 md:py-2",
-                  isActive
-                    ? "bg-[#2d6a4f] text-white shadow-[0_2px_8px_rgba(45,106,79,0.2)]"
-                    : "bg-[#f7f5f0] text-[#72706a] hover:bg-[#edeae4] hover:text-[#1a1918]"
-                )}
-                style={{ minWidth: 62 }}
-              >
-                <span className={cn("transition-colors", isActive ? "text-white/90" : "text-[#9a958e]")}>
-                  {cat.icon}
-                </span>
-                <span className="whitespace-nowrap text-[11px] font-semibold leading-tight md:text-[13px]">
-                  {cat.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
+/* (카테고리 필터는 SortBar 내 드롭다운으로 통합됨) */
 
 /* ════════════════════════════════════════════════════
    검색 바
@@ -562,18 +456,23 @@ function CompanyListItem({
 /* ════════════════════════════════════════════════════
    정렬 셀렉트
 ════════════════════════════════════════════════════ */
-function SortBar({
-  total,
-  sortBy,
-  onSortChange,
+/* ════════════════════════════════════════════════════
+   필터 + 정렬 바 (카테고리 드롭다운 + 정렬 드롭다운)
+════════════════════════════════════════════════════ */
+function FilterDropdown({
+  label,
+  options,
+  value,
+  onChange,
 }: {
-  total: number | null;
-  sortBy: string;
-  onSortChange: (v: string) => void;
+  label: string;
+  options: readonly { value: string; label: string }[];
+  value: string;
+  onChange: (v: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const currentLabel = SORT_OPTIONS.find((o) => o.value === sortBy)?.label || "추천순";
+  const currentLabel = options.find((o) => o.value === value)?.label || label;
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -584,7 +483,89 @@ function SortBar({
   }, []);
 
   return (
-    <div className="flex items-center justify-between border-b border-[#f0ede8] px-4 py-3 md:px-0">
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "flex items-center gap-1 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors",
+          value
+            ? "bg-[#2d6a4f]/10 text-[#2d6a4f]"
+            : "text-[#72706a] hover:text-[#1a1918]"
+        )}
+      >
+        {currentLabel}
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={cn("transition-transform", isOpen && "rotate-180")}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 top-full z-20 mt-1.5 w-36 rounded-2xl border border-[#eae7e1] bg-white py-1.5 shadow-[0_8px_28px_rgba(0,0,0,0.08)]"
+          >
+            {options.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => {
+                  onChange(opt.value);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "flex w-full items-center px-4 py-2 text-[13px] transition-colors",
+                  value === opt.value
+                    ? "font-semibold text-[#2d6a4f]"
+                    : "text-[#72706a] hover:bg-[#f5f3ee]"
+                )}
+              >
+                {opt.label}
+                {value === opt.value && (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-auto">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+const CATEGORY_OPTIONS = [
+  { value: "", label: "전체 카테고리" },
+  ...CATEGORIES.filter((c) => c.key !== "").map((c) => ({ value: c.key, label: c.label })),
+] as const;
+
+function FilterSortBar({
+  total,
+  sortBy,
+  onSortChange,
+  category,
+  onCategoryChange,
+}: {
+  total: number | null;
+  sortBy: string;
+  onSortChange: (v: string) => void;
+  category: string;
+  onCategoryChange: (v: string) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between border-b border-[#f0ede8] px-4 py-2.5 md:px-0">
       <p className="text-[13px] text-[#72706a]">
         {total != null ? (
           <>
@@ -594,60 +575,19 @@ function SortBar({
           "\u00A0"
         )}
       </p>
-      <div ref={ref} className="relative">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-1 text-[13px] font-medium text-[#72706a] transition-colors hover:text-[#1a1918]"
-        >
-          {currentLabel}
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={cn("transition-transform", isOpen && "rotate-180")}
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -4, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.97 }}
-              transition={{ duration: 0.15 }}
-              className="absolute right-0 top-full z-20 mt-1.5 w-36 rounded-2xl border border-[#eae7e1] bg-white py-1.5 shadow-[0_8px_28px_rgba(0,0,0,0.08)]"
-            >
-              {SORT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => {
-                    onSortChange(opt.value);
-                    setIsOpen(false);
-                  }}
-                  className={cn(
-                    "flex w-full items-center px-4 py-2 text-[13px] transition-colors",
-                    sortBy === opt.value
-                      ? "font-semibold text-[#2d6a4f]"
-                      : "text-[#72706a] hover:bg-[#f5f3ee]"
-                  )}
-                >
-                  {opt.label}
-                  {sortBy === opt.value && (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-auto">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <div className="flex items-center gap-1">
+        <FilterDropdown
+          label="전체 카테고리"
+          options={CATEGORY_OPTIONS}
+          value={category}
+          onChange={onCategoryChange}
+        />
+        <FilterDropdown
+          label="추천순"
+          options={SORT_OPTIONS}
+          value={sortBy}
+          onChange={onSortChange}
+        />
       </div>
     </div>
   );
@@ -861,16 +801,18 @@ function HomeContent() {
       {/* 검색 바 */}
       <SearchBar keyword={keyword} onChange={setKeyword} onSearch={handleSearch} />
 
-      {/* 카테고리 필터 */}
+      {/* 퀵 네비게이션 */}
       <div className="px-4 md:px-0">
-        <CategoryFilter selected={selectedCategory} onSelect={handleCategoryChange} />
+        <QuickNav />
       </div>
 
-      {/* 정렬 바 */}
-      <SortBar
+      {/* 필터 + 정렬 바 */}
+      <FilterSortBar
         total={meta?.total ?? null}
         sortBy={sortBy}
         onSortChange={handleSortChange}
+        category={selectedCategory}
+        onCategoryChange={handleCategoryChange}
       />
 
       {/* 업체 리스트 */}
