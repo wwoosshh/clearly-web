@@ -28,7 +28,7 @@ interface SubscriptionState {
   subscription: ActiveSubscription | null;
   subscriptionStack: SubscriptionStackItem[];
   estimateLimit: EstimateLimitInfo | null;
-  plans: { BASIC: SubscriptionPlan[]; PRO: SubscriptionPlan[]; PREMIUM: SubscriptionPlan[] } | null;
+  plans: { BASIC: SubscriptionPlan[]; PRO?: SubscriptionPlan[]; PREMIUM?: SubscriptionPlan[] } | null;
   showPaymentPopup: boolean;
   isLoading: boolean;
   subscriptionLoaded: boolean;

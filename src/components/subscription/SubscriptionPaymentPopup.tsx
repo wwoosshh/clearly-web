@@ -34,15 +34,11 @@ export default function SubscriptionPaymentPopup() {
 
   if (!showPaymentPopup) return null;
 
-  const allTiers = [
-    { key: "BASIC" as const, label: "Basic", plans: plans?.BASIC || [] },
-    { key: "PRO" as const, label: "Pro", plans: plans?.PRO || [] },
-    { key: "PREMIUM" as const, label: "Premium", plans: plans?.PREMIUM || [] },
-  ];
+  const basicPlans = plans?.BASIC || [];
 
   const title = isTrial ? "유료 구독 안내" : "구독 안내";
   const message = isTrial
-    ? "현재 무료 체험 중입니다. 유료 구독으로 업그레이드하여 더 많은 기능을 이용해 보세요."
+    ? "현재 무료 체험 중입니다. 유료 구독으로 전환하여 서비스를 계속 이용하세요."
     : "서비스 이용을 위해 구독이 필요합니다. 아래 계좌로 입금 후 관리자 확인을 통해 활성화됩니다.";
 
   const bankDisplay = bankInfo
@@ -67,25 +63,21 @@ export default function SubscriptionPaymentPopup() {
           )}
         </div>
 
-        {/* 요금제 요약 */}
-        <div className="mt-4 space-y-3">
-          {allTiers.map((tier) => (
-            <div key={tier.key}>
-              <p className="text-[13px] font-semibold text-gray-900">{tier.label}</p>
-              {tier.plans.length > 0 ? (
-                <div className="mt-1 space-y-0.5">
-                  {tier.plans.map((plan) => (
-                    <div key={plan.id} className="flex justify-between text-[12px]">
-                      <span className="text-gray-500">{plan.durationMonths}개월</span>
-                      <span className="font-medium text-gray-900">{plan.price.toLocaleString()}원</span>
-                    </div>
-                  ))}
+        {/* Basic 요금제 */}
+        <div className="mt-4">
+          <p className="text-[13px] font-semibold text-gray-900">Basic</p>
+          {basicPlans.length > 0 ? (
+            <div className="mt-1 space-y-0.5">
+              {basicPlans.map((plan) => (
+                <div key={plan.id} className="flex justify-between text-[12px]">
+                  <span className="text-gray-500">{plan.durationMonths}개월</span>
+                  <span className="font-medium text-gray-900">{plan.price.toLocaleString()}원</span>
                 </div>
-              ) : (
-                <p className="text-[12px] text-gray-400">-</p>
-              )}
+              ))}
             </div>
-          ))}
+          ) : (
+            <p className="text-[12px] text-gray-400">-</p>
+          )}
         </div>
 
         <p className="mt-4 text-[12px] text-gray-400">
