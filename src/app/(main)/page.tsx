@@ -160,9 +160,9 @@ interface BannerData {
 ════════════════════════════════════════════════════ */
 function BannerSlide({ banner }: { banner: BannerData }) {
   return (
-    <div className="w-full flex-shrink-0 px-4 pt-4 pb-2 md:px-0">
+    <div className="w-full flex-shrink-0 px-4 pt-4 pb-2 md:px-6 md:pt-6 md:pb-3">
       <div
-        className="relative overflow-hidden rounded-2xl h-[160px] md:h-[200px] md:rounded-2xl flex flex-col justify-center px-7 md:px-12"
+        className="relative overflow-hidden rounded-2xl h-[160px] md:h-[280px] md:rounded-3xl flex flex-col justify-center px-7 md:px-16"
         style={{
           background: banner.imageUrl
             ? `url(${banner.imageUrl}) center/cover`
@@ -174,11 +174,11 @@ function BannerSlide({ banner }: { banner: BannerData }) {
         )}
         <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/[0.06]" />
         <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/[0.04]" />
-        <p className="relative text-[19px] font-bold leading-snug tracking-[-0.02em] text-white md:text-[24px]">
+        <p className="relative text-[19px] font-bold leading-snug tracking-[-0.02em] text-white md:text-[28px] lg:text-[32px]">
           {banner.title}
         </p>
         {banner.subtitle && (
-          <p className="relative mt-1.5 text-[13px] leading-relaxed text-white/50 md:text-[14px]">
+          <p className="relative mt-1.5 text-[13px] leading-relaxed text-white/50 md:text-[15px] lg:text-[16px]">
             {banner.subtitle}
           </p>
         )}
@@ -381,10 +381,9 @@ function SearchBar({
   onSearch: () => void;
 }) {
   return (
-    <div className="px-4 pb-1 pt-4 md:px-0">
+    <div className="px-4 pb-1 pt-4 md:px-6 md:pt-5 md:pb-2">
       <div
-        className="flex items-center gap-2.5 rounded-2xl border bg-white px-4 transition-all focus-within:border-[#2d6a4f]/40 focus-within:shadow-[0_0_0_3px_rgba(45,106,79,0.06)]"
-        style={{ borderColor: C.border, height: 48 }}
+        className="flex items-center gap-2.5 rounded-2xl border border-[#e2ddd6] bg-white px-4 h-[48px] transition-all focus-within:border-[#2d6a4f]/40 focus-within:shadow-[0_0_0_3px_rgba(45,106,79,0.06)] md:h-[56px] md:mx-auto md:max-w-2xl md:px-5 md:shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
       >
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#b5b0a8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
           <circle cx="11" cy="11" r="8" />
@@ -445,17 +444,17 @@ function CompanyListItem({
   return (
     <Link
       href={`/companies/${company.id}`}
-      className="flex gap-3.5 border-b border-[#f0ede8] px-4 py-4 transition-colors active:bg-[#fafaf8] md:rounded-2xl md:border md:border-[#eae7e1] md:px-5 md:py-5 md:hover:shadow-[0_2px_16px_rgba(0,0,0,0.04)]"
+      className="flex gap-3.5 border-b border-[#f0ede8] px-4 py-4 transition-colors active:bg-[#fafaf8] md:flex-col md:gap-0 md:bg-white md:p-0 md:overflow-hidden md:rounded-2xl md:border md:border-[#eae7e1] md:hover:shadow-[0_4px_20px_rgba(45,106,79,0.08)] md:hover:-translate-y-0.5 md:transition-all"
     >
       {/* 썸네일 */}
-      <div className="relative h-[104px] w-[104px] flex-shrink-0 overflow-hidden rounded-2xl bg-[#f2efea] md:h-[120px] md:w-[120px]">
+      <div className="relative h-[104px] w-[104px] flex-shrink-0 overflow-hidden rounded-2xl bg-[#f2efea] md:h-[180px] md:w-full md:rounded-none md:rounded-t-2xl">
         {photo ? (
           <Image
             src={photo}
             alt={company.businessName}
             fill
             className="object-cover"
-            sizes="120px"
+            sizes="(max-width: 768px) 104px, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -479,7 +478,7 @@ function CompanyListItem({
       </div>
 
       {/* 정보 */}
-      <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+      <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5 md:p-4 md:py-3.5">
         <div>
           {/* 업체명 */}
           <h3 className="truncate text-[15px] font-bold text-[#1a1918] md:text-[16px]">
@@ -532,7 +531,7 @@ function CompanyListItem({
         </div>
 
         {/* 하단: 가격 + 평점 */}
-        <div className="mt-2 flex items-end justify-between">
+        <div className="mt-2 flex items-end justify-between md:mt-3 md:border-t md:border-[#f0ede8] md:pt-3">
           <div>
             {priceRange && (
               <p className="text-[15px] font-bold text-[#1a1918] md:text-[16px]">
@@ -680,7 +679,7 @@ function FilterSortBar({
   onServiceTierChange: (v: string) => void;
 }) {
   return (
-    <div className="flex items-center justify-between border-b border-[#f0ede8] px-4 py-2.5 md:px-0">
+    <div className="flex items-center justify-between border-b border-[#f0ede8] px-4 py-2.5 md:px-6 md:py-3 md:border-b-0 md:mt-2">
       <p className="text-[13px] text-[#72706a]">
         {total != null ? (
           <>
@@ -719,9 +718,9 @@ function FilterSortBar({
 ════════════════════════════════════════════════════ */
 function SkeletonCard() {
   return (
-    <div className="flex gap-3.5 border-b border-[#f0ede8] px-4 py-4 md:rounded-2xl md:border md:border-[#eae7e1] md:px-5 md:py-5">
-      <div className="h-[104px] w-[104px] flex-shrink-0 animate-pulse rounded-2xl bg-[#edeae4] md:h-[120px] md:w-[120px]" />
-      <div className="flex flex-1 flex-col justify-between py-1">
+    <div className="flex gap-3.5 border-b border-[#f0ede8] px-4 py-4 md:flex-col md:gap-0 md:bg-white md:p-0 md:overflow-hidden md:rounded-2xl md:border md:border-[#eae7e1]">
+      <div className="h-[104px] w-[104px] flex-shrink-0 animate-pulse rounded-2xl bg-[#edeae4] md:h-[180px] md:w-full md:rounded-none" />
+      <div className="flex flex-1 flex-col justify-between py-1 md:p-4">
         <div>
           <div className="h-4 w-28 animate-pulse rounded-md bg-[#edeae4]" />
           <div className="mt-2 h-3 w-36 animate-pulse rounded-md bg-[#f2efea]" />
@@ -746,10 +745,10 @@ export default function Home() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-2xl bg-white lg:max-w-3xl">
-          <div className="h-[180px] animate-pulse bg-[#f0ede8]" />
-          <div className="px-4 py-6">
-            {Array.from({ length: 5 }).map((_, i) => (
+        <div className="mx-auto max-w-2xl bg-white md:max-w-6xl md:bg-transparent">
+          <div className="h-[180px] animate-pulse bg-[#f0ede8] md:mx-6 md:mt-6 md:h-[280px] md:rounded-3xl" />
+          <div className="px-4 py-6 md:grid md:grid-cols-2 md:gap-4 md:px-6 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}
           </div>
@@ -937,7 +936,7 @@ function HomeContent() {
   const hasMore = meta ? currentPage < meta.totalPages : false;
 
   return (
-    <div className="mx-auto max-w-2xl bg-white lg:max-w-3xl">
+    <div className="mx-auto max-w-2xl bg-white md:max-w-6xl md:bg-transparent">
       {/* 배너 캐러셀 */}
       <BannerCarousel banners={banners} />
 
@@ -945,7 +944,7 @@ function HomeContent() {
       <SearchBar keyword={keyword} onChange={setKeyword} onSearch={handleSearch} />
 
       {/* 퀵 네비게이션 */}
-      <div className="px-4 md:px-0">
+      <div className="px-4 md:px-6">
         <QuickNav />
       </div>
 
@@ -971,9 +970,11 @@ function HomeContent() {
               </svg>
               <span className="text-[13px] font-medium text-[#72706a]">업체 정보를 불러오는 중...</span>
             </div>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
+            <div className="md:grid md:grid-cols-2 md:gap-4 md:px-6 md:pt-4 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
           </div>
         ) : companies.length > 0 ? (
           <>
@@ -984,6 +985,7 @@ function HomeContent() {
                 hidden: {},
                 show: { transition: { staggerChildren: 0.04 } },
               }}
+              className="md:grid md:grid-cols-2 md:gap-4 md:px-6 md:pt-4 lg:grid-cols-3"
             >
               {companies.map((company) => (
                 <motion.div
@@ -1007,11 +1009,11 @@ function HomeContent() {
 
             {/* 더 보기 버튼 */}
             {hasMore && (
-              <div className="px-4 py-6 md:px-0">
+              <div className="px-4 py-6 md:px-6 md:py-8">
                 <button
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
-                  className="flex h-[48px] w-full items-center justify-center rounded-2xl border border-[#e2ddd6] text-[14px] font-semibold text-[#72706a] transition-all hover:border-[#2d6a4f] hover:text-[#2d6a4f] disabled:opacity-50"
+                  className="flex h-[48px] w-full items-center justify-center rounded-2xl border border-[#e2ddd6] text-[14px] font-semibold text-[#72706a] transition-all hover:border-[#2d6a4f] hover:text-[#2d6a4f] disabled:opacity-50 md:max-w-md md:mx-auto"
                 >
                   {isLoadingMore ? (
                     <span className="flex items-center gap-2">
@@ -1034,7 +1036,7 @@ function HomeContent() {
 
             {/* 리스트 끝 (더 이상 없을 때) */}
             {!hasMore && companies.length > 0 && (
-              <div className="flex flex-col items-center gap-1 py-10 text-center">
+              <div className="flex flex-col items-center gap-1 py-10 md:py-14 text-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4d0ca" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
@@ -1050,7 +1052,7 @@ function HomeContent() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="flex flex-col items-center py-20 text-center"
+            className="flex flex-col items-center py-20 md:py-28 text-center"
           >
             <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[#f5f3ee]">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b5b0a8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
