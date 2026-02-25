@@ -160,6 +160,26 @@ const CompanyCard = React.memo(function CompanyCard({ company, isCompany = false
         </div>
       )}
 
+      {/* 서비스 티어 뱃지 */}
+      {company.serviceTiers && company.serviceTiers.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {company.serviceTiers.map((tier) => (
+            <span
+              key={tier}
+              className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                tier === "PREMIUM_CLEAN"
+                  ? "bg-amber-50 text-amber-700"
+                  : tier === "DEEP_CLEAN"
+                  ? "bg-blue-50 text-blue-700"
+                  : "bg-green-50 text-green-700"
+              }`}
+            >
+              {tier === "PREMIUM_CLEAN" ? "프리미엄클린" : tier === "DEEP_CLEAN" ? "딥클린" : "클린"}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* 예상 가격대 */}
       {priceRange && (
         <p className="mt-3 text-[13px] text-gray-700">

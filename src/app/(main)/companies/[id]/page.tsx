@@ -162,6 +162,7 @@ export default function CompanyDetailPage() {
   const certDocs: any[] = Array.isArray(company.certificationDocs) ? company.certificationDocs : [];
   const paymentMethods: string[] = Array.isArray(company.paymentMethods) ? company.paymentMethods : [];
   const specialties: string[] = Array.isArray(company.specialties) ? company.specialties : [];
+  const serviceTiers: string[] = Array.isArray(company.serviceTiers) ? company.serviceTiers : [];
   const serviceAreas: string[] = Array.isArray(company.serviceAreas) ? company.serviceAreas : [];
 
   return (
@@ -277,6 +278,26 @@ export default function CompanyDetailPage() {
                 {specialties.map((s: string) => (
                   <span key={s} className="rounded-full bg-[#f0ede8] px-3 py-1 text-[13px] font-medium text-[#1a1918]">
                     {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 서비스 등급 */}
+          {serviceTiers.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-[13px] font-medium text-[#72706a] mb-2">서비스 등급</h3>
+              <div className="flex flex-wrap gap-2">
+                {serviceTiers.map((tier: string) => (
+                  <span key={tier} className={`rounded-full px-3 py-1 text-[13px] font-semibold ${
+                    tier === "PREMIUM_CLEAN"
+                      ? "bg-amber-50 text-amber-700"
+                      : tier === "DEEP_CLEAN"
+                      ? "bg-blue-50 text-blue-700"
+                      : "bg-green-50 text-green-700"
+                  }`}>
+                    {tier === "PREMIUM_CLEAN" ? "프리미엄클린" : tier === "DEEP_CLEAN" ? "딥클린" : "클린"}
                   </span>
                 ))}
               </div>

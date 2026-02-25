@@ -14,6 +14,7 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 interface EstimateRequest {
   id: string;
   cleaningType: string;
+  serviceTier: string | null;
   address: string;
   areaSize: number | null;
   budget: number | null;
@@ -46,6 +47,12 @@ const cleaningTypeLabels: Record<string, string> = {
   STORE: "상가청소",
   AIRCON: "에어컨청소",
   SPECIAL: "특수청소",
+};
+
+const serviceTierLabels: Record<string, string> = {
+  CLEAN: "클린",
+  DEEP_CLEAN: "딥클린",
+  PREMIUM_CLEAN: "프리미엄클린",
 };
 
 export default function AdminEstimateRequestsPage() {
@@ -140,6 +147,7 @@ export default function AdminEstimateRequestsPage() {
                   <tr className="border-b border-[#e2ddd6] bg-[#f0ede8]">
                     <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">작성자</th>
                     <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">청소 유형</th>
+                    <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">서비스 등급</th>
                     <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">주소</th>
                     <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">예산</th>
                     <th className="px-4 py-3 text-[12px] font-semibold text-[#72706a]">견적 수</th>
@@ -150,7 +158,7 @@ export default function AdminEstimateRequestsPage() {
                 <tbody>
                   {requests.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#72706a]">
+                      <td colSpan={8} className="px-4 py-12 text-center text-sm text-[#72706a]">
                         견적요청이 없습니다.
                       </td>
                     </tr>
@@ -160,6 +168,17 @@ export default function AdminEstimateRequestsPage() {
                         <td className="px-4 py-3 text-[13px] text-[#1a1918]">{req.user?.name || "-"}</td>
                         <td className="px-4 py-3 text-[13px] text-[#72706a]">
                           {cleaningTypeLabels[req.cleaningType] || req.cleaningType}
+                        </td>
+                        <td className="px-4 py-3 text-[13px] text-[#72706a]">
+                          {req.serviceTier ? (
+                            <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                              req.serviceTier === "PREMIUM_CLEAN" ? "bg-amber-50 text-amber-700"
+                              : req.serviceTier === "DEEP_CLEAN" ? "bg-blue-50 text-blue-700"
+                              : "bg-green-50 text-green-700"
+                            }`}>
+                              {serviceTierLabels[req.serviceTier] || req.serviceTier}
+                            </span>
+                          ) : "-"}
                         </td>
                         <td className="max-w-[200px] px-4 py-3 text-[12px] text-[#72706a] truncate">
                           {req.address}

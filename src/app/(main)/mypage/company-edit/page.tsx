@@ -35,6 +35,7 @@ interface FormData {
   companyUrl: string;
   contactHours: string;
   specialties: string[];
+  serviceTiers: string[];
   serviceAreas: string[];
   serviceRange: string;
   minPrice: string;
@@ -57,7 +58,7 @@ interface FormData {
 const INITIAL_FORM: FormData = {
   businessName: "", representative: "", address: "", detailAddress: "",
   description: "", contactEmail: "", companyUrl: "", contactHours: "",
-  specialties: [], serviceAreas: [], serviceRange: "", minPrice: "", maxPrice: "",
+  specialties: [], serviceTiers: [], serviceAreas: [], serviceRange: "", minPrice: "", maxPrice: "",
   serviceDetail: "", employeeCount: "", experienceYears: "", experienceDescription: "",
   education: "", profileImages: [], videos: [], portfolio: [],
   businessRegistration: "", certificationDocs: [], certificates: [],
@@ -136,6 +137,7 @@ export default function CompanyProfileEditPage() {
         companyUrl: c.companyUrl || "",
         contactHours: c.contactHours || "",
         specialties: Array.isArray(c.specialties) ? c.specialties : [],
+        serviceTiers: Array.isArray(c.serviceTiers) ? c.serviceTiers : [],
         serviceAreas: Array.isArray(c.serviceAreas) ? c.serviceAreas : [],
         serviceRange: c.serviceRange != null ? String(c.serviceRange) : "",
         minPrice: c.minPrice != null ? String(c.minPrice) : "",
@@ -362,6 +364,39 @@ export default function CompanyProfileEditPage() {
                   {key === "service" && (
                     <>
                       <TagField label="전문분야" tags={form.specialties} onRemove={(i) => update("specialties", removeAt(form.specialties, i))} inputValue={newSpecialty} onInputChange={setNewSpecialty} onAdd={() => { if (newSpecialty.trim()) { update("specialties", [...form.specialties, newSpecialty.trim()]); setNewSpecialty(""); } }} />
+                      {/* 서비스 등급 */}
+                      <div>
+                        <label className="block text-[13px] font-medium text-[#1a1918] mb-1.5">서비스 등급</label>
+                        <div className="flex flex-wrap gap-2">
+                          {([
+                            { value: "CLEAN", label: "클린" },
+                            { value: "DEEP_CLEAN", label: "딥클린" },
+                            { value: "PREMIUM_CLEAN", label: "프리미엄클린" },
+                          ] as const).map((tier) => {
+                            const isSelected = form.serviceTiers.includes(tier.value);
+                            return (
+                              <button
+                                key={tier.value}
+                                type="button"
+                                onClick={() => {
+                                  const next = isSelected
+                                    ? form.serviceTiers.filter((t) => t !== tier.value)
+                                    : [...form.serviceTiers, tier.value];
+                                  update("serviceTiers", next);
+                                }}
+                                className={`rounded-full border px-3 py-1.5 text-[13px] transition-colors ${
+                                  isSelected
+                                    ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                                    : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#4a8c6a]"
+                                }`}
+                              >
+                                {tier.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <p className="mt-1 text-[11px] text-[#a8a49c]">복수 선택 가능합니다</p>
+                      </div>
                       <TagField label="서비스 지역" tags={form.serviceAreas} onRemove={(i) => update("serviceAreas", removeAt(form.serviceAreas, i))} inputValue={newArea} onInputChange={setNewArea} onAdd={() => { if (newArea.trim()) { update("serviceAreas", [...form.serviceAreas, newArea.trim()]); setNewArea(""); } }} />
                       <Field label="활동가능범위 (km)" value={form.serviceRange} onChange={(v) => update("serviceRange", v)} type="number" />
                       <Field label="최소 가격 (원)" value={form.minPrice} onChange={(v) => update("minPrice", v)} type="number" />

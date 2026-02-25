@@ -36,6 +36,12 @@ const SPECIALTY_OPTIONS = [
   "특수청소",
 ] as const;
 
+const SERVICE_TIER_OPTIONS = [
+  { value: "CLEAN", label: "클린", description: "기본 청소 서비스" },
+  { value: "DEEP_CLEAN", label: "딥클린", description: "꼼꼼한 심층 청소" },
+  { value: "PREMIUM_CLEAN", label: "프리미엄클린", description: "최고급 청소 서비스" },
+] as const;
+
 const REGION_OPTIONS = [
   "서울",
   "경기",
@@ -107,6 +113,7 @@ const registerCompanySchema = z
       .or(z.literal("")),
     // 서비스 정보
     specialties: z.array(z.string()).optional(),
+    serviceTiers: z.array(z.string()).optional(),
     serviceAreas: z.array(z.string()).optional(),
     description: z
       .string()
@@ -149,6 +156,7 @@ export default function RegisterCompanyPage() {
     defaultValues: {
       address: "",
       specialties: [],
+      serviceTiers: [],
       serviceAreas: [],
       description: "",
       minPrice: "",
@@ -159,6 +167,7 @@ export default function RegisterCompanyPage() {
 
   const addressValue = watch("address");
   const selectedSpecialties = watch("specialties") || [];
+  const selectedServiceTiers = watch("serviceTiers") || [];
   const selectedAreas = watch("serviceAreas") || [];
 
   const onSubmit = async (data: RegisterCompanyForm) => {
@@ -175,6 +184,7 @@ export default function RegisterCompanyPage() {
         address: data.address,
         detailAddress: data.detailAddress || undefined,
         specialties: data.specialties?.length ? data.specialties : undefined,
+        serviceTiers: data.serviceTiers?.length ? data.serviceTiers : undefined,
         serviceAreas: data.serviceAreas?.length ? data.serviceAreas : undefined,
         description: data.description || undefined,
         minPrice: data.minPrice ? Number(data.minPrice) : undefined,
@@ -471,6 +481,41 @@ export default function RegisterCompanyPage() {
               );
             })}
           </div>
+        </motion.div>
+
+        {/* 서비스 티어 */}
+        <motion.div variants={fadeUp} className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-[#1a1918]">
+            서비스 등급
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {SERVICE_TIER_OPTIONS.map((tier) => {
+              const isSelected = selectedServiceTiers.includes(tier.value);
+              return (
+                <motion.button
+                  key={tier.value}
+                  type="button"
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    const current = selectedServiceTiers;
+                    const next = isSelected
+                      ? current.filter((t) => t !== tier.value)
+                      : [...current, tier.value];
+                    setValue("serviceTiers", next);
+                  }}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+                    isSelected
+                      ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                      : "border-[#e2ddd6] bg-[#f5f3ee] text-[#72706a] hover:border-[#4a8c6a]"
+                  )}
+                >
+                  {tier.label}
+                </motion.button>
+              );
+            })}
+          </div>
+          <p className="text-[11px] text-[#a8a49c]">복수 선택 가능합니다</p>
         </motion.div>
 
         {/* 서비스 가능 지역 */}

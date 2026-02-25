@@ -227,6 +227,7 @@ export interface CompanySearchResult {
   experienceYears?: number | null;
   contactHours?: string | null;
   employeeCount?: number | null;
+  serviceTiers?: string[];
   subscriptionTier?: "BASIC" | "PRO" | "PREMIUM" | null;
   score: number;
   user: {
@@ -271,6 +272,16 @@ export type CleaningType =
   | "AIRCON"
   | "SPECIAL";
 
+/** 서비스 티어 */
+export type ServiceTier = "CLEAN" | "DEEP_CLEAN" | "PREMIUM_CLEAN";
+
+/** 서비스 티어 라벨 매핑 */
+export const SERVICE_TIER_LABELS: Record<ServiceTier, string> = {
+  CLEAN: "클린",
+  DEEP_CLEAN: "딥클린",
+  PREMIUM_CLEAN: "프리미엄클린",
+};
+
 /** 청소 유형 라벨 매핑 */
 export const CLEANING_TYPE_LABELS: Record<CleaningType, string> = {
   MOVE_IN: "입주청소",
@@ -293,6 +304,7 @@ export interface EstimateRequest {
   desiredDate?: string;
   desiredTime?: string;
   message: string;
+  serviceTier?: ServiceTier;
   budget?: number;
   images?: string[];
   status: EstimateRequestStatus;

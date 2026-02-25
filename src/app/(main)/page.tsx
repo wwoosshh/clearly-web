@@ -127,6 +127,13 @@ const CATEGORIES = [
   },
 ] as const;
 
+const SERVICE_TIER_OPTIONS = [
+  { value: "", label: "전체 등급" },
+  { value: "CLEAN", label: "클린" },
+  { value: "DEEP_CLEAN", label: "딥클린" },
+  { value: "PREMIUM_CLEAN", label: "프리미엄클린" },
+] as const;
+
 const SORT_OPTIONS = [
   { value: "score", label: "추천순" },
   { value: "rating", label: "평점순" },
@@ -502,6 +509,26 @@ function CompanyListItem({
               )}
             </div>
           )}
+
+          {/* 서비스 티어 뱃지 */}
+          {company.serviceTiers && company.serviceTiers.length > 0 && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {company.serviceTiers.map((tier) => (
+                <span
+                  key={tier}
+                  className={`rounded-md px-2 py-[2px] text-[10px] font-semibold ${
+                    tier === "PREMIUM_CLEAN"
+                      ? "bg-amber-50 text-amber-700"
+                      : tier === "DEEP_CLEAN"
+                      ? "bg-blue-50 text-blue-700"
+                      : "bg-green-50 text-green-700"
+                  }`}
+                >
+                  {tier === "PREMIUM_CLEAN" ? "프리미엄클린" : tier === "DEEP_CLEAN" ? "딥클린" : "클린"}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 하단: 가격 + 평점 */}
@@ -641,12 +668,16 @@ function FilterSortBar({
   onSortChange,
   category,
   onCategoryChange,
+  serviceTier,
+  onServiceTierChange,
 }: {
   total: number | null;
   sortBy: string;
   onSortChange: (v: string) => void;
   category: string;
   onCategoryChange: (v: string) => void;
+  serviceTier: string;
+  onServiceTierChange: (v: string) => void;
 }) {
   return (
     <div className="flex items-center justify-between border-b border-[#f0ede8] px-4 py-2.5 md:px-0">
@@ -665,6 +696,12 @@ function FilterSortBar({
           options={CATEGORY_OPTIONS}
           value={category}
           onChange={onCategoryChange}
+        />
+        <FilterDropdown
+          label="전체 등급"
+          options={SERVICE_TIER_OPTIONS}
+          value={serviceTier}
+          onChange={onServiceTierChange}
         />
         <FilterDropdown
           label="추천순"
@@ -737,6 +774,9 @@ function HomeContent() {
   const [sortBy, setSortBy] = useState(
     searchParams.get("sortBy") || "score"
   );
+  const [selectedServiceTier, setSelectedServiceTier] = useState(
+    searchParams.get("serviceTier") || ""
+  );
   const [banners, setBanners] = useState<BannerData[]>([]);
   const [companies, setCompanies] = useState<CompanySearchResult[]>([]);
   const [meta, setMeta] = useState<CompanySearchResponse["meta"] | null>(null);
@@ -750,11 +790,12 @@ function HomeContent() {
     async (params: {
       keyword?: string;
       specialty?: string;
+      serviceTier?: string;
       sortBy?: string;
       page?: number;
       append?: boolean;
     }) => {
-      const cacheKey = `home:${params.keyword || ""}:${params.specialty || ""}:${params.sortBy || "score"}:${params.page || 1}`;
+      const cacheKey = `home:${params.keyword || ""}:${params.specialty || ""}:${params.serviceTier || ""}:${params.sortBy || "score"}:${params.page || 1}`;
       const cache = useCacheStore.getState();
       const cached = cache.get<{
         companies: CompanySearchResult[];
@@ -782,6 +823,7 @@ function HomeContent() {
         };
         if (params.keyword) query.keyword = params.keyword;
         if (params.specialty) query.specialty = params.specialty;
+        if (params.serviceTier) query.serviceTier = params.serviceTier;
         if (params.sortBy) query.sortBy = params.sortBy;
 
         const response = await api.get<CompanySearchResponse>(
@@ -826,6 +868,7 @@ function HomeContent() {
     fetchCompanies({
       keyword: searchParams.get("keyword") || "",
       specialty: searchParams.get("specialty") || "",
+      serviceTier: searchParams.get("serviceTier") || "",
       sortBy: searchParams.get("sortBy") || "score",
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -837,6 +880,19 @@ function HomeContent() {
     fetchCompanies({
       keyword,
       specialty: key,
+      serviceTier: selectedServiceTier,
+      sortBy,
+    });
+  };
+
+  // 서비스 티어 변경
+  const handleServiceTierChange = (tier: string) => {
+    setSelectedServiceTier(tier);
+    setCurrentPage(1);
+    fetchCompanies({
+      keyword,
+      specialty: selectedCategory,
+      serviceTier: tier,
       sortBy,
     });
   };
@@ -847,6 +903,7 @@ function HomeContent() {
     fetchCompanies({
       keyword,
       specialty: selectedCategory,
+      serviceTier: selectedServiceTier,
       sortBy,
     });
   };
@@ -858,6 +915,7 @@ function HomeContent() {
     fetchCompanies({
       keyword,
       specialty: selectedCategory,
+      serviceTier: selectedServiceTier,
       sortBy: newSort,
     });
   };
@@ -869,6 +927,7 @@ function HomeContent() {
     fetchCompanies({
       keyword,
       specialty: selectedCategory,
+      serviceTier: selectedServiceTier,
       sortBy,
       page: nextPage,
       append: true,
@@ -897,6 +956,8 @@ function HomeContent() {
         onSortChange={handleSortChange}
         category={selectedCategory}
         onCategoryChange={handleCategoryChange}
+        serviceTier={selectedServiceTier}
+        onServiceTierChange={handleServiceTierChange}
       />
 
       {/* 업체 리스트 */}

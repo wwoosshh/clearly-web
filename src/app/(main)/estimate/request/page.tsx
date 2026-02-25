@@ -9,8 +9,8 @@ import { z } from "zod";
 import { Input } from "@/components/ui/Input";
 import { AddressSearch } from "@/components/address/AddressSearch";
 import api from "@/lib/api";
-import { CLEANING_TYPE_LABELS } from "@/types";
-import type { CleaningType } from "@/types";
+import { CLEANING_TYPE_LABELS, SERVICE_TIER_LABELS } from "@/types";
+import type { CleaningType, ServiceTier } from "@/types";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { motion } from "framer-motion";
@@ -34,6 +34,7 @@ const stagger = {
 
 const estimateRequestSchema = z.object({
   cleaningType: z.string().min(1, "청소 유형을 선택해주세요."),
+  serviceTier: z.string().optional(),
   address: z.string().min(1, "주소를 입력해주세요."),
   detailAddress: z.string(),
   areaSize: z.string(),
@@ -92,6 +93,7 @@ export default function EstimateRequestPage() {
     resolver: zodResolver(estimateRequestSchema),
     defaultValues: {
       cleaningType: "",
+      serviceTier: "",
       address: "",
       detailAddress: "",
       areaSize: "",
@@ -103,8 +105,10 @@ export default function EstimateRequestPage() {
   });
 
   const selectedType = watch("cleaningType");
+  const selectedServiceTier = watch("serviceTier");
   const address = watch("address");
   const watchAreaSize = watch("areaSize");
+  const watchBudget = watch("budget");
 
   // 예상 가격 조회 (디바운스)
   useEffect(() => {
@@ -118,7 +122,7 @@ export default function EstimateRequestPage() {
       try {
         const params: Record<string, string> = { cleaningType: selectedType };
         if (watchAreaSize) params.areaSize = watchAreaSize;
-        if (address) params.address = address;
+        if (selectedServiceTier) params.serviceTier = selectedServiceTier;
         const res = await api.get("/estimates/price-estimate", { params });
         const data = res.data?.data ?? res.data;
         if (data && data.sampleCount > 0) {
@@ -135,9 +139,24 @@ export default function EstimateRequestPage() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [selectedType, watchAreaSize, address]);
+  }, [selectedType, watchAreaSize, selectedServiceTier]);
+
+  // 예산이 예상 최소가격의 50% 미만이면 경고
+  const budgetNum = watchBudget ? parseInt(watchBudget) : 0;
+  const isBudgetTooLow = budgetNum > 0 && priceEstimate && budgetNum < priceEstimate.minPrice * 0.5;
 
   const onSubmit = async (data: EstimateRequestForm) => {
+    // 예산이 예상 최소가격의 50% 미만이면 제출 차단
+    if (data.budget) {
+      const budget = parseInt(data.budget);
+      if (priceEstimate && budget > 0 && budget < priceEstimate.minPrice * 0.5) {
+        setServerError(
+          `희망 예산(${budget.toLocaleString()}원)이 예상 최소 가격(${priceEstimate.minPrice.toLocaleString()}원)에 비해 너무 낮습니다. 예산을 조정해주세요.`,
+        );
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     setServerError("");
 
@@ -147,6 +166,7 @@ export default function EstimateRequestPage() {
         address: data.address,
         message: data.message,
       };
+      if (data.serviceTier) payload.serviceTier = data.serviceTier;
       if (data.detailAddress) payload.detailAddress = data.detailAddress;
       if (data.areaSize) payload.areaSize = parseInt(data.areaSize);
       if (data.desiredDate) payload.desiredDate = data.desiredDate;
@@ -213,6 +233,36 @@ export default function EstimateRequestPage() {
             {errors.cleaningType && (
               <p className="mt-1.5 text-[12px] text-red-500">{errors.cleaningType.message}</p>
             )}
+          </motion.div>
+
+          {/* 서비스 등급 (선택) */}
+          <motion.div variants={fadeUp}>
+            <label className="text-[13px] font-medium text-[#1a1918] mb-2 block">
+              서비스 등급 <span className="text-[12px] font-normal text-[#a8a49c]">(선택)</span>
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {(Object.entries(SERVICE_TIER_LABELS) as [ServiceTier, string][]).map(
+                ([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => {
+                      // 재클릭 시 해제
+                      setValue("serviceTier", selectedServiceTier === value ? "" : value, { shouldValidate: true });
+                    }}
+                    className={cn(
+                      "press-scale rounded-lg border px-3 py-2.5 text-[13px] font-medium transition-colors",
+                      selectedServiceTier === value
+                        ? "border-[#2d6a4f] bg-[#2d6a4f] text-[#f5f3ee]"
+                        : "border-[#e2ddd6] text-[#72706a] hover:border-[#2d6a4f] hover:text-[#2d6a4f]"
+                    )}
+                  >
+                    {label}
+                  </button>
+                )
+              )}
+            </div>
+            <p className="mt-1.5 text-[11px] text-[#a8a49c]">미선택 시 전체 등급 업체에게 노출됩니다</p>
           </motion.div>
 
           {/* 주소 */}
@@ -339,10 +389,20 @@ export default function EstimateRequestPage() {
               label="희망 예산 (원)"
               type="number"
               placeholder="예: 300000"
-              helperText="선택 사항입니다"
+              helperText={isBudgetTooLow ? undefined : "선택 사항입니다"}
               {...register("budget")}
               error={errors.budget?.message}
             />
+            {isBudgetTooLow && (
+              <p className="mt-1.5 flex items-center gap-1 text-[12px] text-red-500">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                예상 최소 가격({priceEstimate!.minPrice.toLocaleString()}원)의 50% 미만입니다. 이 예산으로는 견적을 받기 어렵습니다.
+              </p>
+            )}
           </motion.div>
 
           {/* 상세 설명 */}
