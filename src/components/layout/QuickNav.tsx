@@ -18,17 +18,7 @@ const NAV_ITEMS = [
     ),
     roles: ["all"],
   },
-  {
-    href: "/search",
-    label: "업체 찾기",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    ),
-    roles: ["all"],
-  },
+  // ── 고객(USER) + 비로그인 ──
   {
     href: "/estimate/request",
     label: "견적요청",
@@ -43,6 +33,20 @@ const NAV_ITEMS = [
     roles: ["USER", "guest"],
   },
   {
+    href: "/matching",
+    label: "매칭내역",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+    roles: ["USER"],
+  },
+  // ── 업체(COMPANY) ──
+  {
     href: "/estimates",
     label: "견적리스트",
     icon: (
@@ -56,27 +60,16 @@ const NAV_ITEMS = [
     roles: ["COMPANY"],
   },
   {
-    href: "/matching",
-    label: "매칭내역",
+    href: "/estimates/submitted",
+    label: "내 견적",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+        <rect x="9" y="3" width="6" height="4" rx="1" />
+        <polyline points="9 14 11 16 15 12" />
       </svg>
     ),
-    roles: ["USER", "COMPANY"],
-  },
-  {
-    href: "/chat",
-    label: "채팅",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
-    ),
-    roles: ["USER", "COMPANY"],
+    roles: ["COMPANY"],
   },
   {
     href: "/customers",
@@ -91,6 +84,50 @@ const NAV_ITEMS = [
     ),
     roles: ["COMPANY"],
   },
+  {
+    href: "/mypage/reviews",
+    label: "리뷰확인",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    ),
+    roles: ["COMPANY"],
+  },
+  {
+    href: "/pricing",
+    label: "요금제",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+      </svg>
+    ),
+    roles: ["COMPANY"],
+  },
+  // ── 공통 (로그인 필요) ──
+  {
+    href: "/chat",
+    label: "채팅",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+    ),
+    roles: ["USER", "COMPANY"],
+  },
+  {
+    href: "/mypage",
+    label: "마이페이지",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    ),
+    roles: ["USER", "COMPANY"],
+  },
+  // ── 공개 ──
   {
     href: "/faq",
     label: "FAQ",
@@ -113,17 +150,6 @@ const NAV_ITEMS = [
       </svg>
     ),
     roles: ["all"],
-  },
-  {
-    href: "/mypage",
-    label: "마이페이지",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    ),
-    roles: ["USER", "COMPANY"],
   },
 ];
 
@@ -208,7 +234,7 @@ export function QuickNav({ className }: { className?: string }) {
         style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
       >
         <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
-        <div className="flex gap-1 py-2.5 md:flex-wrap md:gap-1.5">
+        <div className="flex gap-2 py-2.5 md:flex-wrap md:gap-2">
           {visibleItems.map((item) => {
             const isActive =
               item.href === "/"
