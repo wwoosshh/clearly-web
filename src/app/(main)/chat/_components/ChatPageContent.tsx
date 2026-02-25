@@ -424,8 +424,8 @@ export function ChatPageContent() {
     if (!selectedRoom || isRefreshing) return;
     // 이미 완료된 매칭은 재완료 불가 (뒤로가기 후 stale 캐시 상태에서 실수로 재완료 방지)
     if (selectedRoom.matching?.status === "COMPLETED") return;
-    // 직접 채팅 상담(CONSULTATION)이면 정보입력 모달, 아니면 단순 확인 모달
-    if (selectedRoom.matching?.cleaningType === "CONSULTATION") {
+    // 직접 채팅 상담(SPECIAL)이면 정보입력 모달, 아니면 단순 확인 모달
+    if (selectedRoom.matching?.cleaningType === "SPECIAL") {
       setConsultationModalForConfirm(false);
       setShowConsultationCompleteModal(true);
     } else {
@@ -442,11 +442,11 @@ export function ChatPageContent() {
 
   // ─── CompletionConfirmModal "완료 확인" 클릭 분기 ─────────────
   // 1) CompletionConfirmModal을 닫고
-  // 2) CONSULTATION이면 ConsultationCompleteModal(거래정보 입력) 열기
+  // 2) SPECIAL(채팅상담)이면 ConsultationCompleteModal(거래정보 입력) 열기
   // 3) 아니면 바로 confirm-completion API 호출
   const handleCompletionConfirmModalConfirm = () => {
     setShowCompletionConfirmModal(false);
-    if (selectedRoom?.matching?.cleaningType === "CONSULTATION") {
+    if (selectedRoom?.matching?.cleaningType === "SPECIAL") {
       setConsultationModalForConfirm(true);
       setShowConsultationCompleteModal(true);
     } else {
