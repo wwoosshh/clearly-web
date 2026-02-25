@@ -18,7 +18,7 @@ interface AuthState {
   user: User | null;
   /** Access Token */
   accessToken: string | null;
-  /** Refresh Token (메모리 전용 — localStorage에 저장하지 않음) */
+  /** Refresh Token */
   refreshToken: string | null;
   /** 인증 상태 로딩 여부 */
   isLoading: boolean;
@@ -43,7 +43,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     typeof window !== "undefined"
       ? localStorage.getItem("accessToken")
       : null,
-  refreshToken: null, // 메모리 전용 — 브라우저 새로고침 시 초기화됨
+  refreshToken:
+    typeof window !== "undefined"
+      ? localStorage.getItem("refreshToken")
+      : null,
   isLoading: false,
   isAuthenticated: false,
   isInitialized: false,
@@ -57,13 +60,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       const { user, tokens } = data.data;
 
-      // accessToken만 localStorage에 저장 (15분 수명)
       localStorage.setItem("accessToken", tokens.accessToken);
+      localStorage.setItem("refreshToken", tokens.refreshToken);
 
       set({
         user,
         accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken, // 메모리에만 보관
+        refreshToken: tokens.refreshToken,
         isAuthenticated: true,
         isLoading: false,
         isInitialized: true,
@@ -83,6 +86,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
 
     set({
       user: null,
@@ -100,6 +104,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       typeof window !== "undefined"
         ? localStorage.getItem("accessToken")
         : null;
+    const savedRefreshToken =
+      typeof window !== "undefined"
+        ? localStorage.getItem("refreshToken")
+        : null;
+
+    if (savedRefreshToken) {
+      set({ refreshToken: savedRefreshToken });
+    }
 
     if (!token) {
       set({ isAuthenticated: false, isLoading: false, isInitialized: true });

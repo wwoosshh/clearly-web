@@ -16,7 +16,7 @@ function Footer() {
     ...(isCompany
       ? [
           { href: "/estimates", label: "견적 리스트" },
-          { href: "/estimates/submitted", label: "내 견적" },
+          { href: "/my-estimates", label: "내 견적" },
         ]
       : []),
     ...(isAdmin ? [{ href: "/admin", label: "관리자" }] : []),

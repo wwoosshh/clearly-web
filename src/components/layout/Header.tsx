@@ -53,7 +53,7 @@ const Header = React.memo(function Header() {
           ? [
               { href: "/customers", label: "고객관리" },
               { href: "/estimates", label: "견적 리스트" },
-              { href: "/estimates/submitted", label: "내 견적" },
+              { href: "/my-estimates", label: "내 견적" },
             ]
           : []),
       ];
@@ -146,7 +146,7 @@ const Header = React.memo(function Header() {
                             마이페이지
                           </Link>
                           <Link
-                            href="/mypage/reviews"
+                            href="/my-reviews"
                             className="flex items-center px-4 py-2 text-[13px] text-[#1a1918] hover:bg-[#f0ede8] transition-colors"
                             onClick={() => setIsProfileOpen(false)}
                           >

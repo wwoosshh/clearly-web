@@ -370,14 +370,14 @@ export default function MyPage() {
               )}
               <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <Link
-                  href="/estimates/submitted"
+                  href="/my-estimates"
                   className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
                 >
                   <p className="text-[22px] font-bold text-[#2d6a4f]">{companyStats.submittedEstimates}</p>
                   <p className="mt-1 text-[13px] text-[#72706a]">제출 견적</p>
                 </Link>
                 <Link
-                  href="/mypage/reviews"
+                  href="/my-reviews"
                   className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
                 >
                   <p className="text-[22px] font-bold text-[#2d6a4f]">{companyStats.receivedReviews}</p>
@@ -413,7 +413,7 @@ export default function MyPage() {
                 <p className="mt-1 text-[13px] text-[#72706a]">완료 매칭</p>
               </Link>
               <Link
-                href="/mypage/reviews"
+                href="/my-reviews"
                 className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
               >
                 <p className="text-[22px] font-bold text-[#2d6a4f]">{userStats.reviews}</p>
@@ -430,7 +430,7 @@ export default function MyPage() {
           <h2 className="text-[15px] font-semibold text-[#1a1918]">바로가기</h2>
           <div className="mt-3 divide-y divide-[#f0ede8] rounded-xl border border-[#e2ddd6] bg-white overflow-hidden">
             <Link
-              href="/mypage/reviews"
+              href="/my-reviews"
               className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]"
             >
               <div className="flex items-center gap-3">
@@ -480,7 +480,7 @@ export default function MyPage() {
                   </div>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8c4bc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
                 </Link>
-                <Link href="/estimates/submitted" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
+                <Link href="/my-estimates" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
                   <div className="flex items-center gap-3">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9 11 12 14 22 4" />

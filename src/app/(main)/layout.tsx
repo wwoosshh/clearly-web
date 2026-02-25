@@ -11,7 +11,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
-const HIDE_QUICKNAV = ["/", "/chat", "/admin"];
+const HIDE_QUICKNAV = ["/", "/admin"];
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -20,7 +20,6 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const isChat = pathname.startsWith("/chat");
   const showQuickNav =
     !HIDE_QUICKNAV.includes(pathname) &&
-    !pathname.startsWith("/chat") &&
     !pathname.startsWith("/admin");
 
   useEffect(() => {
@@ -38,7 +37,10 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     <div className={cn("flex flex-col", isChat ? "h-screen overflow-hidden" : "min-h-screen")}>
       <Header />
       {showQuickNav && (
-        <div className="sticky top-[60px] z-30 border-b border-[#f0ede8] bg-white/95 backdrop-blur-md">
+        <div className={cn(
+          "z-30 border-b border-[#f0ede8] bg-white/95 backdrop-blur-md",
+          !isChat && "sticky top-[60px]"
+        )}>
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <QuickNav />
           </div>

@@ -38,12 +38,17 @@ function processQueue(error: unknown, token: string | null = null) {
 /** Zustand store에서 refreshToken 가져오기 (순환 의존 방지를 위한 lazy import) */
 function getRefreshToken(): string | null {
   try {
-    // dynamic import 대신 직접 store 접근
     const { useAuthStore } = require("@/stores/auth.store");
-    return useAuthStore.getState().refreshToken;
+    const storeToken = useAuthStore.getState().refreshToken;
+    if (storeToken) return storeToken;
   } catch {
-    return null;
+    // store 접근 실패 시 fallback
   }
+  // store에 없으면 localStorage fallback (새로고침 직후 등)
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("refreshToken");
+  }
+  return null;
 }
 
 /** Zustand store에 새 토큰 저장 */
@@ -111,9 +116,8 @@ api.interceptors.response.use(
 
         const { accessToken, refreshToken: newRefreshToken } = data.data;
 
-        // accessToken만 localStorage에 저장
         localStorage.setItem("accessToken", accessToken);
-        // refreshToken은 메모리(store)에만 저장
+        localStorage.setItem("refreshToken", newRefreshToken);
         setTokensInStore(accessToken, newRefreshToken);
 
         if (originalRequest.headers) {
@@ -128,6 +132,7 @@ api.interceptors.response.use(
 
         // 토큰 갱신 실패 시 로그아웃 처리
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
 
         if (typeof window !== "undefined") {
           window.location.href = "/login";

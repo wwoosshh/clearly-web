@@ -551,7 +551,7 @@ export function ChatPageContent() {
 
   if (!user) {
     return (
-      <div className="flex h-[calc(100vh-60px)] items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <p className="text-[15px] text-[#72706a]">로그인이 필요합니다</p>
       </div>
     );
@@ -559,14 +559,14 @@ export function ChatPageContent() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-60px)] items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <Spinner size="lg" className="text-[#4a8c6a]" />
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-60px)]">
+    <div className="flex h-full">
       {/* 좌측: 채팅방 목록 */}
       <ChatRoomList
         rooms={rooms}

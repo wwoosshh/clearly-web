@@ -165,7 +165,7 @@ function getNotificationLink(
     case "ESTIMATE_ACCEPTED":
       return data?.chatRoomId ? `/chat?roomId=${data.chatRoomId}` : "/chat";
     case "ESTIMATE_REJECTED":
-      return "/estimates/submitted";
+      return "/my-estimates";
     case "NEW_ESTIMATE_REQUEST":
       return "/estimates";
     case "NEW_MESSAGE":
