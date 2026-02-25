@@ -46,7 +46,7 @@ export function ChatHeader({
           {getRoomDisplayName(selectedRoom, user)}
         </span>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 flex-wrap justify-end">
         <button
           onClick={onShowReportModal}
           className="rounded-lg border border-[#e2ddd6] px-3 py-1.5 text-[12px] font-medium text-red-500 transition-colors hover:bg-red-50 active:scale-95"

@@ -270,12 +270,12 @@ export default function EstimateRequestPage() {
             <label className="text-[13px] font-medium text-[#1a1918] mb-2 block">
               주소 <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 min-w-0">
               <input
                 readOnly
                 value={address}
                 placeholder="주소를 검색해주세요"
-                className="h-[44px] flex-1 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] bg-[#f0ede8] text-[#72706a] cursor-pointer"
+                className="h-[44px] flex-1 min-w-0 rounded-lg border border-[#e2ddd6] px-3.5 text-[14px] bg-[#f0ede8] text-[#72706a] cursor-pointer truncate"
                 onClick={() => {
                   // 주소 검색은 AddressSearch 버튼으로
                 }}

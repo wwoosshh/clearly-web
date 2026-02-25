@@ -61,7 +61,7 @@ function AddressSearch({ onComplete, className }: AddressSearchProps) {
       onClick={handleClick}
       className={
         className ||
-        "h-[44px] rounded-lg border border-gray-200 bg-white px-4 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50 whitespace-nowrap"
+        "h-[44px] flex-shrink-0 rounded-lg border border-gray-200 bg-white px-3 text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-50 whitespace-nowrap"
       }
     >
       주소 검색
