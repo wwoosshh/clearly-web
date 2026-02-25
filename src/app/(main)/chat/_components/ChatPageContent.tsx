@@ -147,27 +147,33 @@ export function ChatPageContent() {
       // 재실행될 수 있음 → 같은 companyId로 이미 방 생성을 시작했다면 중복 차단
       if (roomCreatedForCompanyRef.current === companyIdParam) return;
       roomCreatedForCompanyRef.current = companyIdParam;
+      setIsLoading(true); // 모바일: 방 생성 중 로딩 표시 (빈 목록 노출 방지)
       (async () => {
+        let newRoom: ChatRoomDetail | null = null;
         try {
           const response = await api.post("/chat/rooms", {
             companyId: companyIdParam,
           });
-          const room = unwrapResponse<ChatRoomDetail>(response);
-          setSelectedRoom(room);
+          newRoom = unwrapResponse<ChatRoomDetail>(response);
+          setSelectedRoom(newRoom);
           setShowMobileChat(true);
-          // 방 목록에 즉시 추가 (syncRooms 타이밍과 무관하게 목록에 표시)
-          setRooms((prev) => {
-            if (prev.some((r) => r.id === room.id)) return prev;
-            return [room, ...prev];
-          });
+          setIsLoading(false); // 방 생성 완료 → 즉시 채팅 화면 진입
           // 캐시에서 메시지 즉시 로드
-          const cached = chatCache.getMessages(room.id);
+          const cached = chatCache.getMessages(newRoom.id);
           if (cached?.length) setMessages(cached);
-          syncMessages(room.id);
+          syncMessages(newRoom.id);
         } catch {
-          // silent
+          setIsLoading(false);
         }
-        syncRooms();
+        // 방 목록 동기화 후 새 방이 목록에 없으면 추가
+        // (syncRooms가 setRooms를 전체 교체하므로 그 이전의 낙관적 추가는 소용없음)
+        await syncRooms();
+        if (newRoom) {
+          setRooms((prev) => {
+            if (prev.some((r) => r.id === newRoom!.id)) return prev;
+            return [newRoom!, ...prev];
+          });
+        }
       })();
     } else if (roomIdParam) {
       (async () => {
