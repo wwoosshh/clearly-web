@@ -74,6 +74,7 @@ export default function CompanyDetailPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!companyId) return;
     async function fetchCompany() {
       try {
         const response = await api.get(`/companies/${companyId}`);
@@ -89,6 +90,7 @@ export default function CompanyDetailPage() {
   }, [companyId]);
 
   const fetchReviews = useCallback(async (page: number) => {
+    if (!companyId) return;
     setIsLoadingReviews(true);
     try {
       const response = await api.get(`/reviews/company/${companyId}?page=${page}&limit=5`);

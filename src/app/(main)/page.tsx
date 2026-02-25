@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence, useMotionValue } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "@/stores/auth.store";
 import { useCacheStore } from "@/stores/cache.store";
 import { cn } from "@/lib/utils";
@@ -168,104 +168,138 @@ interface BannerData {
 /* ════════════════════════════════════════════════════
    배너 캐러셀
 ════════════════════════════════════════════════════ */
+function BannerSlide({ banner }: { banner: BannerData }) {
+  return (
+    <div className="w-full flex-shrink-0 px-4 pt-4 pb-2 md:px-0">
+      <div
+        className="relative overflow-hidden rounded-2xl h-[160px] md:h-[200px] md:rounded-2xl flex flex-col justify-center px-7 md:px-12"
+        style={{
+          background: banner.imageUrl
+            ? `url(${banner.imageUrl}) center/cover`
+            : banner.bgColor,
+        }}
+      >
+        {banner.imageUrl && (
+          <div className="absolute inset-0 bg-black/30" />
+        )}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/[0.06]" />
+        <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/[0.04]" />
+        <p className="relative text-[19px] font-bold leading-snug tracking-[-0.02em] text-white md:text-[24px]">
+          {banner.title}
+        </p>
+        {banner.subtitle && (
+          <p className="relative mt-1.5 text-[13px] leading-relaxed text-white/50 md:text-[14px]">
+            {banner.subtitle}
+          </p>
+        )}
+        {banner.linkUrl && banner.linkText && (
+          <Link
+            href={banner.linkUrl}
+            className="relative mt-4 inline-flex h-[34px] w-fit items-center gap-1 rounded-lg px-4 text-[12px] font-semibold text-white/90 transition-all hover:text-white hover:bg-white/25 md:mt-5 md:h-[38px] md:text-[13px]"
+            style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}
+          >
+            {banner.linkText}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function BannerCarousel({ banners }: { banners: BannerData[] }) {
-  const [current, setCurrent] = useState(0);
+  const len = banners.length;
+  // 내부 인덱스: 0=클론(마지막), 1~len=실제, len+1=클론(첫번째)
+  const [current, setCurrent] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
-  const x = useMotionValue(0);
+  const [animate, setAnimate] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // 확장 슬라이드: [마지막 클론, ...실제 배너들, 첫번째 클론]
+  const slides = len > 0 ? [banners[len - 1], ...banners, banners[0]] : [];
 
   // 자동 재생
   useEffect(() => {
-    if (isDragging || banners.length === 0) return;
+    if (isDragging || len === 0) return;
     const timer = setInterval(() => {
-      setCurrent((p) => (p + 1) % banners.length);
+      setAnimate(true);
+      setCurrent((p) => p + 1);
     }, 4500);
     return () => clearInterval(timer);
-  }, [isDragging, banners.length]);
+  }, [isDragging, len, current]);
+
+  // 클론 도달 시 실제 위치로 순간 이동
+  useEffect(() => {
+    if (!animate) return;
+    if (current === len + 1) {
+      const timeout = setTimeout(() => {
+        setAnimate(false);
+        setCurrent(1);
+      }, 400);
+      return () => clearTimeout(timeout);
+    }
+    if (current === 0) {
+      const timeout = setTimeout(() => {
+        setAnimate(false);
+        setCurrent(len);
+      }, 400);
+      return () => clearTimeout(timeout);
+    }
+  }, [current, len, animate]);
 
   const handleDragEnd = (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
     setIsDragging(false);
     const swipe = info.offset.x + info.velocity.x * 0.3;
+    setAnimate(true);
     if (swipe < -40) {
-      setCurrent((p) => Math.min(p + 1, banners.length - 1));
+      setCurrent((p) => p + 1);
     } else if (swipe > 40) {
-      setCurrent((p) => Math.max(p - 1, 0));
+      setCurrent((p) => p - 1);
     }
   };
 
-  if (banners.length === 0) return null;
+  // 인디케이터용 실제 인덱스 (0-based)
+  const realIndex = current === 0 ? len - 1 : current === len + 1 ? 0 : current - 1;
+
+  if (len === 0) return null;
 
   return (
     <div className="relative overflow-hidden" ref={containerRef}>
       <motion.div
         className="flex"
         animate={{ x: `-${current * 100}%` }}
-        transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.9 }}
+        transition={
+          animate
+            ? { type: "spring", stiffness: 260, damping: 30, mass: 0.9 }
+            : { duration: 0 }
+        }
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.12}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={handleDragEnd}
-        style={{ x }}
       >
-        {banners.map((banner) => (
-          <div
-            key={banner.id}
-            className="w-full flex-shrink-0 px-4 pt-4 pb-2 md:px-0"
-          >
-            <div
-              className="relative overflow-hidden rounded-2xl h-[160px] md:h-[200px] md:rounded-2xl flex flex-col justify-center px-7 md:px-12"
-              style={{
-                background: banner.imageUrl
-                  ? `url(${banner.imageUrl}) center/cover`
-                  : banner.bgColor,
-              }}
-            >
-              {/* 이미지 위 오버레이 */}
-              {banner.imageUrl && (
-                <div className="absolute inset-0 bg-black/30" />
-              )}
-
-              {/* 장식 요소 */}
-              <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/[0.06]" />
-              <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/[0.04]" />
-
-              <p className="relative text-[19px] font-bold leading-snug tracking-[-0.02em] text-white md:text-[24px]">
-                {banner.title}
-              </p>
-              {banner.subtitle && (
-                <p className="relative mt-1.5 text-[13px] leading-relaxed text-white/50 md:text-[14px]">
-                  {banner.subtitle}
-                </p>
-              )}
-              {banner.linkUrl && banner.linkText && (
-                <Link
-                  href={banner.linkUrl}
-                  className="relative mt-4 inline-flex h-[34px] w-fit items-center gap-1 rounded-lg px-4 text-[12px] font-semibold text-white/90 transition-all hover:text-white hover:bg-white/25 md:mt-5 md:h-[38px] md:text-[13px]"
-                  style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}
-                >
-                  {banner.linkText}
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </Link>
-              )}
-            </div>
-          </div>
+        {slides.map((banner, i) => (
+          <BannerSlide key={`${banner.id}-${i}`} banner={banner} />
         ))}
       </motion.div>
 
       {/* 인디케이터 */}
-      {banners.length > 1 && (
+      {len > 1 && (
         <div className="flex items-center justify-center gap-1.5 pb-1.5 pt-2.5">
           {banners.map((_, i) => (
             <button
               key={i}
-              onClick={() => setCurrent(i)}
+              onClick={() => {
+                setAnimate(true);
+                setCurrent(i + 1);
+              }}
               className="relative h-[5px] rounded-full transition-all duration-300"
               style={{
-                width: i === current ? 20 : 5,
-                background: i === current ? C.green : "#dbd7d0",
+                width: i === realIndex ? 20 : 5,
+                background: i === realIndex ? C.green : "#dbd7d0",
               }}
             />
           ))}
