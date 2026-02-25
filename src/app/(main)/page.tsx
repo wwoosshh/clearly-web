@@ -230,11 +230,29 @@ function BannerCarousel({ banners }: { banners: BannerData[] }) {
     setDragPx(0);
   }, []);
 
+  /** 클론 위치에 있으면 실제 위치로 즉시 보정 (애니메이션 없이) */
+  const snapFromClone = useCallback(() => {
+    const cur = idxRef.current;
+    if (cur === len + 1) {
+      setSmooth(false);
+      setIdx(1);
+      idxRef.current = 1;
+    } else if (cur === 0) {
+      setSmooth(false);
+      setIdx(len);
+      idxRef.current = len;
+    }
+  }, [len]);
+
   /** 자동 재생 — 슬라이드 전환 후 4.5초 뒤 다음으로 */
   useEffect(() => {
     if (len <= 1) return;
     const id = setTimeout(() => {
-      if (!dragging.current) go(idxRef.current + 1, true);
+      if (dragging.current) return;
+      // 클론 위치면 스킵 — transitionEnd가 보정 후 다음 타이머 발동
+      const cur = idxRef.current;
+      if (cur === 0 || cur === len + 1) return;
+      go(cur + 1, true);
     }, 4500);
     return () => clearTimeout(id);
   }, [idx, len, go]);
@@ -250,13 +268,14 @@ function BannerCarousel({ banners }: { banners: BannerData[] }) {
     }
   }, [len]);
 
-  /** 드래그 시작 */
+  /** 드래그 시작 — 클론에 있으면 먼저 보정 */
   const onDragStart = useCallback((clientX: number) => {
+    snapFromClone();
     dragging.current = true;
     startX.current = clientX;
     setSmooth(false);
     setDragPx(0);
-  }, []);
+  }, [snapFromClone]);
 
   /** 드래그 이동 */
   const onDragMove = useCallback((clientX: number) => {
