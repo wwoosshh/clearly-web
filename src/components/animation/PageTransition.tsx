@@ -59,6 +59,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
         initial="initial"
         animate="animate"
         exit="exit"
+        className="h-full"
       >
         <FrozenRouter>{children}</FrozenRouter>
       </motion.div>

@@ -155,6 +155,11 @@ export function ChatPageContent() {
           const room = unwrapResponse<ChatRoomDetail>(response);
           setSelectedRoom(room);
           setShowMobileChat(true);
+          // 방 목록에 즉시 추가 (syncRooms 타이밍과 무관하게 목록에 표시)
+          setRooms((prev) => {
+            if (prev.some((r) => r.id === room.id)) return prev;
+            return [room, ...prev];
+          });
           // 캐시에서 메시지 즉시 로드
           const cached = chatCache.getMessages(room.id);
           if (cached?.length) setMessages(cached);
