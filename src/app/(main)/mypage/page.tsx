@@ -368,7 +368,7 @@ export default function MyPage() {
                     ))}
                 </div>
               )}
-              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <div className="mt-3 grid grid-cols-3 gap-3">
                 <Link
                   href="/my-estimates"
                   className="hover-lift rounded-xl border border-[#e2ddd6] bg-white p-4 text-center"
@@ -520,16 +520,6 @@ export default function MyPage() {
                       <polyline points="14 2 14 8 20 8" />
                     </svg>
                     <span className="text-[14px] font-medium text-[#1a1918]">매칭 내역</span>
-                  </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8c4bc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-                </Link>
-                <Link href="/search" className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-[#f0ede8]">
-                  <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8c6a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8" />
-                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <span className="text-[14px] font-medium text-[#1a1918]">업체 찾기</span>
                   </div>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8c4bc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
                 </Link>

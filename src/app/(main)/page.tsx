@@ -964,6 +964,13 @@ function HomeContent() {
       <div ref={listRef} id="list">
         {isLoading ? (
           <div>
+            <div className="flex items-center justify-center gap-2 py-6">
+              <svg width="18" height="18" viewBox="0 0 24 24" className="animate-spin" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#e2ddd6" strokeWidth="2.5" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="#2d6a4f" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+              <span className="text-[13px] font-medium text-[#72706a]">업체 정보를 불러오는 중...</span>
+            </div>
             {Array.from({ length: 6 }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}

@@ -10,7 +10,6 @@ function Footer() {
   const isAdmin = isAuthenticated && user?.role === "ADMIN";
 
   const serviceLinks = [
-    { href: "/search", label: "업체 찾기" },
     ...(!isCompany ? [{ href: "/matching", label: "매칭 내역" }] : []),
     { href: "/chat", label: "채팅" },
     ...(isCompany
