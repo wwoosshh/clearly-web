@@ -33,9 +33,7 @@ const SPECIALTY_OPTIONS = [
   "사무실청소",
   "상가청소",
   "에어컨청소",
-  "카펫청소",
-  "외벽청소",
-  "기타",
+  "특수청소",
 ] as const;
 
 const REGION_OPTIONS = [

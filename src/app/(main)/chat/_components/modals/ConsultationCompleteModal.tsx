@@ -20,10 +20,7 @@ interface ConsultationCompleteModalProps {
   isCompleting: boolean;
 }
 
-// CONSULTATION 제외한 청소 유형 목록
-const CLEANING_OPTIONS = (
-  Object.entries(CLEANING_TYPE_LABELS) as [CleaningType, string][]
-).filter(([key]) => key !== "CONSULTATION");
+const CLEANING_OPTIONS = Object.entries(CLEANING_TYPE_LABELS) as [CleaningType, string][];
 
 export function ConsultationCompleteModal({
   isOpen,

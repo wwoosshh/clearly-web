@@ -117,28 +117,11 @@ const CATEGORIES = [
     ),
   },
   {
-    key: "카펫청소",
-    label: "카펫청소",
+    key: "특수청소",
+    label: "특수청소",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="6" width="18" height="12" rx="1" />
-        <path d="M3 10h18" />
-        <path d="M7 6v12" />
-        <path d="M17 6v12" />
-        <path d="M5 18l-2 3" />
-        <path d="M19 18l2 3" />
-      </svg>
-    ),
-  },
-  {
-    key: "외벽청소",
-    label: "외벽청소",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="4" y="2" width="16" height="20" rx="2" />
-        <path d="M4 8h16" />
-        <path d="M4 14h16" />
-        <line x1="10" y1="2" x2="10" y2="22" />
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z" />
       </svg>
     ),
   },

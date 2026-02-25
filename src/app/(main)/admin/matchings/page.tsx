@@ -45,8 +45,7 @@ const cleaningTypeLabels: Record<string, string> = {
   OFFICE: "사무실청소",
   STORE: "상가청소",
   AIRCON: "에어컨청소",
-  CARPET: "카펫청소",
-  EXTERIOR: "외부청소",
+  SPECIAL: "특수청소",
 };
 
 export default function AdminMatchingsPage() {
