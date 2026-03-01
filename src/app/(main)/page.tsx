@@ -12,6 +12,7 @@ import api from "@/lib/api";
 import type { CompanySearchResponse, CompanySearchResult } from "@/types";
 import { unwrapPaginatedResponse } from "@/lib/apiHelpers";
 import { QuickNav } from "@/components/layout/QuickNav";
+import { showToast } from "@/components/ui/Toast";
 
 /* ── 디자인 토큰 ─────────────────────────────────── */
 const C = {
@@ -854,6 +855,7 @@ function HomeContent() {
         if (!cached && !params.append) {
           setCompanies([]);
           setMeta(null);
+          showToast("오류", "업체 목록을 불러오는데 실패했습니다.");
         }
       } finally {
         setIsLoading(false);
