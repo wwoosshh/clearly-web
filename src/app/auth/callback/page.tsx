@@ -12,34 +12,37 @@ function OAuthCallbackContent() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const accessToken = searchParams.get("accessToken");
-    const refreshToken = searchParams.get("refreshToken");
+    const code = searchParams.get("code");
 
-    if (!accessToken || !refreshToken) {
+    if (!code) {
       setError("인증 정보가 없습니다. 다시 로그인해주세요.");
       return;
     }
 
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-
-    // 사용자 정보 조회 후 인증 상태 설정
+    // 1회용 코드를 서버에 POST하여 실제 토큰 교환
     api
-      .get("/auth/me")
+      .post("/auth/oauth/exchange", { code })
       .then(({ data }) => {
-        useAuthStore.setState({
-          user: data.data,
-          accessToken,
-          refreshToken, // 메모리(store)에만 보관
-          isAuthenticated: true,
-          isLoading: false,
-          isInitialized: true,
+        const { tokens, isNewUser } = data.data;
+
+        localStorage.setItem("accessToken", tokens.accessToken);
+        localStorage.setItem("refreshToken", tokens.refreshToken);
+
+        return api.get("/auth/me").then(({ data: meData }) => {
+          useAuthStore.setState({
+            user: meData.data,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            isAuthenticated: true,
+            isLoading: false,
+            isInitialized: true,
+          });
+          router.replace(isNewUser ? "/" : "/");
         });
-        router.replace("/");
       })
       .catch(() => {
         localStorage.removeItem("accessToken");
-        setError("사용자 정보를 불러오는데 실패했습니다.");
+        setError("로그인 처리에 실패했습니다. 다시 시도해주세요.");
       });
   }, [searchParams, router]);
 
@@ -48,10 +51,7 @@ function OAuthCallbackContent() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="text-[14px] text-red-500">{error}</p>
-          <a
-            href="/login"
-            className="mt-4 inline-block text-[13px] text-gray-600 underline"
-          >
+          <a href="/login" className="mt-4 inline-block text-[13px] text-gray-600 underline">
             로그인 페이지로 이동
           </a>
         </div>
@@ -71,13 +71,7 @@ function OAuthCallbackContent() {
 
 export default function OAuthCallbackPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          <Spinner size="lg" className="text-gray-400" />
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Spinner size="lg" className="text-gray-400" /></div>}>
       <OAuthCallbackContent />
     </Suspense>
   );
