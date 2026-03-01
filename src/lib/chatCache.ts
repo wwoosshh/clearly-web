@@ -80,4 +80,12 @@ export const chatCache = {
     );
     this.setRooms(updated);
   },
+
+  clearAll() {
+    if (typeof window === "undefined") return;
+    const keys = Object.keys(localStorage).filter(
+      (k) => k === ROOMS_KEY || k.startsWith(MSGS_PREFIX),
+    );
+    keys.forEach((k) => localStorage.removeItem(k));
+  },
 };

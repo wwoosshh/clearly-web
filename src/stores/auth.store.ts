@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { AuthTokens, LoginRequest, User } from "@/types";
 import api from "@/lib/api";
+import { chatCache } from "@/lib/chatCache";
 
 /** JWT payload에서 기본 유저 정보를 디코딩 */
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
@@ -89,6 +90,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     document.cookie = "userRole=; path=/; max-age=0; SameSite=Strict";
+    chatCache.clearAll();
 
     set({
       user: null,

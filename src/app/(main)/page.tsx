@@ -155,6 +155,15 @@ interface BannerData {
   sortOrder: number;
 }
 
+function isSafeImageUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 /* ════════════════════════════════════════════════════
    배너 캐러셀
 ════════════════════════════════════════════════════ */
@@ -164,12 +173,12 @@ function BannerSlide({ banner }: { banner: BannerData }) {
       <div
         className="relative overflow-hidden rounded-2xl h-[160px] md:h-[280px] md:rounded-3xl flex flex-col justify-center px-7 md:px-16"
         style={{
-          background: banner.imageUrl
+          background: banner.imageUrl && isSafeImageUrl(banner.imageUrl)
             ? `url(${banner.imageUrl}) center/cover`
             : banner.bgColor,
         }}
       >
-        {banner.imageUrl && (
+        {banner.imageUrl && isSafeImageUrl(banner.imageUrl) && (
           <div className="absolute inset-0 bg-black/30" />
         )}
         <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/[0.06]" />
