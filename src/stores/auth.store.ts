@@ -62,6 +62,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       localStorage.setItem("accessToken", tokens.accessToken);
       localStorage.setItem("refreshToken", tokens.refreshToken);
+      document.cookie = `userRole=${user.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Strict`;
 
       set({
         user,
@@ -87,6 +88,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    document.cookie = "userRole=; path=/; max-age=0; SameSite=Strict";
 
     set({
       user: null,
@@ -143,6 +145,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // 백그라운드에서 최신 유저 데이터로 동기화
     try {
       const { data } = await api.get<{ data: User }>("/auth/me");
+      document.cookie = `userRole=${data.data.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Strict`;
       set({
         user: data.data,
         accessToken: token,

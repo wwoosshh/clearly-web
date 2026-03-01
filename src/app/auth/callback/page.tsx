@@ -29,6 +29,7 @@ function OAuthCallbackContent() {
         localStorage.setItem("refreshToken", tokens.refreshToken);
 
         return api.get("/auth/me").then(({ data: meData }) => {
+          document.cookie = `userRole=${meData.data.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Strict`;
           useAuthStore.setState({
             user: meData.data,
             accessToken: tokens.accessToken,
