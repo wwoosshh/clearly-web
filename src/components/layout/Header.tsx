@@ -75,27 +75,6 @@ const Header = React.memo(function Header() {
           </span>
         </Link>
 
-        {/* Desktop Nav - 페이지 기준 중앙 */}
-        <nav className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-0.5 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "relative whitespace-nowrap px-4 py-2 text-[14px] font-medium transition-colors",
-                pathname === link.href
-                  ? "text-[#0284C7]"
-                  : "text-[#72706a] hover:text-[#1a1918]"
-              )}
-            >
-              {link.label}
-              {pathname === link.href && (
-                <span className="absolute bottom-0 left-4 right-4 h-[2px] bg-[#0284C7] rounded-full" />
-              )}
-            </Link>
-          ))}
-        </nav>
-
         {/* Desktop Right */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
           {!isInitialized ? (
