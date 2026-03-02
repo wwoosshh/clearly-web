@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSubscriptionStore } from "@/stores/subscription.store";
 import SubscriptionBadge from "@/components/subscription/SubscriptionBadge";
@@ -12,11 +11,9 @@ import { cn } from "@/lib/utils";
 import { NotificationBell } from "./NotificationBell";
 
 const Header = React.memo(function Header() {
-  const pathname = usePathname();
   const { user, isAuthenticated, isInitialized, logout } = useAuthStore();
   const { subscription } = useSubscriptionStore();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -44,20 +41,6 @@ const Header = React.memo(function Header() {
   const isCompany = isAuthenticated && user?.role === "COMPANY";
   const isAdmin = isAuthenticated && user?.role === "ADMIN";
 
-  const navLinks = isAdmin
-    ? [{ href: "/admin", label: "관리자 페이지" }]
-    : [
-        ...(!isCompany ? [{ href: "/matching", label: "매칭 내역" }] : []),
-        { href: "/chat", label: "채팅" },
-        ...(isCompany
-          ? [
-              { href: "/customers", label: "고객관리" },
-              { href: "/estimates", label: "견적 리스트" },
-              { href: "/my-estimates", label: "내 견적" },
-            ]
-          : []),
-      ];
-
   return (
     <header
       className={cn(
@@ -67,7 +50,7 @@ const Header = React.memo(function Header() {
           : "bg-white"
       )}
     >
-      <div className="relative mx-auto flex h-[60px] max-w-6xl items-center px-4 sm:px-6">
+      <div className="mx-auto flex h-[60px] max-w-6xl items-center px-4 sm:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1.5 select-none">
           <span className="text-[22px] font-extrabold tracking-tight text-[#141412]">
@@ -75,8 +58,8 @@ const Header = React.memo(function Header() {
           </span>
         </Link>
 
-        {/* Desktop Right */}
-        <div className="ml-auto hidden items-center gap-2 md:flex">
+        {/* Right — 모바일/PC 동일 */}
+        <div className="ml-auto flex items-center gap-2">
           {!isInitialized ? (
             <div className="h-7 w-20" />
           ) : isAuthenticated && user ? (
@@ -89,7 +72,13 @@ const Header = React.memo(function Header() {
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0284C7] text-[#f5f3ee] overflow-hidden">
                     {user.profileImage ? (
-                      <Image src={user.profileImage} alt="" width={28} height={28} className="h-full w-full object-cover" />
+                      <Image
+                        src={user.profileImage}
+                        alt=""
+                        width={28}
+                        height={28}
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
                       <span className="text-xs font-semibold leading-none">
                         {user.name.charAt(0)}
@@ -166,113 +155,7 @@ const Header = React.memo(function Header() {
             </>
           )}
         </div>
-
-        {/* Mobile Right */}
-        <div className="ml-auto flex items-center gap-1 md:hidden">
-          {isInitialized && isAuthenticated && user && (
-            <NotificationBell />
-          )}
-          <button
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-[#72706a] hover:bg-[#f0ede8] transition-colors"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="메뉴"
-          >
-            {isMobileMenuOpen ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="4" y1="7" x2="20" y2="7" />
-                <line x1="4" y1="12" x2="20" y2="12" />
-                <line x1="4" y1="17" x2="20" y2="17" />
-              </svg>
-            )}
-          </button>
-        </div>
       </div>
-
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 top-[60px] z-40 bg-black/15 md:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="absolute left-0 right-0 top-[60px] z-50 border-t border-[#e2ddd6] bg-white shadow-[0_8px_24px_rgba(2,132,199,0.08)] md:hidden"
-            >
-              <nav className="flex flex-col px-5 pt-3">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "py-2.5 text-[15px] font-medium transition-colors",
-                      pathname === link.href
-                        ? "text-[#0284C7]"
-                        : "text-[#72706a]"
-                    )}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-              <div className="mx-5 mt-3 flex flex-col gap-2 border-t border-[#e2ddd6] pb-5 pt-4">
-                {!isInitialized ? (
-                  <div className="h-11" />
-                ) : isAuthenticated && user ? (
-                  <>
-                    {!isAdmin && (
-                      <Link
-                        href="/mypage"
-                        className="py-2 text-[15px] font-medium text-[#1a1918]"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        마이페이지
-                      </Link>
-                    )}
-                    <button
-                      onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                      className="py-2 text-left text-[15px] font-medium text-[#72706a]"
-                    >
-                      로그아웃
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      className="flex h-11 items-center justify-center rounded-lg border border-[#e2ddd6] text-[14px] font-medium text-[#1a1918] hover:bg-[#f0ede8] transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      로그인
-                    </Link>
-                    <Link
-                      href="/register"
-                      className="flex h-11 items-center justify-center rounded-lg bg-[#0284C7] text-[14px] font-medium text-[#f5f3ee] hover:bg-[#0369A1] transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      시작하기
-                    </Link>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </header>
   );
 });
