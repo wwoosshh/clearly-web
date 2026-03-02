@@ -16,7 +16,7 @@ const PROTECTED_PATHS = [
 // ADMIN 전용 경로
 const ADMIN_PATHS = ["/admin"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const userRole = request.cookies.get("userRole")?.value;
