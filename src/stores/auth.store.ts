@@ -109,9 +109,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     if (!legacyToken) {
       // 쿠키 기반: /auth/me로 세션 확인
+      // skipAuthRefresh: 미로그인 상태의 401은 정상이므로 refresh 사이클 건너뜀
       set({ isLoading: true });
       try {
-        const { data } = await api.get<{ data: User }>("/auth/me");
+        const { data } = await api.get<{ data: User }>("/auth/me", { skipAuthRefresh: true } as any);
         document.cookie = `userRole=${data.data.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Strict`;
         set({
           user: data.data,
@@ -148,7 +149,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     try {
-      const { data } = await api.get<{ data: User }>("/auth/me");
+      const { data } = await api.get<{ data: User }>("/auth/me", { skipAuthRefresh: true } as any);
       // /auth/me 성공 → 쿠키로 전환 완료, localStorage 정리
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");

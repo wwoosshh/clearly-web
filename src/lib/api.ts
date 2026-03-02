@@ -50,9 +50,12 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
+      skipAuthRefresh?: boolean;
     };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // skipAuthRefresh 플래그가 있으면 refresh 사이클 건너뜀
+    // (예: restoreSession의 /auth/me → 미로그인 상태에서 401은 정상)
+    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.skipAuthRefresh) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
