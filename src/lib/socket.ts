@@ -24,6 +24,7 @@ export function getSocket(): Socket {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 10000,
       timeout: 10000,
+      withCredentials: true, // httpOnly 쿠키(accessToken) 자동 전송
     });
   }
   return socket;
@@ -35,12 +36,9 @@ export function getSocket(): Socket {
 export function connectSocket(): void {
   const s = getSocket();
 
-  // 매번 연결 시 최신 토큰으로 auth 설정
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("accessToken")
-      : null;
-  s.auth = { token };
+  // 쿠키 기반 인증: auth.token은 사용하지 않음
+  // 서버는 handshake 쿠키(accessToken)에서 토큰을 읽음
+  s.auth = {};
 
   if (!s.connected) {
     s.connect();

@@ -58,7 +58,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
   fetchUnreadCount: async () => {
     try {
-      const response = await api.get("/notifications/unread-count");
+      const response = await api.get("/notifications/unread-count", {
+        skipAuthRefresh: true,
+      } as any);
       const result = unwrapResponse<{ unreadCount: number }>(response);
       const count = result?.unreadCount ?? 0;
       set({ unreadCount: typeof count === "number" ? count : 0 });

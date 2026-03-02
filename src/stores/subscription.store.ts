@@ -52,7 +52,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
 
   fetchSubscription: async () => {
     try {
-      const { data } = await api.get("/subscriptions/my");
+      const { data } = await api.get("/subscriptions/my", {
+        skipAuthRefresh: true,
+      } as any);
       set({ subscription: data?.data ?? null, subscriptionLoaded: true });
     } catch {
       set({ subscription: null, subscriptionLoaded: true });
