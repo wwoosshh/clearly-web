@@ -11,6 +11,7 @@ const API_BASE_URL =
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
+  withCredentials: true, // httpOnly 쿠키 자동 전송
   headers: {
     "Content-Type": "application/json",
   },
@@ -19,49 +20,17 @@ const api: AxiosInstance = axios.create({
 /** 토큰 갱신 중복 요청 방지 플래그 */
 let isRefreshing = false;
 let failedQueue: Array<{
-  resolve: (token: string) => void;
+  resolve: () => void;
   reject: (error: unknown) => void;
 }> = [];
 
 /** 대기 큐 처리 */
-function processQueue(error: unknown, token: string | null = null) {
-  failedQueue.forEach((promise) => {
-    if (error) {
-      promise.reject(error);
-    } else {
-      promise.resolve(token!);
-    }
-  });
+function processQueue(error: unknown) {
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve()));
   failedQueue = [];
 }
 
-/** Zustand store에서 refreshToken 가져오기 (순환 의존 방지를 위한 lazy import) */
-function getRefreshToken(): string | null {
-  try {
-    const { useAuthStore } = require("@/stores/auth.store");
-    const storeToken = useAuthStore.getState().refreshToken;
-    if (storeToken) return storeToken;
-  } catch {
-    // store 접근 실패 시 fallback
-  }
-  // store에 없으면 localStorage fallback (새로고침 직후 등)
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("refreshToken");
-  }
-  return null;
-}
-
-/** Zustand store에 새 토큰 저장 */
-function setTokensInStore(accessToken: string, refreshToken: string) {
-  try {
-    const { useAuthStore } = require("@/stores/auth.store");
-    useAuthStore.setState({ accessToken, refreshToken });
-  } catch {
-    // store 접근 실패 시 무시
-  }
-}
-
-/** 요청 인터셉터: Access Token 자동 첨부 */
+/** 요청 인터셉터: 레거시 localStorage 토큰 호환 (과도기) */
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
@@ -75,7 +44,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-/** 응답 인터셉터: 401 에러 시 토큰 갱신 시도 */
+/** 응답 인터셉터: 401 에러 시 쿠키 기반 토큰 갱신 */
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -83,18 +52,11 @@ api.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // 401 에러이고 재시도하지 않은 요청인 경우
     if (error.response?.status === 401 && !originalRequest._retry) {
-      // 이미 refresh 중이면 큐에 추가
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
-            resolve: (token: string) => {
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${token}`;
-              }
-              resolve(api(originalRequest));
-            },
+            resolve: () => resolve(api(originalRequest)),
             reject,
           });
         });
@@ -104,40 +66,28 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // refreshToken은 메모리(Zustand store)에서만 가져옴
-        const refreshToken = getRefreshToken();
-        if (!refreshToken) {
-          throw new Error("No refresh token");
-        }
+        // 쿠키 기반 refresh (withCredentials로 쿠키 자동 전송)
+        await axios.post(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
 
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-          refreshToken,
-        });
+        // 레거시 localStorage 토큰 정리
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
 
-        const { accessToken, refreshToken: newRefreshToken } = data.data;
-
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", newRefreshToken);
-        setTokensInStore(accessToken, newRefreshToken);
-
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        }
-
-        processQueue(null, accessToken);
-
+        processQueue(null);
         return api(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
+        processQueue(refreshError);
 
-        // 토큰 갱신 실패 시 로그아웃 처리
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
 
         if (typeof window !== "undefined") {
           window.location.href = "/login";
         }
-
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

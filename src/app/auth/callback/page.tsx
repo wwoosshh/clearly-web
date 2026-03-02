@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { Spinner } from "@/components/ui/Spinner";
 import api from "@/lib/api";
+import type { User } from "@/types";
 
 function OAuthCallbackContent() {
   const searchParams = useSearchParams();
@@ -19,21 +20,18 @@ function OAuthCallbackContent() {
       return;
     }
 
-    // 1회용 코드를 서버에 POST하여 실제 토큰 교환
+    // 1회용 코드를 서버에 POST → 쿠키로 토큰 자동 설정
     api
-      .post("/auth/oauth/exchange", { code })
+      .post<{ data: { isNewUser: boolean } }>("/auth/oauth/exchange", { code })
       .then(({ data }) => {
-        const { tokens, isNewUser } = data.data;
+        const { isNewUser } = data.data;
 
-        localStorage.setItem("accessToken", tokens.accessToken);
-        localStorage.setItem("refreshToken", tokens.refreshToken);
-
-        return api.get("/auth/me").then(({ data: meData }) => {
+        return api.get<{ data: User }>("/auth/me").then(({ data: meData }) => {
           document.cookie = `userRole=${meData.data.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Strict`;
           useAuthStore.setState({
             user: meData.data,
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
+            accessToken: null,
+            refreshToken: null,
             isAuthenticated: true,
             isLoading: false,
             isInitialized: true,
@@ -42,7 +40,6 @@ function OAuthCallbackContent() {
         });
       })
       .catch(() => {
-        localStorage.removeItem("accessToken");
         setError("로그인 처리에 실패했습니다. 다시 시도해주세요.");
       });
   }, [searchParams, router]);

@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import type { AuthTokens, LoginRequest, User } from "@/types";
+import type { LoginRequest, User } from "@/types";
 import api from "@/lib/api";
 import { chatCache } from "@/lib/chatCache";
 
-/** JWT payload에서 기본 유저 정보를 디코딩 */
+/** JWT payload에서 기본 유저 정보를 디코딩 (레거시 localStorage 토큰용) */
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
     const base64 = token.split(".")[1];
@@ -17,9 +17,9 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 interface AuthState {
   /** 현재 로그인한 사용자 */
   user: User | null;
-  /** Access Token */
+  /** Access Token (레거시 — 쿠키 전환 후에는 null) */
   accessToken: string | null;
-  /** Refresh Token */
+  /** Refresh Token (레거시 — 쿠키 전환 후에는 null) */
   refreshToken: string | null;
   /** 인증 상태 로딩 여부 */
   isLoading: boolean;
@@ -40,6 +40,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
+  // 레거시 localStorage 토큰 — 쿠키 전환 완료 후 제거 예정
   accessToken:
     typeof window !== "undefined"
       ? localStorage.getItem("accessToken")
@@ -56,19 +57,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       const { data } = await api.post<{
-        data: { user: User; tokens: AuthTokens };
+        data: { user: User };
       }>("/auth/login", credentials);
 
-      const { user, tokens } = data.data;
-
-      localStorage.setItem("accessToken", tokens.accessToken);
-      localStorage.setItem("refreshToken", tokens.refreshToken);
+      const { user } = data.data;
+      // 쿠키 기반으로 전환 — localStorage 저장 제거
+      // userRole 쿠키는 미들웨어 서버사이드 보호용
       document.cookie = `userRole=${user.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Strict`;
 
       set({
         user,
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
+        accessToken: null,
+        refreshToken: null,
         isAuthenticated: true,
         isLoading: false,
         isInitialized: true,
@@ -80,13 +80,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: async () => {
-    // 백엔드에서 refresh token 폐기 (실패해도 로컬은 정리)
     try {
       await api.post("/auth/logout");
     } catch {
-      // 네트워크 오류 등 무시 — 로컬 토큰 정리가 우선
+      // 네트워크 오류 무시
     }
 
+    // 레거시 localStorage 정리
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     document.cookie = "userRole=; path=/; max-age=0; SameSite=Strict";
@@ -101,29 +101,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   restoreSession: async () => {
-    // 이미 초기화 완료된 경우 중복 호출 방지
     if (get().isInitialized) return;
 
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("accessToken")
-        : null;
-    const savedRefreshToken =
-      typeof window !== "undefined"
-        ? localStorage.getItem("refreshToken")
-        : null;
+    // 레거시 localStorage 토큰 확인
+    const legacyToken =
+      typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
-    if (savedRefreshToken) {
-      set({ refreshToken: savedRefreshToken });
-    }
-
-    if (!token) {
-      set({ isAuthenticated: false, isLoading: false, isInitialized: true });
+    if (!legacyToken) {
+      // 쿠키 기반: /auth/me로 세션 확인
+      set({ isLoading: true });
+      try {
+        const { data } = await api.get<{ data: User }>("/auth/me");
+        document.cookie = `userRole=${data.data.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Strict`;
+        set({
+          user: data.data,
+          isAuthenticated: true,
+          isLoading: false,
+          isInitialized: true,
+        });
+      } catch {
+        set({ isAuthenticated: false, isLoading: false, isInitialized: true });
+      }
       return;
     }
 
-    // Optimistic UI: JWT에서 기본 유저 정보를 즉시 디코딩하여 먼저 표시
-    const payload = decodeJwtPayload(token);
+    // 레거시 localStorage 토큰 있음 → Optimistic UI 후 /auth/me로 동기화
+    const payload = decodeJwtPayload(legacyToken);
     if (payload?.sub && payload?.email && payload?.role) {
       set({
         user: {
@@ -135,7 +138,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           createdAt: "",
           updatedAt: "",
         },
-        accessToken: token,
+        accessToken: legacyToken,
         isAuthenticated: true,
         isLoading: true,
         isInitialized: true,
@@ -144,13 +147,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
     }
 
-    // 백그라운드에서 최신 유저 데이터로 동기화
     try {
       const { data } = await api.get<{ data: User }>("/auth/me");
+      // /auth/me 성공 → 쿠키로 전환 완료, localStorage 정리
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       document.cookie = `userRole=${data.data.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Strict`;
       set({
         user: data.data,
-        accessToken: token,
+        accessToken: null,
+        refreshToken: null,
         isAuthenticated: true,
         isLoading: false,
       });
