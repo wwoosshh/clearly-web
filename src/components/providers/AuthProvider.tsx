@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSubscriptionStore } from "@/stores/subscription.store";
 import SubscriptionPaymentPopup from "@/components/subscription/SubscriptionPaymentPopup";
-import axios from "axios";
+import { refreshAccessToken } from "@/lib/api";
 
 /** tokenExp 쿠키에서 만료 시각(초 단위 Unix timestamp) 읽기 */
 function getTokenExpFromCookie(): number | null {
@@ -56,24 +56,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRefreshingRef = useRef(false);
 
-  /** /auth/refresh 호출하여 쿠키 갱신 */
+  /** /auth/refresh 호출하여 쿠키 갱신 — api.ts의 공유 함수 사용 (#4 fix) */
   const refreshTokens = useCallback(async () => {
     if (isRefreshingRef.current) return;
     isRefreshingRef.current = true;
 
     try {
-      const apiBaseUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-
-      // 쿠키 기반 refresh (withCredentials로 쿠키 자동 전송)
-      await axios.post(
-        `${apiBaseUrl}/auth/refresh`,
-        {},
-        { withCredentials: true }
-      );
-
-      // 갱신 성공 → 새 tokenExp 쿠키 기반으로 타이머 재설정
-      scheduleRefresh();
+      const success = await refreshAccessToken();
+      if (success) {
+        // 갱신 성공 → 새 tokenExp 쿠키 기반으로 타이머 재설정
+        scheduleRefresh();
+      }
     } catch {
       // 갱신 실패 시 401 인터셉터에 위임
     } finally {

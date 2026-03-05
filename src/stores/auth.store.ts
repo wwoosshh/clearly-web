@@ -2,6 +2,8 @@ import { create } from "zustand";
 import type { LoginRequest, User } from "@/types";
 import api from "@/lib/api";
 import { chatCache } from "@/lib/chatCache";
+import { useSubscriptionStore } from "@/stores/subscription.store";
+import { useNotificationStore } from "@/stores/notification.store";
 
 /** JWT payload에서 기본 유저 정보를 디코딩 (레거시 localStorage 토큰용) */
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
@@ -91,6 +93,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     localStorage.removeItem("refreshToken");
     document.cookie = "userRole=; path=/; max-age=0; SameSite=Strict";
     chatCache.clearAll();
+    useSubscriptionStore.getState().reset();
+    useNotificationStore.getState().reset();
 
     set({
       user: null,

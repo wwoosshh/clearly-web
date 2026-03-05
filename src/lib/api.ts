@@ -3,6 +3,7 @@ import axios, {
   type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from "axios";
+import { useAuthStore } from "@/stores/auth.store";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -19,6 +20,7 @@ const api: AxiosInstance = axios.create({
 
 /** 토큰 갱신 중복 요청 방지 플래그 */
 let isRefreshing = false;
+let refreshPromise: Promise<void> | null = null;
 let failedQueue: Array<{
   resolve: () => void;
   reject: (error: unknown) => void;
@@ -44,7 +46,31 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-/** 응답 인터셉터: 401 에러 시 쿠키 기반 토큰 갱신 */
+/** 강제 로그아웃: auth store 초기화 + 로그인 페이지 리다이렉트 */
+function forceLogout() {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+
+  // Zustand auth store 즉시 초기화 (#2 fix)
+  const store = useAuthStore.getState();
+  if (store.isAuthenticated) {
+    useAuthStore.setState({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+    });
+  }
+
+  if (
+    typeof window !== "undefined" &&
+    !window.location.pathname.startsWith("/login")
+  ) {
+    window.location.href = "/login";
+  }
+}
+
+/** 응답 인터셉터: 401 에러 시 쿠키 기반 토큰 갱신, 403 시 강제 로그아웃 */
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -52,6 +78,12 @@ api.interceptors.response.use(
       _retry?: boolean;
       skipAuthRefresh?: boolean;
     };
+
+    // 403: 권한 박탈 → 강제 로그아웃 (#6 fix)
+    if (error.response?.status === 403 && !originalRequest.skipAuthRefresh) {
+      forceLogout();
+      return Promise.reject(error);
+    }
 
     // skipAuthRefresh 플래그가 있으면 refresh 사이클 건너뜀
     // (예: restoreSession의 /auth/me → 미로그인 상태에서 401은 정상)
@@ -66,42 +98,55 @@ api.interceptors.response.use(
       }
 
       originalRequest._retry = true;
-      isRefreshing = true;
 
       try {
-        // 쿠키 기반 refresh (withCredentials로 쿠키 자동 전송)
-        await axios.post(
-          `${API_BASE_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
-
-        // 레거시 localStorage 토큰 정리
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        const success = await refreshAccessToken();
+        if (!success) throw new Error("refresh failed");
 
         processQueue(null);
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-
-        if (
-          typeof window !== "undefined" &&
-          !window.location.pathname.startsWith("/login")
-        ) {
-          window.location.href = "/login";
-        }
+        forceLogout();
         return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
       }
     }
 
     return Promise.reject(error);
   }
 );
+
+/**
+ * 공유 토큰 갱신 함수 - AuthProvider와 인터셉터가 동일한 refresh를 사용 (#4 fix)
+ * 동시 호출 시 하나의 요청만 실행하고 나머지는 같은 Promise를 공유
+ */
+export async function refreshAccessToken(): Promise<boolean> {
+  if (isRefreshing && refreshPromise) {
+    try {
+      await refreshPromise;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  isRefreshing = true;
+  refreshPromise = axios
+    .post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true })
+    .then(() => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+    });
+
+  try {
+    await refreshPromise;
+    return true;
+  } catch {
+    return false;
+  } finally {
+    isRefreshing = false;
+    refreshPromise = null;
+  }
+}
 
 export default api;
